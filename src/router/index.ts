@@ -7,7 +7,11 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     },
     {
       path: '/about',
@@ -19,5 +23,17 @@ const router = createRouter({
     }
   ]
 })
-
+function isLogin() {
+  const user = localStorage.getItem('user')
+  // const member = localStorage.getItem('member')
+  if (user) {
+    return true
+  }
+  return false
+}
+router.beforeEach((to, from) => {
+  if (to.meta.requireAuth && !isLogin()) {
+    router.replace('login')
+  }
+})
 export default router
