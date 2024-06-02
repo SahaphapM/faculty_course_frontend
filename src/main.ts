@@ -6,6 +6,7 @@ import router from './router'
 import { createVuetify } from 'vuetify'
 import { md1 } from 'vuetify/blueprints'
 import * as components from 'vuetify/components'
+import '@mdi/font/css/materialdesignicons.css'
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
