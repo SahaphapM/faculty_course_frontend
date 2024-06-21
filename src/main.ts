@@ -8,16 +8,19 @@ import { md1 } from 'vuetify/blueprints'
 import * as components from 'vuetify/components'
 import '@mdi/font/css/materialdesignicons.css'
 import * as directives from 'vuetify/directives'
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
+
 
 const vuetify = createVuetify({
   blueprint: md1,
   icons: {
-    defaultSet: 'mdi' // This is already the default value - only for display purposes
+    defaultSet: 'mdi' 
   },
-  text: '#252525',
   components,
   directives
 })
+
 
 const app = createApp(App)
 

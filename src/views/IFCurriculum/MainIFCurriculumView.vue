@@ -1,17 +1,109 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const tab = ref<string | null>(null)
-    const show = ref<boolean>(false);
+const show1 = ref(false)
+const show2 = ref(false)
+const show3 = ref(false)
+const show4 = ref(false)
+const show5 = ref(false)
 </script>
 <template>
-      <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'วิทยาการสารสนเทศ']">
-      <template v-slot:divider>
-        <v-icon icon="mdi-chevron-right"></v-icon>
-      </template>
-      
-    </v-breadcrumbs>
-    <p style="font-size: xx-large; margin-left: 3%">วิทยาการสารสนเทศ</p>
+  <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'วิทยาการสารสนเทศ']">
+    <template v-slot:divider>
+      <v-icon icon="mdi-chevron-right"></v-icon>
+    </template>
+  </v-breadcrumbs>
+  <p style="font-size: xx-large; margin-left: 3%">วิทยาการสารสนเทศ</p>
+
+  <v-card class="ma-5">
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">เล่มหลักสูตร</p>
+      <v-combobox
+        label="Combobox"
+        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+        variant="outlined"
+        max-width="70%"
+        class="ma-2 rounded"
+      ></v-combobox>
+    </v-card-actions>
+  </v-card>
+
+  <v-card class="ma-5">
+    <p class="font-weight-black ma-5" style="font-size: large">
+      <v-icon left size="xx-small" class="mr-2" color="#112f69">mdi-circle</v-icon>เนื้อหาหลักสูตร
+    </p>
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">รายละเอียด</p>
+      <v-spacer></v-spacer>
+
+      <v-btn :icon="show1 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show1 = !show1"></v-btn>
+    </v-card-actions>
+
+    <v-expand-transition>
+      <div v-show="show1">
+        <v-divider></v-divider>
+
+        <v-card-text> 1 </v-card-text>
+      </div>
+    </v-expand-transition>
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
+      <v-spacer></v-spacer>
+
+      <v-btn :icon="show2 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show2 = !show2"></v-btn>
+    </v-card-actions>
+    <v-expand-transition>
+      <div v-show="show2">
+        <v-divider></v-divider>
+
+        <v-card-text> 2 </v-card-text>
+      </div>
+    </v-expand-transition>
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">
+        ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+      </p>
+      <v-spacer></v-spacer>
+
+      <v-btn :icon="show3 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show3 = !show3"></v-btn>
+    </v-card-actions>
+    <v-expand-transition>
+      <div v-show="show3">
+        <v-divider></v-divider>
+
+        <v-card-text> 3 </v-card-text>
+      </div>
+    </v-expand-transition>
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">การจัดกระบวนการเรียนรู้</p>
+      <v-spacer></v-spacer>
+
+      <v-btn :icon="show4 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show4 = !show4"></v-btn>
+    </v-card-actions>
+    <v-expand-transition>
+      <div v-show="show4">
+        <v-divider></v-divider>
+
+        <v-card-text> 4 </v-card-text>
+      </div>
+    </v-expand-transition>
+    <v-card-actions>
+      <p class="font-weight-black ma-2" style="font-size: small">
+        โครงสร้างหลักสูตร รายวิชาและหน่วยกิต
+      </p>
+      <v-spacer></v-spacer>
+
+      <v-btn :icon="show5 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show5 = !show5"></v-btn>
+    </v-card-actions>
+    <v-expand-transition>
+      <div v-show="show5">
+        <v-divider></v-divider>
+
+        <v-card-text> 5 </v-card-text>
+      </div>
+    </v-expand-transition>
+  </v-card>
+
   <!-- <div class="container">
       <v-card max-width="40%" style="padding: 5px">
         <v-btn-toggle rounded="8" group>
@@ -23,7 +115,7 @@ const tab = ref<string | null>(null)
         </v-btn-toggle>
       </v-card>
     </div> -->
-
+  <!-- 
   <div class="container">
     <v-card max-width="40%">
       <v-tabs fixed-tabs justify="center">
@@ -47,7 +139,7 @@ const tab = ref<string | null>(null)
           >สาขาปัญญาประดิษฐ์ประยุกต์และเทคโนโลยีอัจฉริยะ<br />
           Applied Artificial Intelligence and Smart Technology ( AAI )</v-tab
         >
-      </v-tabs>กกไกไกไกไกไกไไกไกไกไ
+      </v-tabs>
     </v-card>
   </div>
   <br />
@@ -203,8 +295,8 @@ Software Development
           <v-tabs-window-item value="four"> Four </v-tabs-window-item>
         </v-tabs-window>
       </v-card-text>
-    </v-card>
-  </div>
+    </v-card> -->
+  <!-- </div> -->
 </template>
 <style scoped>
 .container {
