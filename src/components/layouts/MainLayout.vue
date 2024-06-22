@@ -11,7 +11,7 @@ import MainAppBar from '../display/MainAppBar.vue'
 
         <v-row justify="end" class="ma-2">
           <v-speed-dial
-            style="position: fixed; bottom: 16px; right: 16px"
+            style="position: sticky-box; bottom: 16px; right: 16px"
             transition="fade-transition"
             justify="end"
           >

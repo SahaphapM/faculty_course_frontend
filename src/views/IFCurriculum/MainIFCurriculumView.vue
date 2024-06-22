@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
+import { computed, onMounted, ref, watch } from 'vue'
+import http from '@/service/http'
+import { useCurriculumStore } from '@/stores/curriculums'
+import type { Curriculum } from '@/types/Curriculums'
+import curriculumService from '@/service/curriculums'
+import type { VForm } from 'vuetify/components'
+const curriculumStore = useCurriculumStore()
+const curriculums = ref(curriculumStore.curriculums)
+const select = ref<string | null>(null)
 const show1 = ref(false)
 const show2 = ref(false)
 const show3 = ref(false)
 const show4 = ref(false)
 const show5 = ref(false)
+const filteredCurriculums = computed(() => {
+  if (select.value) {
+    return curriculums.value.filter((curriculum) => curriculum.thaiName === select.value)
+  } else {
+    return curriculums.value
+  }
+})
 </script>
 <template>
   <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'วิทยาการสารสนเทศ']">
@@ -18,13 +32,12 @@ const show5 = ref(false)
   <v-card class="ma-5">
     <v-card-actions>
       <p class="font-weight-black ma-2" style="font-size: small">เล่มหลักสูตร</p>
-      <v-combobox
-        label="Combobox"
-        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+      <v-select
+        v-model="select"
+        :items="curriculums.map((curriculum) => curriculum.thaiName)"
         variant="outlined"
-        max-width="70%"
-        class="ma-2 rounded"
-      ></v-combobox>
+        rounded="lg"
+      ></v-select>
     </v-card-actions>
   </v-card>
 
@@ -43,7 +56,23 @@ const show5 = ref(false)
       <div v-show="show1">
         <v-divider></v-divider>
 
-        <v-card-text> 1 </v-card-text>
+        <v-card-text>
+          <v-list>
+            <v-list-item v-for="curriculum in filteredCurriculums" :key="curriculum.id">
+              <v-list-item-content>
+                <v-list-item-title>{{ curriculum.thaiName }}</v-list-item-title>
+                <v-list-item-subtitle>{{ curriculum.engName }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ curriculum.phdName }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ curriculum.degreeName }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ curriculum.objective }}</v-list-item-subtitle>
+                <v-list-item-subtitle>Duration: {{ curriculum.period }} years</v-list-item-subtitle>
+                <v-list-item-subtitle
+                  >Minimum Grade: {{ curriculum.minimumGrade }}</v-list-item-subtitle
+                >
+              </v-list-item-content>
+            </v-list-item>
+          </v-list></v-card-text
+        >
       </div>
     </v-expand-transition>
     <v-card-actions>
