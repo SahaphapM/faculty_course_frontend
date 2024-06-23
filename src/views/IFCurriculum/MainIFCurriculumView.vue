@@ -6,13 +6,16 @@ import type { Curriculum } from '@/types/Curriculums'
 import curriculumService from '@/service/curriculums'
 import type { VForm } from 'vuetify/components'
 const curriculumStore = useCurriculumStore()
-const curriculums = ref(curriculumStore.curriculums)
+const curriculums = computed(() => curriculumStore.curriculums)
 const select = ref<string | null>(null)
 const show1 = ref(false)
 const show2 = ref(false)
 const show3 = ref(false)
 const show4 = ref(false)
 const show5 = ref(false)
+onMounted(() => {
+  curriculumStore.fetchCurriculums()
+})
 const filteredCurriculums = computed(() => {
   if (select.value) {
     return curriculums.value.filter((curriculum) => curriculum.thaiName === select.value)

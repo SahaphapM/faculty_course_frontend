@@ -3,16 +3,20 @@ import { computed, onMounted, ref, watch } from 'vue'
 import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
-import curriculumService from '@/service/curriculums'
+import { useUserStore } from '@/stores/user'
+import type { User } from '@/types/User'
 import type { VForm } from 'vuetify/components'
 const curriculumStore = useCurriculumStore()
+const userStore = useUserStore()
+
 const overlay = ref(false)
 const reveal = ref(false)
 const reveal2 = ref(true)
-const curriculums = ref(curriculumStore.curriculums)
-
+const users = computed(() => userStore.users)
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
+  await userStore.fetchUsers()
+  console.log(userStore.users)
 })
 
 watch(overlay, (val) => {
@@ -21,6 +25,14 @@ watch(overlay, (val) => {
       overlay.value = false
     }, 2000)
   }
+})
+const userOptions = computed(() => {
+  return users.value.map((user) => {
+    const rolesString = Array.isArray(user.roles)
+      ? user.roles.map((role) => role.name).join(', ')
+      : 'No Roles'
+    return `${user.id} ${rolesString} ${user.firstName} ${user.lastName}`
+  })
 })
 const id = ref<string>('')
 const thaiName = ref<string>('')
@@ -75,7 +87,7 @@ async function save() {
 }
 </script>
 <template>
-  <div class="pa-4 bg-grey-lighten-4">
+  <div class="bg-grey-lighten-4">
     <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'วิทยาการสารสนเทศ']">
       <template v-slot:divider>
         <v-icon icon="mdi-chevron-right"></v-icon>
@@ -171,19 +183,13 @@ async function save() {
               <p class="details-text" style="font-size: 2.5vh">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
             </div>
             <v-form ref="form" class="ma-2">
-              <p style="font-size: 1.5vh">คำนำหน้า</p>
-              <v-select
+              <p style="font-size: 1.5vh">เลือก</p>
+              <v-combobox
                 v-model="select3"
-                :items="items3"
+                :items="userOptions"
                 variant="outlined"
                 rounded="lg"
-              ></v-select>
-              <p style="font-size: 1.5vh">ชื่อ</p>
-              <v-text-field :rules="nameRules" variant="outlined" rounded="lg"></v-text-field>
-              <p style="font-size: 1.5vh">นามสกุล</p>
-              <v-text-field :rules="nameRules" variant="outlined" rounded="lg"></v-text-field>
-              <p style="font-size: 1.5vh">ตำแหน่งทางวิชาการ</p>
-              <v-text-field :rules="nameRules" variant="outlined" rounded="lg"></v-text-field>
+              ></v-combobox>
 
               <v-overlay :model-value="overlay" class="align-center justify-center">
                 <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
