@@ -65,9 +65,9 @@ const filteredCurriculums = computed(() => {
               <v-list-item-content>
                 <v-list-item-title>{{ curriculum.thaiName }}</v-list-item-title>
                 <v-list-item-subtitle>{{ curriculum.engName }}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{ curriculum.phdName }}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{ curriculum.degreeName }}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{ curriculum.objective }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ curriculum.thaiDegreeName }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ curriculum.engDegreeName }}</v-list-item-subtitle>
+                <!-- <v-list-item-subtitle>{{ curriculum.branch }}</v-list-item-subtitle> -->
                 <v-list-item-subtitle>Duration: {{ curriculum.period }} years</v-list-item-subtitle>
                 <v-list-item-subtitle
                   >Minimum Grade: {{ curriculum.minimumGrade }}</v-list-item-subtitle
@@ -88,7 +88,15 @@ const filteredCurriculums = computed(() => {
       <div v-show="show2">
         <v-divider></v-divider>
 
-        <v-card-text> 2 </v-card-text>
+        <v-card-text>
+          <v-list>
+            <v-list-item v-for="curriculum in filteredCurriculums" :key="curriculum.id">
+              <v-list-item-content>
+                <v-list-item-title>{{ curriculum.coordinators }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list></v-card-text
+        >
       </div>
     </v-expand-transition>
     <v-card-actions>

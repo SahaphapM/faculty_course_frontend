@@ -17,6 +17,7 @@ export const useUserStore = defineStore('user', () => {
     lastName: '' ,
     gender: '',
     phone: '',
+    googleId: '',
     roles: null
   };
 

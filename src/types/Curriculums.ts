@@ -1,10 +1,12 @@
+import type { User } from './User'
 type Curriculum = {
     id: string ;
     thaiName: string;
     engName: string;
-    phdName: string|null;
-    degreeName: string;
-    objective: string|null ; 
+    thaiDegreeName: string|null;
+    engDegreeName: string;
+    description: string|null ; 
+    coordinators: User|null , 
     period: number;
     minimumGrade: number;
   }

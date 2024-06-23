@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { Curriculum } from '@/types/Curriculums';
 import curriculumService from '@/service/curriculums';
+import type { User } from '@/types/User';
 
 export const useCurriculumStore = defineStore('curriculum', () => {
   const curriculums = ref<Curriculum[]>([]);
@@ -11,9 +12,10 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     id: '',
     thaiName: '',
     engName: '',
-    phdName: '',
-    degreeName: '',
-    objective: '',
+    thaiDegreeName: '',
+    engDegreeName: '',
+    description: '',
+    coordinators:null,
     period: 0,
     minimumGrade: 0,
   };
@@ -51,7 +53,10 @@ export const useCurriculumStore = defineStore('curriculum', () => {
 
 
 
-  
+  async function addCoordinatorToCurriculum(curriculumId: string, user: User) {
+    await curriculumService.addCoordinator(curriculumId, user);
+  }
+
   async function deleteCurriculum(id: string) {
     await curriculumService.delCurriculum(id);
     await fetchCurriculums();
@@ -71,6 +76,6 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     saveCurriculum,
     deleteCurriculum,
     editedCurriculum,
-    clearForm,
+    clearForm,addCoordinatorToCurriculum
   };
 });

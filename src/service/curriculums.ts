@@ -1,3 +1,4 @@
+import type { User } from '@/types/User';
 import http from './http';
 import type { Curriculum } from '@/types/Curriculums';
 
@@ -21,10 +22,15 @@ function getCurriculum(id: string) {
   return http.get<Curriculum>(`/curriculums/${id}`);
 }
 
+function addCoordinator(curriculumId: string, user: User) {
+  return http.patch(`/curriculums/${curriculumId}/coordinators`, { id: user });
+}
+
 export default {
   addCurriculum,
   updateCurriculum,
   delCurriculum,
   getCurriculums,
   getCurriculum,
+  addCoordinator
 };

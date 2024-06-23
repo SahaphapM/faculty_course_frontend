@@ -8,6 +8,7 @@ type User = {
     lastName: string ; 
     gender: string;
     phone: string;
+    googleId: string;
     roles: Role|null
   }
   

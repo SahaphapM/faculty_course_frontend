@@ -31,14 +31,14 @@ const userOptions = computed(() => {
     const rolesString = Array.isArray(user.roles)
       ? user.roles.map((role) => role.name).join(', ')
       : 'No Roles'
-    return `${user.id} ${rolesString} ${user.firstName} ${user.lastName}`
+    return `${user.id}`
   })
 })
 const id = ref<string>('')
 const thaiName = ref<string>('')
 const engName = ref<string>('')
-const phdName = ref<string>('')
-const degreeName = ref<string>('')
+const thaiDegreeName = ref<string>('')
+const engDegreeName = ref<string>('')
 const nameRules = [(v: string) => !!v || 'Please check complete information']
 const select1 = ref<string | null>(null)
 const select2 = ref<string | null>(null)
@@ -47,6 +47,9 @@ const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
+const selectedUser = computed(() => {
+  return userStore.users.find((user) => user.id === select3.value)
+})
 
 const validate = async () => {
   setTimeout(() => {
@@ -77,13 +80,25 @@ async function save() {
   curriculumStore.editedCurriculum.thaiName = thaiName.value
   curriculumStore.editedCurriculum.engName = engName.value
   curriculumStore.editedCurriculum.id = id.value
-  curriculumStore.editedCurriculum.phdName = select1.value
-  curriculumStore.editedCurriculum.degreeName = degreeName.value
-  curriculumStore.editedCurriculum.objective = select2.value
+  curriculumStore.editedCurriculum.thaiDegreeName = select1.value
+  curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
+  curriculumStore.editedCurriculum.description = ''
   curriculumStore.editedCurriculum.period = 4
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
   await curriculumStore.saveCurriculum()
+}
+
+async function saveC() {
+  const { valid } = await form.value!.validate()
+  if (!valid) return
+
+  const user = selectedUser.value
+  if (!user) {
+    return
+  }
+  curriculumStore.editedCurriculum.id = '25630194000857'
+  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, user)
 }
 </script>
 <template>
@@ -144,7 +159,7 @@ async function save() {
               ></v-select>
               <p style="font-size: 1.5vh">ชื่อปริญญา ( อังกฤษ)</p>
               <v-text-field
-                v-model="degreeName"
+                v-model="engDegreeName"
                 :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
@@ -190,6 +205,8 @@ async function save() {
                 variant="outlined"
                 rounded="lg"
               ></v-combobox>
+              {{ curriculumStore.editedCurriculum.id }}
+              {{ selectedUser }}
 
               <v-overlay :model-value="overlay" class="align-center justify-center">
                 <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
@@ -204,7 +221,7 @@ async function save() {
               </v-row>
               <v-row class="justify-end mt-8">
                 <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                ><v-btn @click="save" variant="plain">บันทึก</v-btn></v-row
+                ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
               >
             </v-form>
           </v-container>
