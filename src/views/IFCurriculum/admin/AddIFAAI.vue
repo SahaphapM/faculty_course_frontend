@@ -8,11 +8,27 @@ import type { User } from '@/types/User'
 import type { VForm } from 'vuetify/components'
 const curriculumStore = useCurriculumStore()
 const userStore = useUserStore()
-
+const curriculums = computed(() => curriculumStore.curriculums)
 const overlay = ref(false)
 const reveal = ref(false)
 const reveal2 = ref(true)
 const users = computed(() => userStore.users)
+const id = ref<string>('')
+const thaiName = ref<string>('')
+const engName = ref<string>('')
+const thaiDegreeName = ref<string>('')
+const engDegreeName = ref<string>('')
+const nameRules = [(v: string) => !!v || 'Please check complete information']
+const select1 = ref<string | null>(null)
+const select2 = ref<string | null>(null)
+const select3 = ref<any | null>(null)
+const select4 = ref<any | null>(null)
+const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
+const form = ref<VForm | null>(null)
+const coordinatorId = ref<string>('')
+
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
   await userStore.fetchUsers()
@@ -31,24 +47,8 @@ const userOptions = computed(() => {
     const rolesString = Array.isArray(user.roles)
       ? user.roles.map((role) => role.name).join(', ')
       : 'No Roles'
-    return `${user.id}`
+    return `${user.id} ${user.firstName} ${user.lastName}`
   })
-})
-const id = ref<string>('')
-const thaiName = ref<string>('')
-const engName = ref<string>('')
-const thaiDegreeName = ref<string>('')
-const engDegreeName = ref<string>('')
-const nameRules = [(v: string) => !!v || 'Please check complete information']
-const select1 = ref<string | null>(null)
-const select2 = ref<string | null>(null)
-const select3 = ref<string | null>(null)
-const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
-const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
-const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
-const form = ref<VForm | null>(null)
-const selectedUser = computed(() => {
-  return userStore.users.find((user) => user.id === select3.value)
 })
 
 const validate = async () => {
@@ -92,13 +92,14 @@ async function save() {
 async function saveC() {
   const { valid } = await form.value!.validate()
   if (!valid) return
-
-  const userId = selectedUser.value
+  const userId = select3.value.substring(0, 8)
+  console.log(userId)
   if (!userId) {
     return
   }
+
   curriculumStore.editedCurriculum.id = '25630194000857'
-  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId.id)
+  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
 }
 </script>
 <template>
@@ -198,6 +199,13 @@ async function saveC() {
               <p class="details-text" style="font-size: 2.5vh">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
             </div>
             <v-form ref="form" class="ma-2">
+              <p style="font-size: 1.5vh">หลักสูตร</p>
+              <v-combobox
+                v-model="select4"
+                :items="curriculums.map((curriculum) => curriculum.thaiName)"
+                variant="outlined"
+                rounded="lg"
+              ></v-combobox>
               <p style="font-size: 1.5vh">เลือก</p>
               <v-combobox
                 v-model="select3"
@@ -205,8 +213,6 @@ async function saveC() {
                 variant="outlined"
                 rounded="lg"
               ></v-combobox>
-              {{ curriculumStore.editedCurriculum.id }}
-              {{ selectedUser }}
 
               <v-overlay :model-value="overlay" class="align-center justify-center">
                 <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
