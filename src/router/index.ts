@@ -44,9 +44,7 @@ const router = createRouter({
         layout: 'MainLayout',
         requireAuth: true
       }
-
     }
-
   ]
 })
 function isLogin() {

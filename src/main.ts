@@ -11,16 +11,14 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
-
 const vuetify = createVuetify({
   blueprint: md1,
   icons: {
-    defaultSet: 'mdi' 
+    defaultSet: 'mdi'
   },
   components,
   directives
 })
-
 
 const app = createApp(App)
 

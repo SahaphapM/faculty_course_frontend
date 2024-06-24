@@ -2,14 +2,20 @@
 
 <template>
   <div>
-    <v-app-bar style="background-color: #212d69">
+    <v-app-bar style="background-color: #102073">
+      <v-img
+        style="margin-left: 70px"
+        src="./img/Buu-logo11.png"
+        max-width="55px"
+        class="mr-2"
+      ></v-img>
       <v-app-bar-title class="custom-title">
         <div>มหาวิทยาลัยบูรพา</div>
         <div>Burapha University</div>
       </v-app-bar-title>
     </v-app-bar>
     <v-app-bar style="background-color: #112f69">
-      <div class="button-bar">
+      <div style="margin-left: 70px" class="button-bar">
         <v-btn color="white" to="/home"> <v-icon left>mdi-home</v-icon>หน้าหลัก </v-btn>
         <v-btn color="white" to="/news"> <v-icon left>mdi-newspaper</v-icon>ข่าวสาร </v-btn>
         <v-btn color="white" to="/mainIFCurriculumView">
@@ -29,6 +35,7 @@ div {
 }
 .custom-title {
   color: #fff;
+  margin-left: 10px;
 }
 .button-bar {
   display: flex;
@@ -38,5 +45,9 @@ div {
 }
 .button-bar .v-btn {
   color: white !important;
+}
+.left-align {
+  display: flex;
+  align-items: center;
 }
 </style>
