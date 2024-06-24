@@ -93,12 +93,12 @@ async function saveC() {
   const { valid } = await form.value!.validate()
   if (!valid) return
 
-  const user = selectedUser.value
-  if (!user) {
+  const userId = selectedUser.value
+  if (!userId) {
     return
   }
   curriculumStore.editedCurriculum.id = '25630194000857'
-  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, user)
+  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId.id)
 }
 </script>
 <template>
