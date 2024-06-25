@@ -44,7 +44,21 @@ const router = createRouter({
         layout: 'MainLayout',
         requireAuth: true
       }
+    },
+    {
+      path: '/MainAdmin',
+      name: 'MainAdmin',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/IFCurriculum/admin/MainAdmin.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     }
+
+    
   ]
 })
 function isLogin() {
