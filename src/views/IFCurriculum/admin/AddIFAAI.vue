@@ -42,6 +42,19 @@ watch(overlay, (val) => {
     }, 2000)
   }
 })
+
+watch(select4, (newValue) => {
+  if (newValue) {
+    const selectedCurriculum = curriculums.value.find(
+      (curriculum) => curriculum.thaiName === newValue
+    )
+    if (selectedCurriculum) {
+      console.log(selectedCurriculum.id)
+      id.value = selectedCurriculum.id
+    }
+  }
+})
+
 const userOptions = computed(() => {
   return users.value.map((user) => {
     const rolesString = Array.isArray(user.roles)
@@ -74,6 +87,14 @@ const resetValidation = () => {
   form.value!.resetValidation()
 }
 
+const filteredCurriculums = computed(() => {
+  if (select4.value) {
+    return curriculums.value.filter((curriculum) => curriculum.thaiName === select4.value)
+  } else {
+    return curriculums.value
+  }
+})
+
 async function save() {
   const { valid } = await form.value!.validate()
   if (!valid) return
@@ -92,13 +113,14 @@ async function save() {
 async function saveC() {
   const { valid } = await form.value!.validate()
   if (!valid) return
-  const userId = select3.value.substring(0, 8)
+  const userId = select3.value.substring(0, select3.value.indexOf(' '))
   console.log(userId)
   if (!userId) {
     return
   }
 
-  curriculumStore.editedCurriculum.id = '25630194000857'
+  curriculumStore.editedCurriculum.id = id.value
+  overlay.value = !overlay.value
   await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
 }
 </script>
@@ -213,6 +235,12 @@ async function saveC() {
                 variant="outlined"
                 rounded="lg"
               ></v-combobox>
+
+              <v-card v-for="curriculum in filteredCurriculums" :key="curriculum.id">
+                <div>
+                  {{ curriculum.coordinators }}
+                </div>
+              </v-card>
 
               <v-overlay :model-value="overlay" class="align-center justify-center">
                 <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
