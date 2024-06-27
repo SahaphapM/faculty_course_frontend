@@ -57,6 +57,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/SkillView',
+      name: 'SkillView',
+      component: () => import('../views/Adminview/Skill/skillView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
       path: '/MainAdmin',
       name: 'MainAdmin',
       // route level code-splitting
@@ -68,8 +77,6 @@ const router = createRouter({
         requireAuth: true
       }
     }
-
-    
   ]
 })
 function isLogin() {
