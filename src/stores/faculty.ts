@@ -1,48 +1,74 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import facultyService from '@/service/faculty'
-import type { Faculty } from '@/types/Faculty'
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
+import type { Faculty } from '@/types/Faculty';
+import facultyService from '@/service/faculty';
 
-export const useFacultytore = defineStore('faculty', () => {
+export const useFacultyStore = defineStore('faculty', () => {
+  const faculties = ref<Faculty[]>([]);
+  const currentFaculty = ref<Faculty | null>(null);
 
-  const faculty = ref<Faculty[]>([])
   const initialFaculty: Faculty = {
-    name: ''
-  }
-  const editedFaculty = ref<Faculty>(JSON.parse(JSON.stringify(initialFaculty)))
+    id: '',
+    name: '',
+    branches: [],
+    departments: []
+  };
 
-  async function getFaculty(id: number) {
-    const res = await facultyService.getFaculty(id)
-    editedFaculty.value = res.data
-  }
-  async function getfaculties() {
+  const editedFaculty = ref<Faculty>({ ...initialFaculty });
 
-      const res = await facultyService.getfaculties()
-      // console.log(res.data)
-      faculty.value = res.data
+  function setCurrentFaculty(faculty: Faculty) {
+    currentFaculty.value = faculty;
   }
-  async function savefaculty() {
-    const faculty = editedFaculty.value
-    if (!faculty.id) {
-      // Add new
-      console.log('Post ' + JSON.stringify(faculty))
-      const res = await facultyService.addFaculty(faculty)
-    } else {
-      // Update
-      console.log('Patch ' + JSON.stringify(faculty))
-      const res = await facultyService.updateFaculty(faculty)
-    }
 
-    await getfaculties()
+  function clearCurrentFaculty() {
+    currentFaculty.value = null;
   }
-  async function deleteFaculty() {
-    const role = editedFaculty.value
-    const res = await facultyService.delFaculty(faculty)
-    await getfaculties()
+
+  const addFaculty = (faculty: Faculty) => {
+    faculties.value.push(faculty);
+  };
+
+  async function fetchFaculty(id: string) {
+    const res = await facultyService.getFaculty(id);
+    editedFaculty.value = res.data;
+  }
+
+  async function fetchFaculties() {
+    const res = await facultyService.getfaculties();
+    faculties.value = res.data;
+  }
+
+  async function saveFaculty() {
+    const faculty = editedFaculty.value;
+    await facultyService.addFaculty(faculty);
+  }
+
+  async function updateFaculty() {
+    const faculty = editedFaculty.value;
+    await facultyService.updateFaculty(faculty);
+  }
+
+  async function deleteFaculty(id: string) {
+    await facultyService.delFaculty(id);
+    await fetchFaculties();
   }
 
   function clearForm() {
-    editedFaculty.value = JSON.parse(JSON.stringify(editedFaculty))
+    editedFaculty.value = { ...initialFaculty };
   }
-  return { faculty, getfaculties, savefaculty, deleteFaculty, editedFaculty, getFaculty, clearForm }
-})
+
+  return {
+    addFaculty,
+    faculties,
+    currentFaculty,
+    clearCurrentFaculty,
+    fetchFaculty,
+    fetchFaculties,
+    saveFaculty,
+    updateFaculty,
+    deleteFaculty,
+    editedFaculty,
+    clearForm,
+    setCurrentFaculty
+  };
+});

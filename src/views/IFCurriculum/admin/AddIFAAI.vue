@@ -4,8 +4,13 @@ import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
 import { useUserStore } from '@/stores/user'
-import type { User } from '@/types/User'
+import type { Branch } from '@/types/Branch'
+import { useBranchStore } from '@/stores/branch'
+import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
+import type { User } from '@/types/User'
+
+const branchStore = useBranchStore()
 const curriculumStore = useCurriculumStore()
 const userStore = useUserStore()
 const curriculums = computed(() => curriculumStore.curriculums)
@@ -20,19 +25,21 @@ const thaiDegreeName = ref<string>('')
 const engDegreeName = ref<string>('')
 const nameRules = [(v: string) => !!v || 'Please check complete information']
 const select1 = ref<string | null>(null)
-const select2 = ref<string | null>(null)
+const select2 = ref<any | null>(null)
+const branches = computed(() => branchStore.branches)
 const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
-const coordinatorId = ref<string>('')
+const coordinators = ref(curriculumStore.currentCurriculum?.coordinators)
 
 onMounted(async () => {
-  await curriculumStore.fetchCurriculums()
+  await branchStore.getBranches()
+  curriculumStore.fetchCurriculums()
   await userStore.fetchUsers()
-  console.log(userStore.users)
+  const coordinators = curriculumStore.currentCurriculum?.coordinators
 })
 
 watch(overlay, (val) => {
@@ -55,12 +62,49 @@ watch(select4, (newValue) => {
   }
 })
 
+watch(
+  () => curriculumStore.currentCurriculum,
+  (newCurriculum) => {
+    coordinators.value = newCurriculum?.coordinators
+  }
+)
+
+watch(
+  () => curriculumStore.currentCurriculum,
+  (newCurriculum) => {
+    if (newCurriculum) {
+      id.value = newCurriculum.id
+      thaiName.value = newCurriculum.thaiName
+      engName.value = newCurriculum.engName
+      select1.value = newCurriculum.thaiDegreeName
+      engDegreeName.value = newCurriculum.engDegreeName
+      select2.value = `${(newCurriculum.branch as any).id} ${(newCurriculum.branch as any).name}`
+
+      console.log(newCurriculum)
+    } else {
+      id.value = ''
+      thaiName.value = ''
+      engName.value = ''
+      thaiDegreeName.value = ''
+      engDegreeName.value = ''
+      select2.value = ''
+    }
+  },
+  { immediate: true }
+)
+
 const userOptions = computed(() => {
   return users.value.map((user) => {
     const rolesString = Array.isArray(user.roles)
       ? user.roles.map((role) => role.name).join(', ')
       : 'No Roles'
     return `${user.id} ${user.firstName} ${user.lastName}`
+  })
+})
+
+const branchOptions = computed(() => {
+  return branches.value.map((branch) => {
+    return `${branch.id} ${branch.name}`
   })
 })
 
@@ -87,29 +131,39 @@ const resetValidation = () => {
   form.value!.resetValidation()
 }
 
-const filteredCurriculums = computed(() => {
-  if (select4.value) {
-    return curriculums.value.filter((curriculum) => curriculum.thaiName === select4.value)
-  } else {
-    return curriculums.value
-  }
-})
-
 async function save() {
   const { valid } = await form.value!.validate()
   if (!valid) return
   curriculumStore.editedCurriculum.thaiName = thaiName.value
   curriculumStore.editedCurriculum.engName = engName.value
   curriculumStore.editedCurriculum.id = id.value
-  curriculumStore.editedCurriculum.thaiDegreeName = select1.value
+  curriculumStore.editedCurriculum.thaiDegreeName = select1.value ?? ''
   curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
   curriculumStore.editedCurriculum.description = ''
   curriculumStore.editedCurriculum.period = 4
+  curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
   await curriculumStore.saveCurriculum()
 }
 
+async function plus() {
+  try {
+    const userId = select3.value.substring(0, select3.value.indexOf(' '))
+    await userStore.fetchUser(userId)
+
+    // Add the coordinator to the curriculum
+    await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
+
+    // Update coordinators after adding
+    // Assuming coordinators is a reactive variable like in the previous examples
+    coordinators.value = curriculumStore.editedCurriculum.coordinators
+
+    console.log(coordinators.value)
+  } catch (error) {
+    console.error('Error adding coordinator:', error)
+  }
+}
 async function saveC() {
   const { valid } = await form.value!.validate()
   if (!valid) return
@@ -121,6 +175,7 @@ async function saveC() {
 
   curriculumStore.editedCurriculum.id = id.value
   overlay.value = !overlay.value
+  await curriculumStore.currentCurriculum
   await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
 }
 </script>
@@ -174,12 +229,12 @@ async function saveC() {
                 rounded="lg"
               ></v-text-field>
               <p style="font-size: 1.5vh">ชื่อปริญญา</p>
-              <v-select
+              <v-text-field
                 v-model="select1"
-                :items="items1"
+                :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
-              ></v-select>
+              ></v-text-field>
               <p style="font-size: 1.5vh">ชื่อปริญญา ( อังกฤษ)</p>
               <v-text-field
                 v-model="engDegreeName"
@@ -190,7 +245,7 @@ async function saveC() {
               <p style="font-size: 1.5vh">สาขาวิชา</p>
               <v-select
                 v-model="select2"
-                :items="items2"
+                :items="branchOptions"
                 variant="outlined"
                 rounded="lg"
               ></v-select>
@@ -221,13 +276,6 @@ async function saveC() {
               <p class="details-text" style="font-size: 2.5vh">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
             </div>
             <v-form ref="form" class="ma-2">
-              <p style="font-size: 1.5vh">หลักสูตร</p>
-              <v-combobox
-                v-model="select4"
-                :items="curriculums.map((curriculum) => curriculum.thaiName)"
-                variant="outlined"
-                rounded="lg"
-              ></v-combobox>
               <p style="font-size: 1.5vh">เลือก</p>
               <v-combobox
                 v-model="select3"
@@ -236,10 +284,14 @@ async function saveC() {
                 rounded="lg"
               ></v-combobox>
 
-              <v-card v-for="curriculum in filteredCurriculums" :key="curriculum.id">
-                <div>
-                  {{ curriculum.coordinators }}
-                </div>
+              <v-card
+                style="border-color: #bdbdbd"
+                variant="outlined"
+                rounded="lg"
+                v-for="curriculum in coordinators"
+                :key="curriculum.id"
+                class="ma-2 pa-3"
+                >{{ curriculum.id }} {{ curriculum.firstName }} {{ curriculum.lastName }}
               </v-card>
 
               <v-overlay :model-value="overlay" class="align-center justify-center">
@@ -251,6 +303,7 @@ async function saveC() {
                   class="ma-4 rounded-circle"
                   size="40px"
                   variant="outlined"
+                  @click="plus"
                 ></v-btn>
               </v-row>
               <v-row class="justify-end mt-8">

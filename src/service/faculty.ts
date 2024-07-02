@@ -9,11 +9,11 @@ function updateFaculty(faculty: Faculty) {
   return http.patch(`/faculties/${faculty.id}`, faculty)
 }
 
-function delFaculty(faculty: Faculty) {
-  return http.delete(`/faculties/${faculty.id}`)
+function delFaculty(id: string) {
+  return http.delete(`/faculties/${id}`)
 }
 
-function getFaculty(id: number) {
+function getFaculty(id: string) {
   return http.get(`/faculties/${id}`)
 }
 

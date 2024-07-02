@@ -3,24 +3,51 @@ import { computed, onMounted, ref, watch } from 'vue'
 import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
-import { useFacultytore } from '@/stores/faculty'
+import { useFacultyStore } from '@/stores/faculty'
 import type { Faculty } from '@/types/Faculty'
+import type { Branch } from '@/types/Branch'
+import { useBranchStore } from '@/stores/branch'
 import type { VForm } from 'vuetify/components'
+const branchStore = useBranchStore()
 const curriculumStore = useCurriculumStore()
-const facultyStore = useFacultytore()
+const facultyStore = useFacultyStore()
 const curriculums = computed(() => curriculumStore.curriculums)
-const faculties = computed(() => facultyStore.faculty)
+const faculties = computed(() => facultyStore.faculties)
+const branches = computed(() => branchStore.branches)
+const setCurrentCurriculum = (curriculum: Curriculum) => {
+  curriculumStore.setCurrentCurriculum(curriculum.id)
+}
+
 const search = ref('')
 const select = ref('')
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
-  await facultyStore.getfaculties()
+  await facultyStore.fetchFaculties()
+  await branchStore.getBranches()
 })
-
+const facultiesOptions = computed(() => {
+  return faculties.value.map((faculty) => {
+    return `${faculty.id} ${faculty.name}`
+  })
+})
 const headers = [
   { text: 'ID', value: 'id' },
   { text: 'Thai Name', value: 'thaiName' }
 ]
+
+const filteredBranches = computed(() => {
+  const selectedFacultyId = select.value.substring(0, select.value.indexOf(' '))
+
+  return branches.value.filter((branch: Branch) => branch.faculty.id === selectedFacultyId)
+})
+
+const filteredCurriculums = computed(() => {
+  const selectedFacultyId = select.value.substring(0, select.value.indexOf(' '))
+  const filteredBranches = branches.value.filter(
+    (branch: Branch) => branch.faculty.id === selectedFacultyId
+  )
+  return filteredBranches.flatMap((branch: Branch) => branch.curriculums)
+})
 </script>
 <template>
   <v-container class="d-flex" style="max-width: 700px">
@@ -39,7 +66,7 @@ const headers = [
             ><v-col cols="9">
               <v-combobox
                 v-model="select"
-                :items="faculties.map((faculty) => faculty.name)"
+                :items="facultiesOptions"
                 variant="outlined"
                 rounded="lg"
               ></v-combobox>
@@ -54,13 +81,17 @@ const headers = [
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in curriculums" :key="item.id">
+            <tr v-for="item in filteredCurriculums" :key="item.id">
               <td>{{ item.id }}</td>
               <td>{{ item.thaiName }}</td>
-              <td>{{ item.period }}</td>
-              <td>{{ item.minimumGrade }}</td>
+
               <td>
-                <v-btn icon="mdi-pencil" variant="text" to="AddIFAAIView"></v-btn>
+                <v-btn
+                  icon="mdi-pencil"
+                  variant="text"
+                  to="AddIFAAIView"
+                  @click="setCurrentCurriculum(item)"
+                ></v-btn>
               </td>
             </tr>
           </tbody>
