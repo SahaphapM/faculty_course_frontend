@@ -27,7 +27,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../views/login/LoginView.vue'),
       meta: {
         layout: 'FullLayout'
       }
@@ -51,6 +51,18 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/IFCurriculum/admin/AddIFAAI.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
+      path: '/users',
+      name: 'users',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/users/userView.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true
