@@ -22,10 +22,15 @@ function getUser(id: string) {
   return http.get<User>(`/users/${id}`)
 }
 
+function getUsersByPage(page: number, limit: number) {
+  return http.get<{ data: User[]; total: number }>(`/users/pages?page=${page}&limit=${limit}`)
+}
+
 export default {
   addUser,
   updateUser,
   delUser,
   getUsers,
-  getUser
+  getUser,
+  getUsersByPage
 }

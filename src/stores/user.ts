@@ -6,6 +6,7 @@ import userService from '@/service/user'
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
   const currentUser = ref<User | null>(null)
+  const totalUsers = ref(0)
 
   const initialUser: User = {
     id: '',
@@ -28,6 +29,12 @@ export const useUserStore = defineStore('user', () => {
 
   const addUser = (user: User) => {
     users.value.push(user)
+  }
+
+  async function fetchUsersPage(page: number, limit: number) {
+    const res = await userService.getUsersByPage(page, limit)
+    users.value = res.data.data
+    totalUsers.value = res.data.total
   }
 
   async function fetchUser(id: string) {
@@ -73,6 +80,8 @@ export const useUserStore = defineStore('user', () => {
     editedUser,
     clearForm,
     updateUser,
-    initialUser
+    initialUser,
+    fetchUsersPage,
+    totalUsers
   }
 })
