@@ -26,6 +26,7 @@ const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+const items4 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
 const coordinatorId = ref<string>('')
@@ -297,7 +298,13 @@ async function saveC() {
                 rounded="lg"
                 class="small-input"
               ></v-text-field>
-
+              <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+              <v-select
+                v-model="select1"
+                :items="items4"
+                variant="outlined"
+                rounded="lg"
+              ></v-select>
               <v-overlay :model-value="overlay" class="align-center justify-center">
                 <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
               </v-overlay>
