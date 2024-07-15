@@ -4,8 +4,7 @@ import roleService from '@/service/role'
 import type { Role } from '@/types/Role'
 
 export const useRoleStore = defineStore('role', () => {
-
-  const role = ref<Role[]>([])
+  const roles = ref<Role[]>([])
   const initialRole: Role = {
     name: ''
   }
@@ -16,10 +15,9 @@ export const useRoleStore = defineStore('role', () => {
     editedRole.value = res.data
   }
   async function getRoles() {
-
-      const res = await roleService.getRoles()
-      // console.log(res.data)
-      role.value = res.data
+    const res = await roleService.getRoles()
+    // console.log(res.data)
+    roles.value = res.data
   }
   async function saveRole() {
     const role = editedRole.value
@@ -44,5 +42,5 @@ export const useRoleStore = defineStore('role', () => {
   function clearForm() {
     editedRole.value = JSON.parse(JSON.stringify(initialRole))
   }
-  return { role, getRoles, saveRole, deleteRole, editedRole, getRole, clearForm }
+  return { roles, getRoles, saveRole, deleteRole, editedRole, getRole, clearForm }
 })
