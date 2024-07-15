@@ -28,7 +28,7 @@ import MainAppBar from '../display/MainAppBar.vue'
                 class="rounded-circle"
                 to="/AddIFAAIView"
               ></v-btn>
-              <v-btn key="3" icon="mdi-alert" class="rounded-circle"></v-btn>
+              <v-btn key="3" icon="mdi-alert" class="rounded-circle" to="MainAdmin"></v-btn>
               <v-btn key="4" icon="mdi-close-circle" class="rounded-circle"></v-btn>
             </v-speed-dial>
           </v-row>
