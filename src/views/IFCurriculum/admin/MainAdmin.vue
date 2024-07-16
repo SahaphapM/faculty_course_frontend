@@ -43,22 +43,44 @@ const filteredBranches = computed(() => {
 
 const filteredCurriculums = computed(() => {
   const selectedFacultyId = select.value.substring(0, select.value.indexOf(' '))
-  const filteredBranches = branches.value.filter(
-    (branch: Branch) => branch.faculty.id === selectedFacultyId
-  )
-  return filteredBranches.flatMap((branch: Branch) => branch.curriculums)
+  if (selectedFacultyId == null || selectedFacultyId == '') {
+    return curriculumStore.curriculums
+  } else {
+    const filteredBranches = branches.value.filter(
+      (branch: Branch) => branch.faculty.id === selectedFacultyId
+    )
+    return filteredBranches.flatMap((branch: Branch) => branch.curriculums)
+  }
 })
 </script>
 <template>
-  <v-container class="d-flex" style="max-width: 700px">
-    <div class="bg-grey-lighten-4">
-      <v-card
-        class="elevation-5"
-        rounded="lg"
-        max-width="800px"
-        width="800px"
-        style="min-width: 40vh"
-      >
+  <v-container>
+    <div class="bg-grey-lighten-4" style="height: 1000px">
+      <v-card flat>
+        <v-card-title class="d-flex align-center pe-2">
+          <v-icon icon="mdi-video-input-component"></v-icon>&nbsp; Find a Graphics Card
+
+          <v-spacer></v-spacer>
+
+          <v-text-field
+            v-model="search"
+            density="compact"
+            label="Search"
+            prepend-inner-icon="mdi-magnify"
+            variant="solo-filled"
+            flat
+            hide-details
+            single-line
+          ></v-text-field>
+        </v-card-title>
+
+        <v-divider></v-divider>
+
+        <v-data-table v-model:search="search" :headers="headers" :items="filteredCurriculums">
+        </v-data-table>
+      </v-card>
+
+      <v-card class="elevation-5" rounded="lg">
         <p class="details-text" style="font-size: 2.5vh">หลักสูตร</p>
         <v-container>
           <v-row>
@@ -74,7 +96,7 @@ const filteredCurriculums = computed(() => {
           </v-row>
         </v-container>
 
-        <v-table :search="search">
+        <v-table :search="search" class="pa-5">
           <thead>
             <tr>
               <th class="text-left" colspan="5">ระดับการศึกษา : ปริญญาตรี ปกติ</th>
