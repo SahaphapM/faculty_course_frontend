@@ -120,7 +120,7 @@ const filteredCurriculums = computed(() => {
                     to="AddIFAAIView"
                     @click="setCurrentCurriculum(item)"
                   >
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon>mdi-file-document-edit-outline</v-icon>
                   </v-btn>
                 </td>
               </tr>
