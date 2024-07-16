@@ -10,7 +10,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email: string, password: string) {
     const res = await authService.login(email, password)
     localStorage.setItem('user', JSON.stringify(res.data.user))
+
     console.log('User Login Success')
+    console.log(res.data.user)
+    console.log(res.data)
     // replace back ไม่ได้ push back ได้
     router.push('/')
   }
