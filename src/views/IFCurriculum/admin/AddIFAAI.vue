@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
@@ -8,7 +8,6 @@ import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
-import type { User } from '@/types/User'
 
 const branchStore = useBranchStore()
 const curriculumStore = useCurriculumStore()
@@ -33,7 +32,6 @@ const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
-const coordinators = ref(curriculumStore.currentCurriculum?.coordinators)
 
 onMounted(async () => {
   await branchStore.getBranches()
@@ -62,12 +60,12 @@ watch(select4, (newValue) => {
   }
 })
 
-watch(
-  () => curriculumStore.currentCurriculum,
-  (newCurriculum) => {
-    coordinators.value = newCurriculum?.coordinators
-  }
-)
+// watch(
+//   () => curriculumStore.currentCurriculum,
+//   (newCurriculum) => {
+//     coordinators.value = newCurriculum?.coordinators
+//   }
+// )
 
 watch(
   () => curriculumStore.currentCurriculum,
@@ -150,20 +148,18 @@ async function save() {
 async function plus() {
   try {
     const userId = select3.value.substring(0, select3.value.indexOf(' '))
-    await userStore.fetchUser(userId)
-
+    const coordinatorsT = userStore.fetchUser(userId)
+    // coordinators.value.push(coordinatorsT)
     // Add the coordinator to the curriculum
-    await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
-
     // Update coordinators after adding
     // Assuming coordinators is a reactive variable like in the previous examples
-    coordinators.value = curriculumStore.editedCurriculum.coordinators
 
-    console.log(coordinators.value)
+    console.log(coordinatorsT)
   } catch (error) {
     console.error('Error adding coordinator:', error)
   }
 }
+
 async function saveC() {
   const { valid } = await form.value!.validate()
   if (!valid) return
@@ -288,7 +284,7 @@ async function saveC() {
                 style="border-color: #bdbdbd"
                 variant="outlined"
                 rounded="lg"
-                v-for="curriculum in coordinators"
+                v-for="curriculum in curriculumStore.currentCurriculum?.coordinators"
                 :key="curriculum.id"
                 class="ma-2 pa-3"
                 >{{ curriculum.id }} {{ curriculum.firstName }} {{ curriculum.lastName }}

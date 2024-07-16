@@ -35,6 +35,7 @@ export const useUserStore = defineStore('user', () => {
     const res = await userService.getUser(id);
     editedUser.value = res.data;
   }
+  
 
   async function fetchUsers() {
     const res = await userService.getUsers();
