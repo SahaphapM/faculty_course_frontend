@@ -6,7 +6,9 @@ import type { Curriculum } from '@/types/Curriculums'
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User'
 import type { VForm } from 'vuetify/components'
+import { usePloStore } from '@/stores/plos'
 const curriculumStore = useCurriculumStore()
+const PloStore = usePloStore()
 const userStore = useUserStore()
 const curriculums = computed(() => curriculumStore.curriculums)
 const overlay = ref(false)
@@ -19,14 +21,17 @@ const thaiName = ref<string>('')
 const engName = ref<string>('')
 const thaiDegreeName = ref<string>('')
 const engDegreeName = ref<string>('')
+const description = ref<string>('')
+const resultTypes = ref<string>('')
 const nameRules = [(v: string) => !!v || 'Please check complete information']
 const select1 = ref<string | null>(null)
 const select2 = ref<string | null>(null)
 const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
+const select5 = ref<string | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
-const items4 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
 const coordinatorId = ref<string>('')
@@ -118,6 +123,16 @@ async function save() {
   curriculumStore.editedCurriculum.description = ''
   curriculumStore.editedCurriculum.period = 4
   curriculumStore.editedCurriculum.minimumGrade = 0
+  overlay.value = !overlay.value
+  await curriculumStore.saveCurriculum()
+}
+
+async function save2() {
+  const { valid } = await form.value!.validate()
+  if (!valid) return
+  // PloStore.editedPlo.id = id.value
+  PloStore.editedPlo.description = description.value
+  PloStore.editedPlo.resultTypes = select5.value
   overlay.value = !overlay.value
   await curriculumStore.saveCurriculum()
 }
@@ -292,7 +307,7 @@ async function saveC() {
             <v-form ref="form" class="ma-2">
               <p style="font-size: 1.5vh">Plo1</p>
               <v-text-field
-                v-model="thaiName"
+                v-model="description"
                 :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
@@ -300,7 +315,7 @@ async function saveC() {
               ></v-text-field>
               <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
               <v-select
-                v-model="select1"
+                v-model="select5"
                 :items="items4"
                 variant="outlined"
                 rounded="lg"
@@ -318,7 +333,7 @@ async function saveC() {
               </v-row>
               <v-row class="justify-end mt-8">
                 <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+                ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
               >
             </v-form>
           </v-container>
@@ -347,7 +362,7 @@ async function saveC() {
           <v-spacer></v-spacer>
         </v-card-actions>
 
-        <v-card-actions v-if="!reveal" @click="validate3">
+        <v-card-actions v-if="!reveal3" @click="validate3">
           <p class="font-weight-black ma-2" style="font-size: small">
             ผลการเรียนรู้ที่คาดหวังของหลักสูตร
           </p>
