@@ -17,8 +17,9 @@ export const usePloStore = defineStore('plo', () => {
       engName: '',
       thaiDegreeName: '',
       engDegreeName: '',
+      branch: [],
       description: '',
-      coordinators: null,
+      coordinators: [],
       period: 0,
       minimumGrade: 0
     }

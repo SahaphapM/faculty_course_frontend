@@ -2,6 +2,7 @@ import http from './http'
 import type { Plos } from '@/types/Plos'
 
 function addPlo(plo: Plos) {
+  console.log(plo)
   return http.post('/plos', plo)
 }
 function updatePlo(plo: Plos) {

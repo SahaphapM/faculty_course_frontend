@@ -43,9 +43,15 @@ const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางส�
 const form = ref<VForm | null>(null)
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 
-function addForm() {
+const addForm = () => {
   const newIndex = forms.value.length + 1
   forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
 }
 
 onMounted(async () => {
@@ -157,7 +163,7 @@ async function save() {
   curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
   curriculumStore.editedCurriculum.description = ''
   curriculumStore.editedCurriculum.period = 4
-  curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
+  // curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
   await curriculumStore.saveCurriculum()
@@ -340,7 +346,9 @@ async function saveC() {
               </p>
             </div>
             <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
-              <p :style="{ fontSize: '1.5vh' }">{{ form.label }}</p>
+              <p style="font-size: 2.5vh">{{ form.label }}</p>
+              <br />
+              <p style="font-size: 1.5vh">รายละเอียด</p>
               <v-text-field
                 v-model="form.description"
                 :rules="nameRules"
@@ -364,6 +372,14 @@ async function saveC() {
                 size="40px"
                 variant="outlined"
                 @click="addForm"
+              ></v-btn>
+              <v-btn
+                color="error"
+                icon="mdi-minus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="removeForm"
               ></v-btn>
             </v-row>
             <v-row class="justify-end mt-8">
