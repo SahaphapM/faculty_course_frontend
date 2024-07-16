@@ -66,6 +66,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/SkillView/SkillDetails/:id',
+      name: 'SkillView/SkillDetails',
+      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
+      meta: {
+        topic: 'MainLayout'
+      }
+    },
+    {
       path: '/MainAdmin',
       name: 'MainAdmin',
       // route level code-splitting

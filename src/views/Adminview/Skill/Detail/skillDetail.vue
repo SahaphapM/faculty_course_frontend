@@ -1,39 +1,43 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const skillStore = useSkillStore()
-const router = useRouter()
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
   { title: 'Description', key: 'description' }
 ])
-const skills = computed(() => skillStore.skills || [])
+const skills = computed(() => skillStore.editedSkill)
 const select = ref<string | null>(null)
+onMounted(async () => {
+  try {
+    const id = route.params.id as string
+    if (id === null) {
+      return
+    }
 
-onMounted(() => {
-  skillStore.fetchSkills()
+    await skillStore.fetchSkill(id)
+    console.log(skillStore.editedSkill)
+  } catch (error) {
+    console.error(error)
+  }
 })
-
-const goToSkillDetail = (id: string) => {
-  router.push({ name: 'SkillView/SkillDetails', params: { id } })
-}
 </script>
-
 <template>
   <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
     <template v-slot:divider>
       <v-icon icon="mdi-chevron-right"></v-icon>
     </template>
   </v-breadcrumbs>
-  <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
+  <p style="font-size: xx-large; margin-left: 3%">รายละเอียดสกิล</p>
 
-  <v-card class="ma-5">
+  <v-card class="ma-5" v-if="skillStore.dataInit">
     <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
-        <tr @click="goToSkillDetail(item.id)">
+        <tr>
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
@@ -49,3 +53,4 @@ const goToSkillDetail = (id: string) => {
   justify-content: center;
 }
 </style>
+s
