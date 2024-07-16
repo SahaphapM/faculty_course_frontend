@@ -9,6 +9,7 @@ import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
 import { usePloStore } from '@/stores/plos'
+
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
@@ -26,7 +27,9 @@ const thaiDegreeName = ref<string>('')
 const engDegreeName = ref<string>('')
 const description = ref<string>('')
 const resultTypes = ref<string>('')
-const nameRules = [(v: string) => !!v || 'Please check complete information']
+const nameRules = ref<(string | ((v: string) => boolean | string))[]>([
+  (v: string) => !!v || 'Please check complete information'
+])
 const select1 = ref<string | null>(null)
 const select2 = ref<any | null>(null)
 const branches = computed(() => branchStore.branches)
@@ -38,6 +41,12 @@ const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
+const forms = ref([{ label: 'Plo1', description: '', select5: null }])
+
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
 
 onMounted(async () => {
   await branchStore.getBranches()
@@ -65,13 +74,6 @@ watch(select4, (newValue) => {
     }
   }
 })
-
-// watch(
-//   () => curriculumStore.currentCurriculum,
-//   (newCurriculum) => {
-//     coordinators.value = newCurriculum?.coordinators
-//   }
-// )
 
 watch(
   () => curriculumStore.currentCurriculum,
@@ -337,10 +339,10 @@ async function saveC() {
                 ผลการเรียนรู้ที่คาดหวังของหลักสูตร
               </p>
             </div>
-            <v-form ref="form" class="ma-2">
-              <p style="font-size: 1.5vh">Plo1</p>
+            <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
+              <p :style="{ fontSize: '1.5vh' }">{{ form.label }}</p>
               <v-text-field
-                v-model="description"
+                v-model="form.description"
                 :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
@@ -348,27 +350,26 @@ async function saveC() {
               ></v-text-field>
               <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
               <v-select
-                v-model="select5"
+                v-model="form.select5"
                 :items="items4"
                 variant="outlined"
                 rounded="lg"
               ></v-select>
-              <v-overlay :model-value="overlay" class="align-center justify-center">
-                <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
-              </v-overlay>
-              <v-row class="justify-center">
-                <v-btn
-                  icon="mdi-plus"
-                  class="ma-4 rounded-circle"
-                  size="40px"
-                  variant="outlined"
-                ></v-btn>
-              </v-row>
-              <v-row class="justify-end mt-8">
-                <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
-              >
             </v-form>
+
+            <v-row class="justify-center">
+              <v-btn
+                icon="mdi-plus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="addForm"
+              ></v-btn>
+            </v-row>
+            <v-row class="justify-end mt-8">
+              <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+              ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
+            >
           </v-container>
         </v-card>
       </v-expand-transition>
