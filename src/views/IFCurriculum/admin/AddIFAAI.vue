@@ -8,28 +8,34 @@ import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
-
-const branchStore = useBranchStore()
+import { usePloStore } from '@/stores/plos'
 const curriculumStore = useCurriculumStore()
+const branchStore = useBranchStore()
+const PloStore = usePloStore()
 const userStore = useUserStore()
 const curriculums = computed(() => curriculumStore.curriculums)
 const overlay = ref(false)
 const reveal = ref(false)
 const reveal2 = ref(true)
+const reveal3 = ref(false)
 const users = computed(() => userStore.users)
 const id = ref<string>('')
 const thaiName = ref<string>('')
 const engName = ref<string>('')
 const thaiDegreeName = ref<string>('')
 const engDegreeName = ref<string>('')
+const description = ref<string>('')
+const resultTypes = ref<string>('')
 const nameRules = [(v: string) => !!v || 'Please check complete information']
 const select1 = ref<string | null>(null)
 const select2 = ref<any | null>(null)
 const branches = computed(() => branchStore.branches)
 const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
+const select5 = ref<string | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
 
@@ -112,12 +118,22 @@ const validate = async () => {
   }, 300)
 
   reveal2.value = false
+  reveal3.value = false
 }
 
 const validate2 = async () => {
   setTimeout(() => {
     reveal2.value = true
   }, 300)
+  reveal.value = false
+  reveal3.value = false
+}
+
+const validate3 = async () => {
+  setTimeout(() => {
+    reveal3.value = true
+  }, 300)
+  reveal2.value = false
   reveal.value = false
 }
 
@@ -145,19 +161,14 @@ async function save() {
   await curriculumStore.saveCurriculum()
 }
 
-async function plus() {
-  try {
-    const userId = select3.value.substring(0, select3.value.indexOf(' '))
-    const coordinatorsT = userStore.fetchUser(userId)
-    // coordinators.value.push(coordinatorsT)
-    // Add the coordinator to the curriculum
-    // Update coordinators after adding
-    // Assuming coordinators is a reactive variable like in the previous examples
-
-    console.log(coordinatorsT)
-  } catch (error) {
-    console.error('Error adding coordinator:', error)
-  }
+async function save2() {
+  const { valid } = await form.value!.validate()
+  if (!valid) return
+  // PloStore.editedPlo.id = id.value
+  PloStore.editedPlo.description = description.value
+  PloStore.editedPlo.resultTypes = select5.value
+  overlay.value = !overlay.value
+  await curriculumStore.saveCurriculum()
 }
 
 async function saveC() {
@@ -299,12 +310,63 @@ async function saveC() {
                   class="ma-4 rounded-circle"
                   size="40px"
                   variant="outlined"
-                  @click="plus"
+                  @click="saveC"
                 ></v-btn>
               </v-row>
               <v-row class="justify-end mt-8">
                 <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
                 ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+              >
+            </v-form>
+          </v-container>
+        </v-card>
+      </v-expand-transition>
+      <v-expand-transition>
+        <v-card
+          class="elevation-5"
+          rounded="lg"
+          max-width="700px"
+          width="700px"
+          style="min-width: 40vh"
+          v-if="reveal3"
+        >
+          <v-container>
+            <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
+              <div class="rounded-rectangle"></div>
+              <p class="details-text" style="font-size: 2.5vh">
+                ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+              </p>
+            </div>
+            <v-form ref="form" class="ma-2">
+              <p style="font-size: 1.5vh">Plo1</p>
+              <v-text-field
+                v-model="description"
+                :rules="nameRules"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
+              <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+              <v-select
+                v-model="select5"
+                :items="items4"
+                variant="outlined"
+                rounded="lg"
+              ></v-select>
+              <v-overlay :model-value="overlay" class="align-center justify-center">
+                <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
+              </v-overlay>
+              <v-row class="justify-center">
+                <v-btn
+                  icon="mdi-plus"
+                  class="ma-4 rounded-circle"
+                  size="40px"
+                  variant="outlined"
+                ></v-btn>
+              </v-row>
+              <v-row class="justify-end mt-8">
+                <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+                ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
               >
             </v-form>
           </v-container>
@@ -333,7 +395,7 @@ async function saveC() {
           <v-spacer></v-spacer>
         </v-card-actions>
 
-        <v-card-actions>
+        <v-card-actions v-if="!reveal3" @click="validate3">
           <p class="font-weight-black ma-2" style="font-size: small">
             ผลการเรียนรู้ที่คาดหวังของหลักสูตร
           </p>
