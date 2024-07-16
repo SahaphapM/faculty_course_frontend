@@ -25,9 +25,6 @@ const pageParams = ref<PageParams>({
   order: 'ASC',
   search: ''
 })
-
-const search = ref('')
-
 const fetchUsers = async () => {
   loading.value = true
   try {
@@ -38,13 +35,19 @@ const fetchUsers = async () => {
     loading.value = false
   }
 }
+
+const editUser = (user: User) => {}
+
+const deleteUser = async (id: string) => {
+  await userStore.deleteUser(id)
+}
+
 const updateOptions = (options: any) => {
   pageParams.value.page = options.page
   pageParams.value.limit = options.itemsPerPage
 }
 
 watch(pageParams, fetchUsers, { deep: true })
-watch(search, fetchUsers)
 
 onMounted(async () => {
   await fetchUsers()
@@ -63,12 +66,24 @@ onMounted(async () => {
       item-value="name"
       @update:options="updateOptions"
     >
+      <template v-slot:top>
+        <v-text-field
+          v-model="pageParams.search"
+          label="Search"
+          @keydown.enter="fetchUsers"
+          class="mx-4"
+        ></v-text-field>
+      </template>
       <template v-slot:item.roles="{ item }">
         <v-chip-group>
           <v-chip v-for="role in item.roles" :key="role.id">
             {{ role.name }}
           </v-chip>
         </v-chip-group>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon small @click="editUser(item)">mdi-pencil</v-icon>
+        <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon>
       </template>
     </v-data-table-server>
   </div>
