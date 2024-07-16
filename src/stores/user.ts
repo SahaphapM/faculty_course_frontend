@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { User } from '@/types/User'
 import userService from '@/service/user'
+import type { PageParams } from '@/types/PageParams'
 
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
@@ -31,8 +32,8 @@ export const useUserStore = defineStore('user', () => {
     users.value.push(user)
   }
 
-  async function fetchUsersPage(page: number, limit: number) {
-    const res = await userService.getUsersByPage(page, limit)
+  async function fetchUsersPage(params: PageParams) {
+    const res = await userService.getUsersByPage(params)
     users.value = res.data.data
     totalUsers.value = res.data.total
   }
