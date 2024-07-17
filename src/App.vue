@@ -16,3 +16,9 @@ const route = useRoute()
     <FullLayout v-if="route.meta.layout === 'FullLayout'"></FullLayout>
   </v-layout>
 </template>
+
+<style>
+* {
+  font-family: 'Kanit';
+}
+</style>
