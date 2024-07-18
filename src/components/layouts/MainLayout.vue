@@ -7,13 +7,13 @@ import MainFooter from '../display/MainFooter.vue'
   <v-layout class="h-full">
     <MainAppBar></MainAppBar>
     <v-main class="align-center justify-center" style="min-height: 900px">
-      <v-sheet class="bg-grey-lighten-4">
+      <v-sheet>
         <RouterView />
         <div :style="{ zIndex: 1000, position: 'fixed', right: '28px', bottom: '28px' }">
           <v-speed-dial class="ms-5 mb-5" size="64">
             <template v-slot:activator="{ props: activatorProps }">
               <v-btn
-                color="primary"
+                color="accent-3"
                 class="rounded-circle"
                 v-bind="activatorProps"
                 size="large"
@@ -21,10 +21,22 @@ import MainFooter from '../display/MainFooter.vue'
               ></v-btn>
             </template>
 
-            <v-btn key="1" icon="mdi-check-circle" class="rounded-circle"></v-btn>
-            <v-btn key="2" icon="mdi-information" class="rounded-circle" to="/AddIFAAIView"></v-btn>
-            <v-btn key="3" icon="mdi-alert" class="rounded-circle" to="MainAdmin"></v-btn>
-            <v-btn key="4" icon="mdi-close-circle" class="rounded-circle"></v-btn>
+            <v-btn color="accent-3" key="1" icon="mdi-check-circle" class="rounded-circle"></v-btn>
+            <v-btn
+              color="accent-3"
+              key="2"
+              icon="mdi-information"
+              class="rounded-circle"
+              to="/AddIFAAIView"
+            ></v-btn>
+            <v-btn
+              color="accent-3"
+              key="3"
+              icon="mdi-alert"
+              class="rounded-circle"
+              to="MainAdmin"
+            ></v-btn>
+            <v-btn color="accent-3" key="4" icon="mdi-close-circle" class="rounded-circle"></v-btn>
           </v-speed-dial>
         </div>
         <!-- <div style="position: relative">
