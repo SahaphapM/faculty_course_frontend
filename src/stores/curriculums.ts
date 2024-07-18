@@ -53,7 +53,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     const curriculum = editedCurriculum.value;
     await curriculumService.addCurriculum(curriculum);
   }
-  
+
   async function updateCurriculum() {
     const curriculum = editedCurriculum.value;
     await curriculumService.updateCurriculum(curriculum);
