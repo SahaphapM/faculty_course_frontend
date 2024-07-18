@@ -1,67 +1,73 @@
-import { ref } from 'vue';
-import { defineStore } from 'pinia';
-import type { User } from '@/types/User';
-import userService from '@/service/user';
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
+import type { User } from '@/types/User'
+import userService from '@/service/user'
+import type { PageParams } from '@/types/PageParams'
 
 export const useUserStore = defineStore('user', () => {
-  const users = ref<User[]>([]);
-  const currentUser = ref<User | null>(null);
+  const users = ref<User[]>([])
+  const currentUser = ref<User | null>(null)
+  const totalUsers = ref(0)
 
   const initialUser: User = {
-
-    id: '' ,
+    id: '',
     email: '',
     password: '',
     firstName: '',
     middleName: '',
-    lastName: '' ,
+    lastName: '',
     gender: '',
     phone: '',
     googleId: '',
-    roles: null
-  };
+    roles: []
+  }
 
-  const editedUser = ref<User>({ ...initialUser });
+  const editedUser = ref<User>({ ...initialUser })
 
   function clearCurrentUser() {
-    currentUser.value = null;
+    currentUser.value = null
   }
 
   const addUser = (user: User) => {
-    users.value.push(user);
-  };
+    users.value.push(user)
+  }
+
+  async function fetchUsersPage(params: PageParams) {
+    const res = await userService.getUsersByPage(params)
+    users.value = res.data.data
+    totalUsers.value = res.data.total
+  }
 
   async function fetchUser(id: string) {
-    const res = await userService.getUser(id);
-    editedUser.value = res.data;
+    const res = await userService.getUser(id)
+    editedUser.value = res.data
   }
+  
 
   async function fetchUsers() {
-    const res = await userService.getUsers();
-    users.value = res.data;
+    const res = await userService.getUsers()
+    users.value = res.data
   }
-
 
   async function saveUser() {
-    const user = editedUser.value;
-    await userService.addUser(user);
+    const user = editedUser.value
+    user.id = null
+    await userService.addUser(user)
   }
-  
+
   async function updateUser() {
-    const user = editedUser.value;
-    await userService.updateUser(user);
+    const user = editedUser.value
+    console.log(user)
+    await userService.updateUser(user)
   }
 
-
-
-  
   async function deleteUser(id: string) {
-    await userService.delUser(id);
-    await fetchUsers();
+    await userService.delUser(id)
+    await fetchUsers()
   }
 
   function clearForm() {
-    editedUser.value = { ...initialUser };
+    editedUser.value = { ...initialUser }
   }
 
   return {
@@ -75,5 +81,9 @@ export const useUserStore = defineStore('user', () => {
     deleteUser,
     editedUser,
     clearForm,
-  };
-});
+    updateUser,
+    initialUser,
+    fetchUsersPage,
+    totalUsers
+  }
+})
