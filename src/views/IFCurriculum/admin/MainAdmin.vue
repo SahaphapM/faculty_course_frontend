@@ -24,12 +24,7 @@ const headers = [
 <template>
   <div class="bg-grey-lighten-4">
     <v-container class="d-flex" style="max-width: 1000px">
-      <v-data-table
-        :headers="headers"
-        :items="curriculums"
-        density="compact"
-        item-key="id"
-      ></v-data-table>
+      <v-data-table :headers="headers" :items="curriculums" density="compact" item-key="id"></v-data-table>
     </v-container>
   </div>
 </template>

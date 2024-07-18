@@ -15,7 +15,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     thaiDegreeName: '',
     engDegreeName: '',
     description: '',
-    coordinators:null,
+    coordinators: null,
     period: 0,
     minimumGrade: 0,
   };
@@ -45,7 +45,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     const curriculum = editedCurriculum.value;
     await curriculumService.addCurriculum(curriculum);
   }
-  
+
   async function updateCurriculum() {
     const curriculum = editedCurriculum.value;
     await curriculumService.updateCurriculum(curriculum);
@@ -76,6 +76,6 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     saveCurriculum,
     deleteCurriculum,
     editedCurriculum,
-    clearForm,addCoordinatorToCurriculum
+    clearForm, addCoordinatorToCurriculum
   };
 });

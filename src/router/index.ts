@@ -67,9 +67,21 @@ const router = createRouter({
         layout: 'MainLayout',
         requireAuth: true
       }
+    },
+    {
+      path: '/manageSubject',
+      name: 'manageSubject',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/IFCurriculum/admin/SubjectView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     }
 
-    
+
   ]
 })
 function isLogin() {
@@ -80,9 +92,9 @@ function isLogin() {
   }
   return false
 }
-router.beforeEach((to, from) => {
-  if (to.meta.requireAuth && !isLogin()) {
-    router.replace('login')
-  }
-})
+// router.beforeEach((to, from) => {
+//   if (to.meta.requireAuth && !isLogin()) {
+//     router.replace('login')
+//   }
+// })
 export default router
