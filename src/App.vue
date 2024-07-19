@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import MainLayout from './components/layouts/MainLayout.vue'
 import FullLayout from './components/layouts/FullLayout.vue'
 import { provide, ref } from 'vue'
+import SearchDialog from './components/display/SearchDialog.vue'
 const drawer = ref(true)
 const rail = ref(true)
 provide('rail', rail)
@@ -14,6 +15,7 @@ const route = useRoute()
   <v-layout>
     <MainLayout v-if="route.meta.layout === 'MainLayout'"></MainLayout>
     <FullLayout v-if="route.meta.layout === 'FullLayout'"></FullLayout>
+    <SearchDialog />
   </v-layout>
 </template>
 
