@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import vuetify from '@/plugins/vuetify'
+import { searchStore } from '@/stores/search'
 import { computed } from 'vue'
 
 const isSmallDisplay = computed(() => vuetify.display.smAndDown)
@@ -10,6 +11,8 @@ const navMenu = [
   { title: 'หลักสูตร', to: '/mainIFCurriculumView' },
   { title: 'ติดต่อ', to: '/contacts' }
 ]
+
+const searchS = searchStore()
 </script>
 
 <template>
@@ -46,6 +49,7 @@ const navMenu = [
         <v-row no-gutters align="center">
           <v-col>
             <v-text-field
+              @click="() => searchS.switchToggle()"
               v-if="!isSmallDisplay.value"
               clearable
               min-width="200"
@@ -55,8 +59,14 @@ const navMenu = [
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
               placeholder="Search"
+              readonly
             ></v-text-field>
-            <v-btn v-else icon="mdi-magnify" density="comfortable"></v-btn>
+            <v-btn
+              v-else
+              @click="() => searchS.switchToggle()"
+              icon="mdi-magnify"
+              density="comfortable"
+            ></v-btn>
           </v-col>
           <v-col>
             <v-btn v-if="isSmallDisplay.value" icon="mdi-login"></v-btn>
