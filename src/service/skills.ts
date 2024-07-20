@@ -4,6 +4,7 @@ import type { Skill } from '@/types/Skills'
 function addSkill(skill: Skill) {
   return http.post('/skills', skill)
 }
+
 function updateSkill(skill: Skill) {
   return http.patch(`/skills/${skill.id}`, skill)
 }
@@ -19,10 +20,6 @@ function getSkills() {
 function getSkill(id: string) {
   return http.get<Skill>(`/skills/${id}`)
 }
-
-// function addCoordinator(skillId: string, userId: string) {
-//   return http.patch(`/skills/${skillId}/coordinators`, { id: userId })
-// }
 
 export default {
   addSkill,
