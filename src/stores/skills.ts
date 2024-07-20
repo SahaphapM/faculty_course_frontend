@@ -29,7 +29,6 @@ export const useSkillStore = defineStore('skill', () => {
     const res = await skillService.getSkill(id)
     editedSkill.value = res.data
     console.log(editedSkill.value)
-
     dataInit.value = true
   }
 

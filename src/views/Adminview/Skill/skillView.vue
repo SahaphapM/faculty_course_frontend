@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
 
 const skillStore = useSkillStore()
 const router = useRouter()
+const route = useRoute()
+
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
   { title: 'Description', key: 'description' }
 ])
+
 const skills = computed(() => skillStore.skills || [])
 const select = ref<string | null>(null)
+
+function navigateToDetail(id: string) {
+  router.push({ name: 'SkillView/SkillDetail', params: { id } })
+}
 
 onMounted(() => {
   skillStore.fetchSkills()
 })
-
-const goToSkillDetail = (id: string) => {
-  router.push({ name: 'SkillView/SkillDetails', params: { id } })
-}
 </script>
 
 <template>
@@ -33,10 +36,17 @@ const goToSkillDetail = (id: string) => {
   <v-card class="ma-5">
     <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
-        <tr @click="goToSkillDetail(item.id)">
+        <tr>
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
+          <td>
+            <v-btn
+              icon="mdi-information"
+              class="rounded-circle"
+              @click="navigateToDetail(item.id)"
+            ></v-btn>
+          </td>
         </tr>
       </template>
     </v-data-table>
