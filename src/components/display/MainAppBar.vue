@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import vuetify from '@/plugins/vuetify'
-import { searchStore } from '@/stores/search'
+import { useSearchStore } from '@/stores/search'
 import { computed } from 'vue'
 
 const isSmallDisplay = computed(() => vuetify.display.smAndDown)
@@ -12,7 +12,7 @@ const navMenu = [
   { title: 'ติดต่อ', to: '/contacts' }
 ]
 
-const searchS = searchStore()
+const searchS = useSearchStore()
 </script>
 
 <template>

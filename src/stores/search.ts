@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const searchStore = defineStore('search-store', {
+export const useSearchStore = defineStore('search-store', {
   state() {
     return {
       text: '',
