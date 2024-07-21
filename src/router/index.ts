@@ -99,6 +99,18 @@ const router = createRouter({
       }
     },
     {
+      path: '/manageSubject',
+      name: 'manageSubject',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/IFCurriculum/admin/SubjectView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
       path: '/test',
       name: 'test',
       component: () => import('../views/Test.vue'),
