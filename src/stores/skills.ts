@@ -33,7 +33,7 @@ export const useSkillStore = defineStore('skill', () => {
     skills.value = res.data
   }
 
-  async function addSkill(addSkill: Skill) {
+  async function addSkill(addSkill: any) {
     console.log(addSkill)
     await skillService.addSkill(addSkill)
   }

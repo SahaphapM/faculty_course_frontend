@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
+import _ from 'lodash'
 
 const route = useRoute()
+const router = useRouter()
 const skillStore = useSkillStore()
 const skills = computed(() => skillStore.editedSkill)
 
@@ -16,18 +18,25 @@ async function fetchSkillDetail(id: string) {
 }
 
 function saveSkill() {
+  let skill
+  skill = { ...skills.value }
   if (route.params.id !== 'addSkill') {
-    skillStore.updateSkill(skills.value)
+    skillStore.updateSkill(skill)
+    router.push({ name: 'SkillView' })
   } else {
-    skillStore.addSkill(skills.value)
+    const payload: { name: string; description: string; colorsTag: string } = {
+      name: skill.name,
+      description: skill.description,
+      colorsTag: skill.colorsTag
+    }
+    skillStore.addSkill(payload)
+    router.push({ name: 'SkillView' })
   }
 }
 
 onMounted(() => {
   if (!route.params.id) return
-  else if (route.params.id == 'addSkill') {
-    console.log('addSkill')
-  } else {
+  else if (route.params.id !== 'addSkill') {
     fetchSkillDetail(route.params.id as string)
   }
 })
@@ -40,22 +49,13 @@ onMounted(() => {
     </template>
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">รายละเอียดสกิล</p>
-  <v-container style="mx-4"
+  <v-container style="mx-auto"
     ><v-row>
-      <v-col cols="12">
-        <v-text-field
-          v-model="skills.id"
-          :counter="10"
-          label="First name"
-          hide-details
-          required
-        ></v-text-field>
-      </v-col>
       <v-col cols="12">
         <v-text-field
           v-model="skills.name"
           :counter="10"
-          label="First name"
+          label="Name"
           hide-details
           required
         ></v-text-field>
@@ -64,7 +64,7 @@ onMounted(() => {
         <v-text-field
           v-model="skills.description"
           :counter="10"
-          label="First name"
+          label="Description"
           hide-details
           required
         ></v-text-field>
@@ -73,7 +73,7 @@ onMounted(() => {
         <v-text-field
           v-model="skills.colorsTag"
           :counter="10"
-          label="First name"
+          label="Colors Tag"
           hide-details
           required
         ></v-text-field>
