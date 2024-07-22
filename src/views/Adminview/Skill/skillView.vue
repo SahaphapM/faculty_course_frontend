@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
 
 const skillStore = useSkillStore()
 const router = useRouter()
-const route = useRoute()
 
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
@@ -14,7 +13,6 @@ const headers = computed(() => [
 ])
 
 const skills = computed(() => skillStore.skills || [])
-const select = ref<string | null>(null)
 
 function navigateToDetail(id: string) {
   router.push({ name: 'SkillView/SkillDetail', params: { id } })
@@ -38,8 +36,15 @@ onMounted(() => {
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
 
-  <v-row><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-row>
-  <v-card class="ma-5">
+  <v-row>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-col>
+  </v-row>
+  <v-row> <v-col></v-col></v-row>
+  <v-card class="mx-auto">
     <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
         <tr>
