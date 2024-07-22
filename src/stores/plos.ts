@@ -9,6 +9,7 @@ export const usePloStore = defineStore('plo', () => {
 
   const initialPlos: Plos = {
     id: '',
+    num_plo: '',
     description: '',
     resultTypes: '',
     curriculum: {

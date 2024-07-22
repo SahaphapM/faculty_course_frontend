@@ -1,5 +1,6 @@
 import http from './http'
 import type { User } from '@/types/User'
+import type { PageParams } from '@/types/PageParams'
 
 function addUser(user: User) {
   console.log(user)
@@ -22,8 +23,8 @@ function getUser(id: string) {
   return http.get<User>(`/users/${id}`)
 }
 
-function getUsersByPage(page: number, limit: number) {
-  return http.get<{ data: User[]; total: number }>(`/users/pages?page=${page}&limit=${limit}`)
+function getUsersByPage(params: PageParams) {
+  return http.get<{ data: User[]; total: number }>(`/users/pages`, { params })
 }
 
 export default {

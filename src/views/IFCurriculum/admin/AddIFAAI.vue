@@ -346,7 +346,7 @@ async function saveC() {
               </p>
             </div>
             <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
-              <p style="font-size: 2.5vh">{{ form.label }}</p>
+              <p class="details-text" style="font-size: 2.5vh">{{ form.label }}</p>
               <br />
               <p style="font-size: 1.5vh">รายละเอียด</p>
               <v-text-field

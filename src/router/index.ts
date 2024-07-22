@@ -63,9 +63,27 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/users/userView.vue'),
+
       meta: {
         layout: 'MainLayout',
         requireAuth: true
+      }
+    },
+    {
+      path: '/SkillView',
+      name: 'SkillView',
+      component: () => import('../views/Adminview/Skill/skillView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
+      path: '/SkillView/SkillDetails/:id',
+      name: 'SkillView/SkillDetails',
+      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
+      meta: {
+        topic: 'MainLayout'
       }
     },
     {
@@ -86,7 +104,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/users/userView.vue'),
+      component: () => import('../views/Test.vue'),
       meta: {
         layout: 'MainLayout'
       }
