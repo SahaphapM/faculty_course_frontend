@@ -8,8 +8,8 @@ import MainDrawer from '../components/MainDrawer.vue'
   <v-layout class="h-full">
     <MainDrawer />
     <MainAppBar></MainAppBar>
-    <v-main class="align-center justify-center" style="min-height: 900px">
-      <RouterView />
+    <v-main>
+      <div class="mx-auto" style="min-height: 900px; max-width: 1440px"><RouterView /></div>
       <!-- <div :style="{ zIndex: 1000, position: 'fixed', right: '28px', bottom: '28px' }">
         <v-speed-dial class="ms-5 mb-5" size="64">
           <template v-slot:activator="{ props: activatorProps }">
