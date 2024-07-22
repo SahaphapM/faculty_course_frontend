@@ -8,6 +8,8 @@ import type { Faculty } from '@/types/Faculty'
 import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type { VForm } from 'vuetify/components'
+import type { PageParams } from '@/types/PageParams'
+import DialogAddIF from '@/views/IFCurriculum/admin/DialogAddIF.vue'
 
 const branchStore = useBranchStore()
 const curriculumStore = useCurriculumStore()
@@ -15,46 +17,82 @@ const facultyStore = useFacultyStore()
 const curriculums = computed(() => curriculumStore.curriculums)
 const faculties = computed(() => facultyStore.faculties)
 const branches = computed(() => branchStore.branches)
-const setCurrentCurriculum = (curriculum: Curriculum) => {
-  curriculumStore.setCurrentCurriculum(curriculum.id)
+
+const loading = ref(false)
+const pageParams = ref<PageParams>({
+  page: 1,
+  limit: 10,
+  sort: '',
+  order: 'ASC',
+  search: ''
+})
+const select = ref<PageParams>({
+  page: 1,
+  limit: 10,
+  sort: '',
+  order: 'ASC',
+  search: ''
+})
+
+const dialogVisible = ref(false)
+const selectedItem = ref<any | null>(null)
+const showDialog = (item: any) => {
+  selectedItem.value = item
+  dialogVisible.value = true
+
+  // Function to set the current curriculum in the store
+  const setCurrentCurriculum = (curriculum: any) => {
+    curriculumStore.setCurrentCurriculum(curriculum.id)
+  }
+
+  // Call the function with the selected item
+  setCurrentCurriculum(item)
+}
+
+const closeDialog = () => {
+  dialogVisible.value = false
 }
 const expanded: any[] = []
 const search = ref('')
-const select = ref('')
+
+const fetchCurriculum = async () => {
+  loading.value = true
+  try {
+    await curriculumStore.fetchCurriculumsPage(pageParams.value)
+    if (select.value.search == '') {
+      await curriculumStore.fetchCurriculumsPage(pageParams.value)
+    } else if (pageParams.value.search == '') {
+      await curriculumStore.fetchCurriculumsPage(select.value)
+    }
+  } catch (error) {
+    console.error('Error fetching curriculum:', error)
+  } finally {
+    loading.value = false
+  }
+  console.log(pageParams.value)
+}
+
+const updateOptions = (options: any) => {
+  pageParams.value.page = options.page
+  pageParams.value.limit = options.itemsPerPage
+  fetchCurriculum()
+}
+
 onMounted(async () => {
-  await curriculumStore.fetchCurriculums()
+  fetchCurriculum()
   await facultyStore.fetchFaculties()
   await branchStore.getBranches()
 })
 const facultiesOptions = computed(() => {
   return faculties.value.map((faculty) => {
-    return `${faculty.id} ${faculty.name}`
+    return `${faculty.name}`
   })
 })
 const headers = [
   { title: 'รหัสหลักสูตร', value: 'id' },
   { title: 'หลักสูตร', value: 'thaiName' },
-  { title: 'ระยะเวลา', value: 'period' },
-  { title: 'สาขา', value: 'period' }
+  { title: 'ระยะเวลา', value: 'period' }
 ]
-
-const filteredBranches = computed(() => {
-  const selectedFacultyId = select.value.substring(0, select.value.indexOf(' '))
-
-  return branches.value.filter((branch: Branch) => branch.faculty.id === selectedFacultyId)
-})
-
-const filteredCurriculums = computed(() => {
-  const selectedFacultyId = select.value.substring(0, select.value.indexOf(' '))
-  if (selectedFacultyId == null || selectedFacultyId == '') {
-    return curriculumStore.curriculums
-  } else {
-    const filteredBranches = branches.value.filter(
-      (branch: Branch) => branch.faculty.id === selectedFacultyId
-    )
-    return filteredBranches.flatMap((branch: Branch) => branch.curriculums)
-  }
-})
 </script>
 <template>
   <v-container>
@@ -67,20 +105,21 @@ const filteredCurriculums = computed(() => {
             <v-spacer></v-spacer>
 
             <v-text-field
-              v-model="search"
-              density="compact"
-              label="Search"
-              prepend-inner-icon="mdi-magnify"
+              clearable
+              label="หลักสูตร"
               variant="outlined"
-              flat
-              hide-details
-              single-line
+              prepend-inner-icon="mdi-magnify"
+              v-model="pageParams.search"
               rounded="lg"
-              style="height: 70px; margin: 2%; margin-top: 17px; width: 500px"
+              @keydown.enter="fetchCurriculum"
+              style="margin-right: 3%; width: 300px"
             ></v-text-field>
+
             <v-combobox
+              clearable
               label="คณะ"
-              v-model="select"
+              @keydown.enter="fetchCurriculum"
+              v-model="select.search"
               :items="facultiesOptions"
               variant="outlined"
               rounded="lg"
@@ -96,85 +135,44 @@ const filteredCurriculums = computed(() => {
 
           <v-divider class="ma-2"></v-divider>
 
-          <v-data-table
-            show-expand
-            :search="search"
+          <v-data-table-server
+            v-model:items-per-page="pageParams.limit"
             :headers="headers"
-            :items="filteredCurriculums"
+            :items="curriculumStore.curriculums"
+            :items-length="curriculumStore.totalCurriculums"
+            :loading="loading"
             item-value="name"
+            @update:options="updateOptions"
             class="custom-header"
             rounded="lg"
-            v-model:expanded="expanded"
           >
+            <!-- <template v-slot:top>
+              <v-text-field
+                v-model="pageParams.search"
+                label="Search"
+                @keydown.enter="fetchCurriculum"
+                class="mx-4"
+              ></v-text-field>
+            </template> -->
             <template v-slot:item="{ item, index }">
               <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
                 <td>{{ item.id }}</td>
                 <td>{{ item.thaiName }}</td>
                 <td>{{ item.period }}</td>
-                <td>{{ item.branch.name }}</td>
 
                 <td>
-                  <v-btn
-                    icon="mdi-pencil"
-                    variant="text"
-                    to="AddIFAAIView"
-                    @click="setCurrentCurriculum(item)"
-                  >
+                  <v-btn variant="text" @click="() => showDialog(item)">
                     <v-icon>mdi-file-document-edit-outline</v-icon>
                   </v-btn>
                 </td>
               </tr>
             </template>
-            <template v-slot:expanded-row="{ columns, item }">
-              <tr>
-                <td :colspan="columns?.length || 1">More info about {{ item.id }}</td>
-              </tr>
-            </template>
-          </v-data-table>
+          </v-data-table-server>
         </v-card>
       </v-card>
-
-      <!-- <v-card class="elevation-5" rounded="lg">
-        <p class="details-text" style="font-size: 2.5vh">หลักสูตร</p>
-        <v-container>
-          <v-row>
-            <v-col> <p class="details-text" style="font-size: 2.5vh">คณะ</p> </v-col
-            ><v-col cols="9">
-              <v-combobox
-                v-model="select"
-                :items="facultiesOptions"
-                variant="outlined"
-                rounded="lg"
-              ></v-combobox>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <v-table :search="search" class="pa-5">
-          <thead>
-            <tr>
-              <th class="text-left" colspan="5">ระดับการศึกษา : ปริญญาตรี ปกติ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in filteredCurriculums" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.thaiName }}</td>
-
-              <td>
-                <v-btn
-                  icon="mdi-pencil"
-                  variant="text"
-                  to="AddIFAAIView"
-                  @click="setCurrentCurriculum(item)"
-                ></v-btn>
-              </td>
-            </tr>
-          </tbody>
-        </v-table>
-      </v-card> -->
     </div>
   </v-container>
+  <DialogAddIF :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog" />
 </template>
 <style scoped>
 .details-text {
@@ -184,15 +182,17 @@ const filteredCurriculums = computed(() => {
 }
 
 .custom-header {
-  background-color: #112f69; /* Blue header color */
+  background-color: #2b5ec3; /* Blue header color */
   color: #ffffff;
 }
 .even-row {
   background-color: #f9f9f9;
   color: black;
+  text-align: left;
 }
 .odd-row {
   background-color: #ffffff;
   color: black;
+  text-align: left;
 }
 </style>

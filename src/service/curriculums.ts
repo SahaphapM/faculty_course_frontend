@@ -1,6 +1,6 @@
-import type { User } from '@/types/User';
 import http from './http';
 import type { Curriculum } from '@/types/Curriculums';
+import type { PageParams } from '@/types/PageParams';
 
 function addCurriculum(curriculum: Curriculum) {
   return http.post('/curriculums', curriculum);
@@ -25,7 +25,9 @@ function addCoordinator(curriculumId: string, userId: string)  {
   return http.patch(`/curriculums/${curriculumId}/coordinators`, { id: userId });
 }
 
-
+function getCurriculumsByPage(params: PageParams) {
+  return http.get<{ data: Curriculum[]; total: number }>(`/curriculums/pages`, { params })
+}
 
 
 export default {
@@ -34,5 +36,6 @@ export default {
   delCurriculum,
   getCurriculums,
   getCurriculum,
-  addCoordinator
+  addCoordinator,
+  getCurriculumsByPage
 };
