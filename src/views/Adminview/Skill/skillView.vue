@@ -5,21 +5,27 @@ import { useSkillStore } from '@/stores/skills'
 
 const skillStore = useSkillStore()
 const router = useRouter()
+
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
   { title: 'Description', key: 'description' }
 ])
-const skills = computed(() => skillStore.skills || [])
-const select = ref<string | null>(null)
 
+const skills = computed(() => skillStore.skills || [])
+
+function navigateToDetail(id: string) {
+  router.push({ name: 'SkillView/SkillDetail', params: { id } })
+}
+
+function deleteSkill(id: string) {
+  if (confirm('ยืนยันการลบสกิล?')) {
+    skillStore.deleteSkill(id)
+  }
+}
 onMounted(() => {
   skillStore.fetchSkills()
 })
-
-const goToSkillDetail = (id: string) => {
-  router.push({ name: 'SkillView/SkillDetails', params: { id } })
-}
 </script>
 
 <template>
@@ -30,13 +36,29 @@ const goToSkillDetail = (id: string) => {
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
 
-  <v-card class="ma-5">
+  <v-row>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col></v-col>
+    <v-col><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-col>
+  </v-row>
+  <v-row> <v-col></v-col></v-row>
+  <v-card class="mx-auto">
     <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
-        <tr @click="goToSkillDetail(item.id)">
+        <tr>
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
+          <td>
+            <v-btn icon="mdi-information" class="rounded-circle" @click="navigateToDetail(item.id)">
+              edit</v-btn
+            >
+            <v-btn icon="mdi-information" class="rounded-circle" @click="deleteSkill(item.id)">
+              delete</v-btn
+            >
+          </td>
         </tr>
       </template>
     </v-data-table>

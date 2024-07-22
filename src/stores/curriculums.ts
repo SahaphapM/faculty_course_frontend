@@ -1,12 +1,13 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { Curriculum } from '@/types/Curriculums';
-import curriculumService from '@/service/curriculums';;
+import curriculumService from '@/service/curriculums';import type { PageParams } from '@/types/PageParams';
+;
 
 export const useCurriculumStore = defineStore('curriculum', () => {
   const curriculums = ref<Curriculum[]>([]);
   const currentCurriculum = ref<Curriculum | null>(null);
-
+  const totalCurriculums = ref(0)
   const initialCurriculum: Curriculum = {
     id: '',
     thaiName: '',
@@ -47,13 +48,17 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     const res = await curriculumService.getCurriculums();
     curriculums.value = res.data;
   }
-
+  async function fetchCurriculumsPage(params: PageParams) {
+    const res = await curriculumService.getCurriculumsByPage(params)
+    curriculums.value = res.data.data
+    totalCurriculums.value = res.data.total
+  }
 
   async function saveCurriculum() {
     const curriculum = editedCurriculum.value;
     await curriculumService.addCurriculum(curriculum);
   }
-  
+
   async function updateCurriculum() {
     const curriculum = editedCurriculum.value;
     await curriculumService.updateCurriculum(curriculum);
@@ -84,6 +89,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     saveCurriculum,
     deleteCurriculum,
     editedCurriculum,
+    fetchCurriculumsPage,totalCurriculums,
     clearForm,addCoordinatorToCurriculum,setCurrentCurriculum
   };
 });

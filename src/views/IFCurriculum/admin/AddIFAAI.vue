@@ -9,7 +9,6 @@ import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
 import { usePloStore } from '@/stores/plos'
-
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
@@ -27,9 +26,7 @@ const thaiDegreeName = ref<string>('')
 const engDegreeName = ref<string>('')
 const description = ref<string>('')
 const resultTypes = ref<string>('')
-const nameRules = ref<(string | ((v: string) => boolean | string))[]>([
-  (v: string) => !!v || 'Please check complete information'
-])
+const nameRules = [(v: string) => !!v || 'Please check complete information']
 const select1 = ref<string | null>(null)
 const select2 = ref<any | null>(null)
 const branches = computed(() => branchStore.branches)
@@ -41,7 +38,6 @@ const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
-const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 
 const addForm = () => {
   const newIndex = forms.value.length + 1
@@ -53,7 +49,6 @@ const removeForm = () => {
     forms.value.pop()
   }
 }
-
 onMounted(async () => {
   await branchStore.getBranches()
   curriculumStore.fetchCurriculums()
@@ -80,6 +75,13 @@ watch(select4, (newValue) => {
     }
   }
 })
+
+// watch(
+//   () => curriculumStore.currentCurriculum,
+//   (newCurriculum) => {
+//     coordinators.value = newCurriculum?.coordinators
+//   }
+// )
 
 watch(
   () => curriculumStore.currentCurriculum,
@@ -163,7 +165,7 @@ async function save() {
   curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
   curriculumStore.editedCurriculum.description = ''
   curriculumStore.editedCurriculum.period = 4
-  // curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
+  curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
   await curriculumStore.saveCurriculum()
@@ -204,132 +206,143 @@ async function saveC() {
     <p style="font-size: x-large; margin-left: 3vh; color: #424242; margin-top: 3vh">
       เพิ่มหลักสูตร
     </p>
-    <v-container class="d-flex" style="max-width: 700px">
-      <v-expand-transition name="fade">
-        <v-card
-          class="elevation-5"
-          rounded="lg"
-          max-width="700px"
-          width="700px"
-          style="min-width: 40vh"
-          v-if="reveal2"
-        >
-          <v-container>
-            <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
-              <div class="rounded-rectangle"></div>
-              <p class="details-text" style="font-size: 2.5vh">รายละเอียด</p>
-            </div>
-
-            <v-form ref="form" class="ma-2">
-              <p style="font-size: 1.5vh">ชื่อหลักสูตร</p>
-              <v-text-field
-                v-model="thaiName"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-                class="small-input"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">ชื่อหลักสูตร (อังกฤษ)</p>
-              <v-text-field
-                v-model="engName"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">รหัสหลักสูตร</p>
-              <v-text-field
-                v-model="id"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">ชื่อปริญญา</p>
-              <v-text-field
-                v-model="select1"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">ชื่อปริญญา ( อังกฤษ)</p>
-              <v-text-field
-                v-model="engDegreeName"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">สาขาวิชา</p>
-              <v-select
-                v-model="select2"
-                :items="branchOptions"
-                variant="outlined"
-                rounded="lg"
-              ></v-select>
-              <v-overlay :model-value="overlay" class="align-center justify-center">
-                <v-progress-circular color="red" size="64" indeterminate></v-progress-circular>
-              </v-overlay>
-              <v-row class="justify-end">
-                <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                ><v-btn @click="save" variant="plain">บันทึก</v-btn></v-row
-              >
-            </v-form>
-          </v-container>
-        </v-card>
-      </v-expand-transition>
-
-      <v-expand-transition>
-        <v-card
-          class="elevation-5"
-          rounded="lg"
-          max-width="700px"
-          width="700px"
-          style="min-width: 40vh"
-          v-if="reveal"
-        >
-          <v-container>
-            <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
-              <div class="rounded-rectangle"></div>
-              <p class="details-text" style="font-size: 2.5vh">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
-            </div>
-            <v-form ref="form" class="ma-2">
-              <p style="font-size: 1.5vh">เลือก</p>
-              <v-combobox
-                v-model="select3"
-                :items="userOptions"
-                variant="outlined"
-                rounded="lg"
-              ></v-combobox>
-
+    <v-container>
+      <v-row>
+        <v-col>
+          <v-container class="d-flex" style="max-width: 700px">
+            <v-expand-transition name="fade">
               <v-card
-                style="border-color: #bdbdbd"
-                variant="outlined"
+                class="elevation-5"
                 rounded="lg"
-                v-for="curriculum in curriculumStore.currentCurriculum?.coordinators"
-                :key="curriculum.id"
-                class="ma-2 pa-3"
-                >{{ curriculum.id }} {{ curriculum.firstName }} {{ curriculum.lastName }}
-              </v-card>
-
-              <v-overlay :model-value="overlay" class="align-center justify-center">
-                <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
-              </v-overlay>
-              <v-row class="justify-center">
-                <v-btn
-                  icon="mdi-plus"
-                  class="ma-4 rounded-circle"
-                  size="40px"
-                  variant="outlined"
-                  @click="saveC"
-                ></v-btn>
-              </v-row>
-              <v-row class="justify-end mt-8">
-                <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+                max-width="700px"
+                width="700px"
+                style="min-width: 40vh"
+                v-if="reveal2"
               >
-            </v-form>
-          </v-container>
-        </v-card>
-      </v-expand-transition>
-      <v-expand-transition>
+                <v-container>
+                  <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
+                    <div class="rounded-rectangle"></div>
+                    <p class="details-text" style="font-size: 2.5vh">รายละเอียด</p>
+                  </div>
+
+                  <v-form ref="form" class="ma-2">
+                    <p style="font-size: 1.5vh">ชื่อหลักสูตร</p>
+                    <v-text-field
+                      v-model="thaiName"
+                      :rules="nameRules"
+                      variant="outlined"
+                      rounded="lg"
+                      class="small-input"
+                    ></v-text-field>
+                    <p style="font-size: 1.5vh">ชื่อหลักสูตร (อังกฤษ)</p>
+                    <v-text-field
+                      v-model="engName"
+                      :rules="nameRules"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-text-field>
+                    <p style="font-size: 1.5vh">รหัสหลักสูตร</p>
+                    <v-text-field
+                      v-model="id"
+                      :rules="nameRules"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-text-field>
+                    <p style="font-size: 1.5vh">ชื่อปริญญา</p>
+                    <v-text-field
+                      v-model="select1"
+                      :rules="nameRules"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-text-field>
+                    <p style="font-size: 1.5vh">ชื่อปริญญา ( อังกฤษ)</p>
+                    <v-text-field
+                      v-model="engDegreeName"
+                      :rules="nameRules"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-text-field>
+                    <p style="font-size: 1.5vh">สาขาวิชา</p>
+                    <v-select
+                      v-model="select2"
+                      :items="branchOptions"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-select>
+                    <v-overlay :model-value="overlay" class="align-center justify-center">
+                      <v-progress-circular
+                        color="red"
+                        size="64"
+                        indeterminate
+                      ></v-progress-circular>
+                    </v-overlay>
+                    <v-row class="justify-end">
+                      <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+                      ><v-btn @click="save" variant="plain">บันทึก</v-btn></v-row
+                    >
+                  </v-form>
+                </v-container>
+              </v-card>
+            </v-expand-transition>
+
+            <v-expand-transition>
+              <v-card
+                class="elevation-5"
+                rounded="lg"
+                max-width="700px"
+                width="700px"
+                style="min-width: 40vh"
+                v-if="reveal"
+              >
+                <v-container>
+                  <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
+                    <div class="rounded-rectangle"></div>
+                    <p class="details-text" style="font-size: 2.5vh">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
+                  </div>
+                  <v-form ref="form" class="ma-2">
+                    <p style="font-size: 1.5vh">เลือก</p>
+                    <v-combobox
+                      v-model="select3"
+                      :items="userOptions"
+                      variant="outlined"
+                      rounded="lg"
+                    ></v-combobox>
+
+                    <v-card
+                      style="border-color: #bdbdbd"
+                      variant="outlined"
+                      rounded="lg"
+                      v-for="curriculum in curriculumStore.currentCurriculum?.coordinators"
+                      :key="curriculum.id"
+                      class="ma-2 pa-3"
+                      >{{ curriculum.id }} {{ curriculum.firstName }} {{ curriculum.lastName }}
+                    </v-card>
+
+                    <v-overlay :model-value="overlay" class="align-center justify-center">
+                      <v-progress-circular
+                        color="primary"
+                        size="64"
+                        indeterminate
+                      ></v-progress-circular>
+                    </v-overlay>
+                    <v-row class="justify-center">
+                      <v-btn
+                        icon="mdi-plus"
+                        class="ma-4 rounded-circle"
+                        size="40px"
+                        variant="outlined"
+                        @click="saveC"
+                      ></v-btn>
+                    </v-row>
+                    <v-row class="justify-end mt-8">
+                      <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+                      ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+                    >
+                  </v-form>
+                </v-container>
+              </v-card>
+            </v-expand-transition>
+                 <v-expand-transition>
         <v-card
           class="elevation-5"
           rounded="lg"
@@ -387,50 +400,56 @@ async function saveC() {
               ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
             >
           </v-container>
-        </v-card>
-      </v-expand-transition>
-    </v-container>
-    <v-container class="d-flex" style="max-width: 700px">
-      <v-card
-        class="elevation-5"
-        rounded="lg"
-        max-width="700px"
-        width="700px"
-        style="min-width: 40vh"
-      >
-        <p class="font-weight-black ma-5" style="font-size: large">
-          <v-icon left size="xx-small" class="mr-2" color="#112f69">mdi-circle</v-icon
-          >เนื้อหาหลักสูตร
-        </p>
-        <v-card-actions v-if="!reveal2" @click="validate2">
-          <p class="font-weight-black ma-2" style="font-size: small">รายละเอียด</p>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+        </v-col>
+        <v-col>
+          <v-container class="d-flex" style="max-width: 700px">
+            <v-card
+              class="elevation-5"
+              rounded="lg"
+              max-width="700px"
+              width="700px"
+              style="min-width: 40vh"
+            >
+              <p class="font-weight-black ma-5" style="font-size: large">
+                <v-icon left size="xx-small" class="mr-2" color="#112f69">mdi-circle</v-icon
+                >เนื้อหาหลักสูตร
+              </p>
+              <v-card-actions v-if="!reveal2" @click="validate2">
+                <p class="font-weight-black ma-2" style="font-size: small">รายละเอียด</p>
+                <v-spacer></v-spacer>
+              </v-card-actions>
 
-        <v-card-actions v-if="!reveal" @click="validate">
-          <p class="font-weight-black ma-2" style="font-size: small">อาจารย์ผู้รับผิดชอบหลักสูตร</p>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+              <v-card-actions v-if="!reveal" @click="validate">
+                <p class="font-weight-black ma-2" style="font-size: small">
+                  อาจารย์ผู้รับผิดชอบหลักสูตร
+                </p>
+                <v-spacer></v-spacer>
+              </v-card-actions>
 
-        <v-card-actions v-if="!reveal3" @click="validate3">
-          <p class="font-weight-black ma-2" style="font-size: small">
-            ผลการเรียนรู้ที่คาดหวังของหลักสูตร
-          </p>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+              <v-card-actions v-if="!reveal3" @click="validate3">
+                <p class="font-weight-black ma-2" style="font-size: small">
+                  ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+                </p>
+                <v-spacer></v-spacer>
+              </v-card-actions>
 
-        <v-card-actions>
-          <p class="font-weight-black ma-2" style="font-size: small">การจัดกระบวนการเรียนรู้</p>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+              <v-card-actions>
+                <p class="font-weight-black ma-2" style="font-size: small">
+                  การจัดกระบวนการเรียนรู้
+                </p>
+                <v-spacer></v-spacer>
+              </v-card-actions>
 
-        <v-card-actions>
-          <p class="font-weight-black ma-2" style="font-size: small">
-            โครงสร้างหลักสูตร รายวิชาและหน่วยกิต
-          </p>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-      </v-card>
+              <v-card-actions>
+                <p class="font-weight-black ma-2" style="font-size: small">
+                  โครงสร้างหลักสูตร รายวิชาและหน่วยกิต
+                </p>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-container>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>

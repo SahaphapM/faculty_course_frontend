@@ -1,31 +1,47 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
-import { useRoute } from 'vue-router'
+import _ from 'lodash'
 
 const route = useRoute()
+const router = useRouter()
 const skillStore = useSkillStore()
-const headers = computed(() => [
-  { title: 'ID', key: 'id' },
-  { title: 'Name', key: 'name' },
-  { title: 'Description', key: 'description' }
-])
 const skills = computed(() => skillStore.editedSkill)
-const select = ref<string | null>(null)
-onMounted(async () => {
-  try {
-    const id = route.params.id as string
-    if (id === null) {
-      return
-    }
 
+async function fetchSkillDetail(id: string) {
+  try {
     await skillStore.fetchSkill(id)
-    console.log(skillStore.editedSkill)
   } catch (error) {
-    console.error(error)
+    console.error('Failed to fetch skill details:', error)
+  }
+}
+
+function saveSkill() {
+  let skill
+  skill = { ...skills.value }
+  if (route.params.id !== 'addSkill') {
+    skillStore.updateSkill(skill)
+    router.push({ name: 'SkillView' })
+  } else {
+    const payload: { name: string; description: string; colorsTag: string } = {
+      name: skill.name,
+      description: skill.description,
+      colorsTag: skill.colorsTag
+    }
+    skillStore.addSkill(payload)
+    router.push({ name: 'SkillView' })
+  }
+}
+
+onMounted(() => {
+  if (!route.params.id) return
+  else if (route.params.id !== 'addSkill') {
+    fetchSkillDetail(route.params.id as string)
   }
 })
 </script>
+
 <template>
   <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
     <template v-slot:divider>
@@ -33,18 +49,37 @@ onMounted(async () => {
     </template>
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">รายละเอียดสกิล</p>
-
-  <v-card class="ma-5" v-if="skillStore.dataInit">
-    <v-data-table :headers="headers" :items="skills" items-per-page="5">
-      <template v-slot:item="{ item }">
-        <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
-        </tr>
-      </template>
-    </v-data-table>
-  </v-card>
+  <v-container style="mx-auto"
+    ><v-row>
+      <v-col cols="12">
+        <v-text-field
+          v-model="skills.name"
+          :counter="10"
+          label="Name"
+          hide-details
+          required
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12">
+        <v-text-field
+          v-model="skills.description"
+          :counter="10"
+          label="Description"
+          hide-details
+          required
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12">
+        <v-text-field
+          v-model="skills.colorsTag"
+          :counter="10"
+          label="Colors Tag"
+          hide-details
+          required
+        ></v-text-field>
+      </v-col> </v-row
+    ><v-row><v-btn @click="saveSkill()"> Button </v-btn></v-row></v-container
+  >
 </template>
 
 <style scoped>
@@ -53,4 +88,3 @@ onMounted(async () => {
   justify-content: center;
 }
 </style>
-s
