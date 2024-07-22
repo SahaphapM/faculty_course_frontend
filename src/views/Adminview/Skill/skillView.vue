@@ -20,11 +20,6 @@ function navigateToDetail(id: string) {
   router.push({ name: 'SkillView/SkillDetail', params: { id } })
 }
 
-function deleteSkill(id: string) {
-  if (confirm('ยืนยันการลบสกิล?')) {
-    skillStore.deleteSkill(id)
-  }
-}
 onMounted(() => {
   skillStore.fetchSkills()
 })
@@ -38,7 +33,6 @@ onMounted(() => {
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
 
-  <v-row><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-row>
   <v-card class="ma-5">
     <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
@@ -47,12 +41,11 @@ onMounted(() => {
           <td>{{ item.name }}</td>
           <td>{{ item.description }}</td>
           <td>
-            <v-btn icon="mdi-information" class="rounded-circle" @click="navigateToDetail(item.id)">
-              edit</v-btn
-            >
-            <v-btn icon="mdi-information" class="rounded-circle" @click="deleteSkill(item.id)">
-              delete</v-btn
-            >
+            <v-btn
+              icon="mdi-information"
+              class="rounded-circle"
+              @click="navigateToDetail(item.id)"
+            ></v-btn>
           </td>
         </tr>
       </template>

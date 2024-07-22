@@ -15,19 +15,8 @@ async function fetchSkillDetail(id: string) {
   }
 }
 
-function saveSkill() {
-  if (route.params.id !== 'addSkill') {
-    skillStore.updateSkill(skills.value)
-  } else {
-    skillStore.addSkill(skills.value)
-  }
-}
-
 onMounted(() => {
-  if (!route.params.id) return
-  else if (route.params.id == 'addSkill') {
-    console.log('addSkill')
-  } else {
+  if (route.params.id) {
     fetchSkillDetail(route.params.id as string)
   }
 })
@@ -40,46 +29,7 @@ onMounted(() => {
     </template>
   </v-breadcrumbs>
   <p style="font-size: xx-large; margin-left: 3%">รายละเอียดสกิล</p>
-  <v-container style="mx-4"
-    ><v-row>
-      <v-col cols="12">
-        <v-text-field
-          v-model="skills.id"
-          :counter="10"
-          label="First name"
-          hide-details
-          required
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12">
-        <v-text-field
-          v-model="skills.name"
-          :counter="10"
-          label="First name"
-          hide-details
-          required
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12">
-        <v-text-field
-          v-model="skills.description"
-          :counter="10"
-          label="First name"
-          hide-details
-          required
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12">
-        <v-text-field
-          v-model="skills.colorsTag"
-          :counter="10"
-          label="First name"
-          hide-details
-          required
-        ></v-text-field>
-      </v-col> </v-row
-    ><v-row><v-btn @click="saveSkill()"> Button </v-btn></v-row></v-container
-  >
+  <div>Hello World</div>
 </template>
 
 <style scoped>
