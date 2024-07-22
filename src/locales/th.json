@@ -1,0 +1,12 @@
+{
+    "username": "ชื่อผู้ใช้",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "login": "เข้าสู่ระบบ",
+    "register": "ลงทะเบียน",
+    "forgetPassword": "ลืมรหัสผ่าน ?",
+    "home": "หน้าหลัก",
+    "news": "ข่าวสาร",
+    "curriculums": "หลักสูตร",
+    "contact": "ติดต่อ"
+}

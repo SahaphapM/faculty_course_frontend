@@ -2,23 +2,27 @@
 import vuetify from '@/plugins/vuetify'
 import { useDrawerStore } from '@/stores/drawer'
 import { useSearchStore } from '@/stores/search'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import LanguageBtns from './LanguageBtns.vue'
+import { useLocale } from 'vuetify'
+
+const { t } = useLocale()
 
 const isSmallDisplay = computed(() => vuetify.display.smAndDown)
 
-const navMenu = [
-  { title: 'หน้าหลัก', to: '/' },
-  { title: 'ข่าวสาร', to: '/news' },
-  { title: 'หลักสูตร', to: '/mainIFCurriculumView' },
-  { title: 'ติดต่อ', to: '/contacts' }
-]
+const navMenu = ref([
+  { title: 'home', to: '/' },
+  { title: 'news', to: '/news' },
+  { title: 'curriculums', to: '/mainIFCurriculumView' },
+  { title: 'contact', to: '/contacts' }
+])
 
 const searchS = useSearchStore()
 const drawerS = useDrawerStore()
 </script>
 
 <template>
-  <v-app-bar class="w-screen bg-white px-3" height="65" flat>
+  <v-app-bar class="w-screen bg-secondary px-3" height="65" flat>
     <v-app-bar-prepend>
       <v-app-bar-nav-icon @click="() => drawerS.switchDrawer()" />
     </v-app-bar-prepend>
@@ -26,14 +30,14 @@ const drawerS = useDrawerStore()
       <v-img src="./img/logo-buu-2.png" max-width="70px"></v-img>
     </v-app-bar-title>
     <v-app-bar-append>
-      <v-row no-gutters align="center">
+      <v-row no-gutters align="center" class="mx-auto ga-2">
         <v-col>
           <v-text-field
             @click="() => searchS.switchToggle()"
             v-if="!isSmallDisplay.value"
             clearable
             min-width="200"
-            class="mt-5 mr-3"
+            class="mt-5"
             density="compact"
             rounded
             prepend-inner-icon="mdi-magnify"
@@ -49,18 +53,21 @@ const drawerS = useDrawerStore()
           ></v-btn>
         </v-col>
         <v-col>
-          <v-btn v-if="isSmallDisplay.value" icon="mdi-login"></v-btn>
+          <LanguageBtns class="text-white" />
+        </v-col>
+        <v-col>
+          <v-btn v-if="isSmallDisplay.value" icon="mdi-login" to="/login"></v-btn>
           <v-btn v-else class="rounded-xl bg-buu-gold" to="/login">
-            <p class="font-weight-bold">Login</p>
+            <p class="font-weight-bold">{{ t('login') }}</p>
           </v-btn>
         </v-col>
       </v-row>
     </v-app-bar-append>
   </v-app-bar>
-  <v-app-bar class="bg-secondary">
-    <v-container>
+  <v-app-bar class="bg-primary">
+    <v-container style="max-width: 1440px">
       <v-btn v-for="nav in navMenu" :key="nav.title" class="rounded-xl" color="white" :to="nav.to">
-        {{ nav.title }}
+        {{ t(nav.title) }}
       </v-btn>
     </v-container>
   </v-app-bar>
