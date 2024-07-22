@@ -82,13 +82,22 @@ const router = createRouter({
       }
     },
     {
-      path: '/SkillView/SkillDetails/:id',
-      name: 'SkillView/SkillDetails',
+      path: '/SkillView/Detail/:id',
+      name: 'SkillView/SkillDetail',
       component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
       meta: {
-        topic: 'MainLayout'
+        layout: 'MainLayout',
+        requireAuth: true
       }
     },
+    // {
+    //   path: '/SkillView/Details/:id',
+    //   name: 'SkillView/SkillDetails',
+    //   component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
+    //   meta: {
+    //     topic: 'MainLayout'
+    //   }
+    // },
     {
       path: '/MainAdmin',
       name: 'MainAdmin',

@@ -20,16 +20,11 @@ export const useSkillStore = defineStore('skill', () => {
     currentSkill.value = null
   }
 
-  const addSkill = (skill: Skill) => {
-    skills.value.push(skill)
-  }
-
   async function fetchSkill(id: string) {
     dataInit.value = false
     const res = await skillService.getSkill(id)
     editedSkill.value = res.data
     console.log(editedSkill.value)
-
     dataInit.value = true
   }
 
@@ -38,14 +33,14 @@ export const useSkillStore = defineStore('skill', () => {
     skills.value = res.data
   }
 
-  async function saveSkill() {
-    const skill = editedSkill.value
-    await skillService.addSkill(skill)
+  async function addSkill(addSkill: Skill) {
+    console.log(addSkill)
+    await skillService.addSkill(addSkill)
   }
 
-  async function updateSkill() {
-    const skill = editedSkill.value
-    await skillService.updateSkill(skill)
+  async function updateSkill(updatedSkill: Skill) {
+    console.log(updatedSkill)
+    await skillService.updateSkill(updatedSkill)
   }
 
   async function deleteSkill(id: string) {
@@ -67,7 +62,6 @@ export const useSkillStore = defineStore('skill', () => {
     clearCurrentSkill,
     fetchSkill,
     fetchSkills,
-    saveSkill,
     deleteSkill,
     clearForm
   }
