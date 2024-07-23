@@ -10,6 +10,7 @@ const userStore = useUserStore()
 const roleStore = useRoleStore()
 
 const headers = [
+  { title: 'ID', value: 'id' },
   { title: 'Email', value: 'email' },
   { title: 'First Name', value: 'firstName' },
   { title: 'Last Name', value: 'lastName' },
@@ -50,15 +51,18 @@ const editUser = (user: User) => {
   selectedRoles.value = userStore.editedUser.roles
     ? userStore.editedUser.roles.map((role) => role.id)
     : []
-  isUpdate.value = true
-  // dialog.value = true
+
+  if (editedUser.value.id) {
+    isUpdate.value = true
+    dialog.value = true
+  }
 }
 
 const deleteUser = async (id: string) => {
   await userStore.deleteUser(id)
 }
 
-const showAddUserDialog = () => {
+const addUser = () => {
   isCreate.value = true
   dialog.value = true
 }
@@ -71,8 +75,8 @@ const closeDialog = () => {
   isUpdate.value = false
 }
 
-const saveUser = async () => {
-  userStore.editedUser = editedUser.value
+const saveUser = async (user: User) => {
+  userStore.editedUser = user
 
   if (isUpdate.value) {
     await userStore.updateUser()
@@ -105,28 +109,32 @@ onMounted(async () => {
     <v-card class="pa-3" rounded="lg">
       <v-card flat>
         <v-card-title class="d-flex align-center pa-2">
-          &nbsp; User
+          <v-row>
+            <v-col cols="12" md="1"></v-col>
+            <v-col cols="12" md="3" style="font-size: xx-large">User </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                clearable
+                label="Name"
+                variant="outlined"
+                prepend-inner-icon="mdi-magnify"
+                v-model="pageParams.search"
+                rounded="lg"
+                @keydown.enter="fetchUsers"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-btn
+                rounded="lg"
+                style="height: 55px; margin-bottom: 2%; margin-left: 1.6%; width: 150px"
+                @click="addUser"
+              >
+                <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
+              >
+            </v-col>
+          </v-row>
 
-          <v-spacer></v-spacer>
-
-          <v-text-field
-            clearable
-            label="Name"
-            variant="outlined"
-            prepend-inner-icon="mdi-magnify"
-            v-model="pageParams.search"
-            rounded="lg"
-            @keydown.enter="fetchUsers"
-            style="margin-right: 3%; width: 300px"
-          ></v-text-field>
-
-          <v-btn
-            rounded="lg"
-            style="height: 55px; margin-bottom: 2%; margin-left: 1.6%; width: 150px"
-            to="/AddIFAAIView"
-          >
-            <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
-          >
+          <!-- <v-spacer></v-spacer> -->
         </v-card-title>
 
         <v-divider class="ma-2"></v-divider>
@@ -155,13 +163,15 @@ onMounted(async () => {
         </v-data-table-server>
       </v-card>
 
-      <FormDialog
-        v-model="isUpdate"
-        :item="editedUser"
-        :is-update="isUpdate"
-        :roles="roleStore.roles"
-      >
-      </FormDialog>
+      <v-dialog max-width="1000px" persistent v-model="dialog">
+        <FormDialog
+          :item="editedUser"
+          :method="saveUser"
+          :isUpdate="isUpdate"
+          :roles="roleStore.roles"
+          @close-dialog="closeDialog"
+        ></FormDialog>
+      </v-dialog>
     </v-card>
   </v-container>
 </template>
