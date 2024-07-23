@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LanguageBtns from '@/components/LanguageBtns.vue'
 import { useAuthStore } from '@/stores/auth'
-import GoogleButton from '@/views/login/GoogleButton.vue'
+import GoogleButton from '@/views/login/components/GoogleButton.vue'
 import { ref } from 'vue'
 import { useDisplay, useLocale } from 'vuetify'
 
@@ -13,7 +13,7 @@ const { t } = useLocale()
 
 <template>
   <v-card
-    elevation="5"
+    flat
     class="mx-auto pa-12 d-flex justify-center align-center"
     max-width="1080"
     :style="{ minHeight: '488px' }"
@@ -38,7 +38,7 @@ const { t } = useLocale()
           placeholder="Email address"
           prepend-inner-icon="mdi-email-outline"
           variant="outlined"
-          v-model="authStore.email"
+          v-model="authStore.user.email"
         ></v-text-field>
 
         <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
@@ -63,7 +63,7 @@ const { t } = useLocale()
           prepend-inner-icon="mdi-lock-outline"
           variant="outlined"
           @click:append-inner="visible = !visible"
-          v-model="authStore.password"
+          v-model="authStore.user.password"
         ></v-text-field>
 
         <v-btn
@@ -73,7 +73,7 @@ const { t } = useLocale()
           variant="flat"
           rounded="xl"
           block
-          v-on:click="authStore.login(authStore.email, authStore.password)"
+          v-on:click="authStore.login()"
         >
           {{ t('login') }}
         </v-btn>

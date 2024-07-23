@@ -1,12 +1,19 @@
+import type { AxiosResponse } from 'axios'
 import http from './http'
-function login(email: string, password: string) {
-  const res = http.post('/auth/login', { email, password })
+
+async function login(email: string, password: string): Promise<AxiosResponse> {
+  const res = await http.post('/auth/login', { email, password })
   console.log(res)
   return res
 }
 
 function loginGoogle() {
-  return http.get('/auth/google')
+  window.location.href = http.defaults.baseURL + '/auth/google'
 }
 
-export default { login, loginGoogle }
+async function profile() {
+  const res = await http.get('/auth/profile')
+  return res
+}
+
+export default { login, loginGoogle, profile }

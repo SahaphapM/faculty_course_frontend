@@ -14,6 +14,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/auth/google/success',
+      name: 'GoogleSuccess',
+      component: () => import('../views/login/pages/GoogleLoginSuccess.vue'),
+      meta: {
+        layout: 'FullLayout',
+        requireAuth: false
+      }
+    },
+    {
       path: '/news',
       name: 'news',
       component: () => import('../views/news/NewsView.vue'),
@@ -39,7 +48,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/login/LoginView.vue'),
+      component: () => import('../views/login/pages/LoginView.vue'),
       meta: {
         layout: 'FullLayout'
       }

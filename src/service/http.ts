@@ -1,5 +1,5 @@
 import router from '@/router'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 const instance = axios.create({
   baseURL: 'http://localhost:3000',
@@ -19,9 +19,9 @@ instance.interceptors.response.use(
   async function (res: any) {
     return res
   },
-  function (error: any) {
+  function (error: AxiosError) {
     // const loadingStore = useLoadingStore()
-    if (401 === error.response.status) {
+    if (401 === error.status) {
       router.replace('/login')
       // loadingStore.finish()
     }

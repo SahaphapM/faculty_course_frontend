@@ -27,7 +27,7 @@ const drawerS = useDrawerStore()
       <v-app-bar-nav-icon @click="() => drawerS.switchDrawer()" />
     </v-app-bar-prepend>
     <v-app-bar-title>
-      <v-img src="./img/logo-buu-2.png" max-width="70px"></v-img>
+      <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
     </v-app-bar-title>
     <v-app-bar-append>
       <v-row no-gutters align="center" class="mx-auto ga-2">

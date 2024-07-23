@@ -133,7 +133,14 @@
 </style> -->
 
 <template>
-  <v-btn outline color="white" block rounded="xl" size="large">
+  <v-btn
+    variant="outlined"
+    color="buu-black"
+    block
+    rounded="xl"
+    size="large"
+    @click="() => auth.loginGoogle()"
+  >
     <template #prepend>
       <v-icon>
         <svg
@@ -167,6 +174,8 @@
   </v-btn>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useAuthStore } from '@/stores/auth'
 
-<style></style>
+const auth = useAuthStore()
+</script>
