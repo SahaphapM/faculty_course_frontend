@@ -10,7 +10,14 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173
   },
-  plugins: [vue(), vuetify()],
+  plugins: [
+    vue(),
+    vuetify({
+      // styles: {
+      //   configFile: './src/styles/settings.scss'
+      // }
+    })
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

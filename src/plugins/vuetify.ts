@@ -1,13 +1,12 @@
-import { createVuetify } from 'vuetify'
 // import * as components from 'vuetify/components'
 // import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { md1 } from 'vuetify/blueprints'
-// import '@/styles/settings.scss'
 import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import { useI18n } from 'vue-i18n'
 import i18n from './i18n'
+import { createVuetify } from 'vuetify'
 
 const myCustomLightTheme = {
   dark: false,
@@ -107,5 +106,15 @@ export default createVuetify({
   },
   locale: {
     adapter: createVueI18nAdapter({ i18n, useI18n })
+  },
+  defaults: {
+    VCard: {
+      rounded: 'md'
+    },
+    VBtn: {
+      variant: 'flat',
+      rounded: 'xl',
+      minWidth: '100px'
+    }
   }
 })

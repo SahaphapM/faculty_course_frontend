@@ -70,9 +70,8 @@ const { t } = useLocale()
           class="mb-8 customHover"
           color="buu-gold"
           size="large"
-          variant="flat"
           rounded="xl"
-          block
+          width="100%"
           v-on:click="authStore.login()"
         >
           {{ t('login') }}

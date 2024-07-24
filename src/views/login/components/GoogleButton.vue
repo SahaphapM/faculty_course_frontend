@@ -136,7 +136,7 @@
   <v-btn
     variant="outlined"
     color="buu-black"
-    block
+    width="100%"
     rounded="xl"
     size="large"
     @click="() => auth.loginGoogle()"
