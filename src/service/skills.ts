@@ -1,3 +1,4 @@
+import type { PageParams } from '@/types/PageParams'
 import http from './http'
 import type { Skill } from '@/types/Skills'
 
@@ -16,6 +17,9 @@ function delSkill(id: string) {
 function getSkills() {
   return http.get<Skill[]>('/skills')
 }
+function getSkillsByPage(params: PageParams) {
+  return http.get<{ data: Skill[]; total: number }>(`/skills/pages`, { params })
+}
 
 function getSkill(id: string) {
   return http.get<Skill>(`/skills/${id}`)
@@ -26,5 +30,6 @@ export default {
   updateSkill,
   delSkill,
   getSkills,
+  getSkillsByPage,
   getSkill
 }

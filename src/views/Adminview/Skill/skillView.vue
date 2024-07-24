@@ -2,10 +2,18 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
+import type { PageParams } from '@/types/PageParams'
 
 const skillStore = useSkillStore()
+const loading = ref(false)
 const router = useRouter()
-
+const pageParams = ref<PageParams>({
+  page: 1,
+  limit: 10,
+  sort: '',
+  order: 'ASC',
+  search: ''
+})
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
@@ -16,6 +24,23 @@ const skills = computed(() => skillStore.skills || [])
 
 function navigateToDetail(id: string) {
   router.push({ name: 'SkillView/SkillDetail', params: { id } })
+}
+const updateOptions = (options: any) => {
+  pageParams.value.page = options.page
+  pageParams.value.limit = options.itemsPerPage
+  fetchSkill()
+}
+
+const fetchSkill = async () => {
+  loading.value = true
+  try {
+    await skillStore.fetchSkillsPage(pageParams.value)
+  } catch (error) {
+    console.error('Error fetching curriculum:', error)
+  } finally {
+    loading.value = false
+  }
+  console.log(pageParams.value)
 }
 
 function deleteSkill(id: string) {
@@ -45,7 +70,18 @@ onMounted(() => {
   </v-row>
   <v-row> <v-col></v-col></v-row>
   <v-card class="mx-auto">
-    <v-data-table :headers="headers" :items="skills" items-per-page="5">
+    <v-data-table-server
+      v-model:items-per-page="pageParams.limit"
+      :headers="headers"
+      :items="skills"
+      :items-length="skillStore.totalSkills"
+      :loading="loading"
+      item-value="name"
+      @update:options="updateOptions"
+      class="custom-header"
+      rounded="lg"
+    ></v-data-table-server>
+    <!-- <v-data-table :headers="headers" :items="skills" items-per-page="5">
       <template v-slot:item="{ item }">
         <tr>
           <td>{{ item.id }}</td>
@@ -61,7 +97,7 @@ onMounted(() => {
           </td>
         </tr>
       </template>
-    </v-data-table>
+    </v-data-table> -->
   </v-card>
 </template>
 
