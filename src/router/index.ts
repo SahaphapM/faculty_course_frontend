@@ -54,6 +54,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/dataCenter',
+      name: 'Data Center',
+      component: () => import('../views/DataCenter/DataCenterView.vue'),
+      meta: {
+        layout: 'MainLayout'
+      }
+    },
+    {
       path: '/mainIFCurriculumView',
       name: 'mainIFCurriculumView',
       component: () => import('../views/IFCurriculum/MainIFCurriculumView.vue'),

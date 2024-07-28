@@ -15,7 +15,17 @@ const route = useRoute()
 </template>
 
 <style>
+/* deep vuetify css config for entire app*/
 * {
   font-family: 'Kanit';
+}
+.v-card > .v-card-title {
+  font-size: 24px;
+}
+.v-card > .v-card-subtitle {
+  font-size: 20px;
+}
+.v-card > .v-card-text {
+  font-size: 18px;
 }
 </style>

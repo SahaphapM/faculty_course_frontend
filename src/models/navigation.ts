@@ -7,6 +7,7 @@ export const appBarMenu: Menu[] = [
   { title: 'home', to: '/' },
   { title: 'news', to: '/news' },
   { title: 'curriculums', to: '/mainIFCurriculumView' },
+  { title: 'data center', to: '/dataCenter' },
   { title: 'contact', to: '/contacts' }
 ]
 
