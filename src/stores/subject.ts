@@ -2,10 +2,11 @@ import type { Subject } from "@/types/Subjects";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import subjectService from '@/service/subject';
+import type { PageParams } from "@/types/PageParams";
 export const useSubjectStore = defineStore('subjectStore', () => {
     const subjects = ref<Subject[]>([]);
     const currentSubject = ref<Subject | null>(null);
-
+    const totalSubjects = ref(0)
     const initialSubject: Subject = {
         id: "",
         thaiName: "",
@@ -13,7 +14,7 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         description: "",
         credit: 0,
         type: "",
-        studyTime: ""
+        studyTime: "",
     };
 
     const editedSubject = ref<Subject>(JSON.parse(JSON.stringify(initialSubject)));
@@ -31,10 +32,12 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         editedSubject.value = res.data;
     }
 
-    async function fetchSubjects() {
+    async function fetchSubjects(params: PageParams) {
         try {
-            const res = await subjectService.getSubjects();
-            subjects.value = res.data;
+            const res = await subjectService.getSubjectsByPage(params);
+            subjects.value = res.data.data;
+            totalSubjects.value = res.data.total
+            console.log(totalSubjects.value)
             console.log('Call fetchSubjects')
             console.log(res);
             console.log(subjects.value);
@@ -43,16 +46,21 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         }
     }
 
-    async function saveSubject() {
+    async function saveSubject(params: PageParams) {
         const subject = editedSubject.value;
+        // if (!subject.id) { //if id is null
         console.log(subject)
         console.log('call funtion addSubject')
         const res = await subjectService.addSubject(subject);
-        // const st = subject.teachers?.id
-        // console.log(st)
-        // await subjectService.addCoordinator(subject.id, subject.teachers.id)
-        await fetchSubjects()
+        await fetchSubjects(params)
         console.log('Save to service' + res)
+        // } else {
+        //     console.log('update subject')
+        //     const res = await subjectService.updateSubject(subject)
+        //     await fetchSubjects()
+        //     console.log(res)
+        // }
+
     }
 
     async function updateSubject() {
@@ -66,12 +74,12 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         await subjectService.addCoordinator(subjectId, userId);
     }
 
-    async function deleteSubject() {
+    async function deleteSubject(params: PageParams) {
         console.log('Call deleteSubject in store')
         const subject = editedSubject.value
         console.log(subject.id)
         await subjectService.delSubject(subject.id);
-        await fetchSubjects();
+        await fetchSubjects(params);
     }
 
     function clearForm() {
@@ -89,6 +97,7 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         saveSubject,
         updateSubject,
         addCoordinatorToSubject,
-        deleteSubject
+        deleteSubject,
+        totalSubjects,
     };
 });
