@@ -34,7 +34,7 @@ import { useDrawerStore } from '@/stores/drawer'
 const dStore = useDrawerStore()
 
 const navMenu = [
-  { title: 'Curriculum Management', to: 'MainAdmin' },
+  { title: 'Curriculum Management', to: 'MainIFAdmin' },
   { title: 'Subject Management', to: '/SkillView' },
   { title: 'Skill Management', to: '/manageSubject' },
   { title: 'User Management', to: '/users' }

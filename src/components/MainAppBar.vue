@@ -20,15 +20,15 @@ const drawerS = useDrawerStore()
 const auth = useAuthStore()
 const profile = computed(() => auth.getProfile)
 
-// onMounted(() => {
-//   auth.fetchProfile()
-// })
+onMounted(() => {
+  auth.fetchProfile()
+})
 </script>
 
 <template>
   <v-app-bar class="w-screen bg-secondary px-3" height="65" flat>
     <template #prepend>
-      <div :style="{ width: '179px' }" class="d-flex">
+      <div :style="{ width: '179px' }" class="d-flex ga-3">
         <v-app-bar-nav-icon @click="() => drawerS.switchDrawer()" />
         <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
       </div>
@@ -42,7 +42,7 @@ const profile = computed(() => auth.getProfile)
         append-inner-icon="mdi-magnify"
         variant="solo"
         density="compact"
-        placeholder="ค้นหา..."
+        :placeholder="`${t('search')}...`"
         readonly
       ></v-text-field>
     </v-app-bar-title>
@@ -54,9 +54,9 @@ const profile = computed(() => auth.getProfile)
             <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
           </template>
           <v-list>
-            <v-list-item title="Login" to="/login" append-icon="mdi-login"> </v-list-item>
+            <v-list-item :title="t('login')" to="/login" append-icon="mdi-login"> </v-list-item>
             <v-list-item
-              title="Search"
+              :title="t('search')"
               append-icon="mdi-magnify"
               @click="() => searchS.switchToggle()"
             >
@@ -70,7 +70,9 @@ const profile = computed(() => auth.getProfile)
           <p class="font-weight-bold">{{ t('login') }}</p>
         </v-btn>
         <v-btn v-else size="large">
-          <v-avatar icon="mdi-account" color="white"> </v-avatar>
+          <v-avatar color="white">
+            <v-img :src="profile.picture" draggable="false"></v-img>
+          </v-avatar>
           <v-menu activator="parent">
             <v-list>
               <v-list-item to="/profile"> {{ t('profile') }} </v-list-item>

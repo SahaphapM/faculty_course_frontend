@@ -33,6 +33,8 @@ import router from '@/router'
 
 interface Profile {
   email: string | undefined
+  name: string | undefined
+  picture: string | undefined
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -42,8 +44,9 @@ export const useAuthStore = defineStore('auth', {
         email: '',
         password: ''
       },
-      profile: {
-        email: undefined
+      profile: <Profile>{
+        email: undefined,
+        picture: undefined
       }
     }
   },
@@ -55,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchProfile() {
       try {
         const res = await authService.profile()
-        this.profile.email = res.data.email
+        this.profile = res.data
       } catch (e) {
         console.error(e)
       }

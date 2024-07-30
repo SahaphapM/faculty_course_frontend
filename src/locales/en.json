@@ -12,6 +12,7 @@
     "data center": "Data Center",
     "profile": "Profile",
     "logout": "Logout",
+    "search": "Search",
     "$vuetify": {
         "noDataText": "No data",
         "dataFooter": {
@@ -28,6 +29,7 @@
         },
         "input": {
             "clear": "Clear"
-        }
+        },
+        "open": "Open"
     }
 }
