@@ -6,6 +6,7 @@ import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
+import SearchData from '@/components/SearchData.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
@@ -28,7 +29,6 @@ const isCreate = ref(false)
 const selectedRoles = ref()
 const loading = ref(false)
 const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
-const sortDesc = ref(false)
 const pageParams = ref<PageParams>({
   page: 1,
   limit: 10,
@@ -37,8 +37,16 @@ const pageParams = ref<PageParams>({
   search: ''
 })
 
-const fetchUsers = async () => {
+const fetchUsers = async (search?: string) => {
+  // search is variable to search null able
   loading.value = true
+  if (search) {
+    pageParams.value.search = search
+    console.log(pageParams.value.search)
+  } else {
+    pageParams.value.search = ''
+  }
+  console.log(pageParams.value.search)
   try {
     await userStore.fetchUsersPage(pageParams.value)
   } catch (error) {
@@ -99,7 +107,6 @@ const updateOptions = (options: any) => {
   } else {
     // Update sortBy and sortDesc based on user selection
     sortBy.value = options.sortBy
-    sortDesc.value = options.sortDesc
   }
   // toUpperCase
   pageParams.value.sort = sortBy.value[0].key
@@ -134,7 +141,7 @@ onMounted(async () => {
             <v-col cols="12" md="1"></v-col>
             <v-col cols="12" md="3" style="font-size: xx-large">User </v-col>
             <v-col cols="12" md="6">
-              <v-text-field
+              <!-- <v-text-field
                 clearable
                 label="Name"
                 variant="outlined"
@@ -142,7 +149,12 @@ onMounted(async () => {
                 v-model="pageParams.search"
                 rounded="lg"
                 @keydown.enter="fetchUsers"
-              ></v-text-field>
+              ></v-text-field> -->
+              <SearchData
+                :label="'ค้นหาผู้ใช้'"
+                :search="pageParams.search"
+                :fetch-data="fetchUsers"
+              ></SearchData>
             </v-col>
             <v-col cols="12" md="2">
               <v-btn width="90px" height="30px" rounded="lg" @click="addUser"> ADD NEW</v-btn>
@@ -162,7 +174,6 @@ onMounted(async () => {
               :headers="headers"
               :items="userStore.users"
               :items-length="userStore.totalUsers"
-              v-model:sort-desc="sortDesc"
               :loading="loading"
               item-value="name"
               class="custom-header"
@@ -221,7 +232,6 @@ onMounted(async () => {
 }
 
 .pagination-container {
-  display: flex;
   column-gap: 5px;
 }
 .paginate-buttons {
