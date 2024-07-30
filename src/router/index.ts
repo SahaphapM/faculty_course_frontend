@@ -124,8 +124,8 @@ const router = createRouter({
     //   }
     // },
     {
-      path: '/MainAdmin',
-      name: 'MainAdmin',
+      path: '/MainIFAdmin',
+      name: 'MainIFAdmin',
       component: () => import('../views/IFCurriculum/admin/MainAdmin.vue'),
       meta: {
         layout: 'MainLayout',

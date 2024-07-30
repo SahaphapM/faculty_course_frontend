@@ -97,47 +97,44 @@ const headers = [
 <template>
   <v-container>
     &nbsp;
-    <h2 style="margin-left: 2%">เล่มหลักสูตร</h2>
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">เล่มหลักสูตร</h2>
 
     <v-spacer></v-spacer>
 
-    <v-container>
-      <v-row>
-        <v-col cols="8">
-          <v-text-field
-            clearable
-            label="หลักสูตร"
-            variant="outlined"
-            prepend-inner-icon="mdi-magnify"
-            v-model="pageParams.search"
-            rounded="lg"
-            @keydown.enter="fetchCurriculum"
-            style="height: 55px; width: 100%; min-width: 310px"
-          ></v-text-field>
-        </v-col>
+    <v-row>
+      <v-col cols="12" md="7">
+        <v-text-field
+          clearable
+          label="หลักสูตร"
+          variant="outlined"
+          prepend-inner-icon="mdi-magnify"
+          v-model="pageParams.search"
+          rounded="lg"
+          @keydown.enter="fetchCurriculum"
+          style="height: 55px; width: 100%; min-width: 300px"
+        ></v-text-field>
+      </v-col>
 
-        <v-col>
-          <v-combobox
-            clearable
-            label="คณะ"
-            @keydown.enter="fetchCurriculum"
-            v-model="select.search"
-            :items="facultiesOptions"
-            variant="outlined"
-            rounded="lg"
-            style="height: 55px; min-width: 150px"
-          ></v-combobox>
-        </v-col>
-        <v-col>
-          <v-btn rounded="lg" style="height: 55px; min-width: 150px" to="/AddIFAAIView">
-            <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
-          ></v-col
-        >
-      </v-row>
-    </v-container>
+      <v-col md="3">
+        <v-combobox
+          clearable
+          label="คณะ"
+          @keydown.enter="fetchCurriculum"
+          v-model="select.search"
+          :items="facultiesOptions"
+          variant="outlined"
+          rounded="lg"
+          style="height: 55px; width: 100%; min-width: 150px"
+        ></v-combobox>
+      </v-col>
+      <v-col md="2">
+        <v-btn rounded="lg" style="height: 55px; min-width: 170px; width: 100%" to="/AddIFAAIView">
+          <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
+        ></v-col
+      >
+    </v-row>
 
-    <v-divider class="ma-2"></v-divider>
-    <v-card rounded="lg">
+    <v-card rounded="lg" style="margin-top: 1%">
       <div>
         <v-data-table-server
           v-model:items-per-page="pageParams.limit"
@@ -148,6 +145,7 @@ const headers = [
           item-value="name"
           @update:options="updateOptions"
           class="custom-header"
+          style="height: auto; max-width: 2000px; width: 100%; min-width: 30vh"
         >
           <!-- <template v-slot:top>
               <v-text-field
@@ -164,7 +162,12 @@ const headers = [
               <td style="height: 55px; min-width: 90px">{{ item.period }}</td>
 
               <td>
-                <v-btn variant="text" @click="() => showDialog(item)">
+                <v-btn
+                  variant="text"
+                  @click="() => showDialog(item)"
+                  rounded="lg"
+                  style="width: px"
+                >
                   <v-icon>mdi-file-document-edit-outline</v-icon>
                 </v-btn>
               </td>
