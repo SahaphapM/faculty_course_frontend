@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', () => {
     firstName: '',
     middleName: '',
     lastName: '',
-    gender: '',
+    gender: 'Male',
     phone: '',
     googleId: '',
     roles: []
@@ -42,7 +42,6 @@ export const useUserStore = defineStore('user', () => {
     const res = await userService.getUser(id)
     editedUser.value = res.data
   }
-  
 
   async function fetchUsers() {
     const res = await userService.getUsers()
