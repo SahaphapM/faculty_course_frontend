@@ -39,7 +39,33 @@ const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
+const forms = ref([{ label: 'Plo1', description: '', select5: null }])
+const filteredPlos = computed(() => PloStore.filteredPlos)
 
+onMounted(async () => {
+  await curriculumStore.fetchCurriculums()
+  await PloStore.fetchPlos()
+})
+
+watch(
+  () => curriculumStore.currentCurriculum,
+  async (newCurriculum) => {
+    if (newCurriculum) {
+      await PloStore.fetchPlos()
+    }
+  }
+)
+
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
+}
 onMounted(async () => {
   await branchStore.getBranches()
   curriculumStore.fetchCurriculums()
@@ -212,7 +238,12 @@ async function saveC() {
 }
 </script>
 <template>
-  <v-dialog max-width="1000px" v-model="localVisible" persistent>
+  <v-dialog
+    max-width="1000px"
+    v-model="localVisible"
+    persistent
+    style="height: 100vh; overflow-y: auto"
+  >
     <v-card
       class="elevation-5"
       rounded="lg"
@@ -412,6 +443,70 @@ async function saveC() {
                         <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
                         ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
                       >
+                    </v-form>
+                  </div>
+                </v-tabs-window-item>
+
+                <v-tabs-window-item value="option-3">
+                  <div style="display: flex; align-items: center; margin-bottom: 5vh">
+                    <div style="flex-grow: 1; display: flex; align-items: center">
+                      <div class="rounded-rectangle"></div>
+                      <p class="details-text" style="font-size: 2.5vh; margin-left: 1vh">
+                        ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+                      </p>
+                    </div>
+                  </div>
+                  <div height="80vh">
+                    <v-form ref="form" class="ma-2">
+                      <p style="font-size: 1.5vh">รายชื่อ</p>
+                      <v-card
+                        v-for="(plo, index) in filteredPlos"
+                        :key="plo.id"
+                        style="border-color: #bdbdbd"
+                        variant="outlined"
+                        rounded="lg"
+                        class="pa-3 mt-3"
+                      >
+                        <v-row>
+                          <v-col>
+                            <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>
+                            &nbsp; {{ plo.num_plo }} - {{ plo.description }}
+                          </v-col>
+                          <v-col class="d-flex justify-end" cols="auto">
+                            <v-btn
+                              color="red"
+                              variant="text"
+                              @click="PloStore.deletePlo(plo.id)"
+                              style="height: auto"
+                              class="circular-btn"
+                              icon="mdi-minus"
+                            >
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-card>
+
+                      <v-overlay :model-value="overlay" class="align-center justify-center">
+                        <v-progress-circular
+                          color="primary"
+                          size="64"
+                          indeterminate
+                        ></v-progress-circular>
+                      </v-overlay>
+                      <v-row class="justify-center">
+                        <v-btn
+                          icon="mdi-plus"
+                          class="ma-4 rounded-circle mt-9"
+                          size="40px"
+                          variant="outlined"
+                          @click="saveC"
+                        ></v-btn>
+                      </v-row>
+                      &nbsp;
+                      <v-row class="justify-end mt-8">
+                        <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
+                        <v-btn @click="saveC" variant="plain">บันทึก</v-btn>
+                      </v-row>
                     </v-form>
                   </div>
                 </v-tabs-window-item>

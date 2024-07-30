@@ -38,6 +38,18 @@ const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
+const forms = ref([{ label: 'Plo1', description: '', select5: null }])
+
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
+}
 
 onMounted(async () => {
   await branchStore.getBranches()
@@ -348,10 +360,12 @@ async function saveC() {
                       ผลการเรียนรู้ที่คาดหวังของหลักสูตร
                     </p>
                   </div>
-                  <v-form ref="form" class="ma-2">
-                    <p style="font-size: 1.5vh">Plo1</p>
+                  <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
+                    <p class="details-text" style="font-size: 2.5vh">{{ form.label }}</p>
+                    <br />
+                    <p style="font-size: 1.5vh">รายละเอียด</p>
                     <v-text-field
-                      v-model="description"
+                      v-model="form.description"
                       :rules="nameRules"
                       variant="outlined"
                       rounded="lg"
@@ -359,31 +373,33 @@ async function saveC() {
                     ></v-text-field>
                     <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
                     <v-select
-                      v-model="select5"
+                      v-model="form.select5"
                       :items="items4"
                       variant="outlined"
                       rounded="lg"
                     ></v-select>
-                    <v-overlay :model-value="overlay" class="align-center justify-center">
-                      <v-progress-circular
-                        color="primary"
-                        size="64"
-                        indeterminate
-                      ></v-progress-circular>
-                    </v-overlay>
-                    <v-row class="justify-center">
-                      <v-btn
-                        icon="mdi-plus"
-                        class="ma-4 rounded-circle"
-                        size="40px"
-                        variant="outlined"
-                      ></v-btn>
-                    </v-row>
-                    <v-row class="justify-end mt-8">
-                      <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                      ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
-                    >
                   </v-form>
+                  <v-row class="justify-center">
+                    <v-btn
+                      icon="mdi-plus"
+                      class="ma-4 rounded-circle"
+                      size="40px"
+                      variant="outlined"
+                      @click="addForm"
+                    ></v-btn>
+                    <v-btn
+                      color="error"
+                      icon="mdi-minus"
+                      class="ma-4 rounded-circle"
+                      size="40px"
+                      variant="outlined"
+                      @click="removeForm"
+                    ></v-btn>
+                  </v-row>
+                  <v-row class="justify-end mt-8">
+                    <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+                    ><v-btn @click="save2" variant="plain">บันทึก</v-btn></v-row
+                  >
                 </v-container>
               </v-card>
             </v-expand-transition>
