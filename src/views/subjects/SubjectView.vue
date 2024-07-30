@@ -5,18 +5,16 @@ import type { Subject } from '@/types/Subjects';
 import type { User } from '@/types/User';
 import { computed, nextTick, onMounted, ref } from 'vue';
 import type { VForm } from 'vuetify/components';
-// import type { PageParams } from '@/types/PageParams'
+import type { PageParams } from '@/types/PageParams'
 const subjects = computed(() => subjectStore.subjects)
 const subjectStore = useSubjectStore()
-const a = await subjectStore.fetchSubjects() //เรียกมาจากstoreได้
 const dialog = ref(false)
 const dialogDelete = ref(false)
 const refForm = ref<VForm | null>(null)
-const tab = ref(false)
-
+const loading = ref(false)
 onMounted(async () => {
-    await subjectStore.fetchSubjects()
-    // await usersStore.fetchUsers()
+    await subjectStore.fetchSubjects(pageParams.value)
+    console.log(subjectStore.totalSubjects)
 })
 const headers = [
     { title: 'รหัสรายวิชา', key: 'id', value: 'id' },
@@ -26,17 +24,23 @@ const headers = [
     { title: '', key: 'actions', sortable: false },
     { title: '', key: 'data-table-expand' },
 ]
-// const filteredCurriculums = computed(() => {
-//     return teachers.value.filter((curriculum) => curriculum.firstName)
-// })
-
+const fetchSubjects = async () => {
+    loading.value = true
+    try {
+        await subjectStore.fetchSubjects(pageParams.value)
+    } catch (error) {
+        console.error('Error fetching users:', error)
+    } finally {
+        loading.value = false
+    }
+}
 async function save() {
     console.log(subjectStore.editedSubject)
     console.log(refForm.value)
     const { valid } = await refForm.value!.validate()
     if (!valid) return
     closeDialog()
-    await subjectStore.saveSubject()
+    await subjectStore.saveSubject(pageParams.value)
 }
 function closeDialog() {
     dialog.value = false
@@ -63,7 +67,7 @@ function closeDelete() {
 }
 
 async function deleteItemConfirm() {
-    await subjectStore.deleteSubject()
+    await subjectStore.deleteSubject(pageParams.value)
     closeDelete()
 }
 const pageParams = ref<PageParams>({
@@ -77,105 +81,110 @@ const pageParams = ref<PageParams>({
 const updateOptions = (options: any) => {
     pageParams.value.page = options.page
     pageParams.value.limit = options.itemsPerPage
-    subjectStore.fetchSubjects()
+    subjectStore.fetchSubjects(pageParams.value)
 }
-const expanded = [subjectStore.editedSubject.description]
 </script>
 
 <template>
     <div>{{ console.log(headers) }}</div>
-    <v-responsive>
-        <v-data-table v-model:expanded="expanded" :headers="headers" :items="subjects"
-            :style="{ width: '2000px', padding: '50px' }" @update:options="updateOptions"
-            class="elevation-1 styled-table" show-expand>
-            <template v-slot:item.actions="{ item }">
-                <v-icon size="small" class="mr-2 edit-icon" @click="editItem(item)"> mdi-pencil</v-icon>
-                <v-icon size="small" class="mr-2 delete-icon" @click="deleteItem(item)">
-                    mdi-delete
-                </v-icon>
-            </template>
-            <template v-slot:top>
-                <v-toolbar color="white">
-                    <v-toolbar-title>รายวิชา</v-toolbar-title>
-                    <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
-                    <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="1000px">
-                        <template v-slot:activator="{ props }">
-                            <!--search-->
-                            <v-text-field v-model="pageParams.search" label="Search"
-                                @keydown.enter="subjectStore.fetchSubjects" class="mx-4" append-icon="mdi-magnify"
-                                density="compact" single-line flat hide-details variant="solo-filled"></v-text-field>
+    <v-container>
+        <v-card>
+            <v-responsive>
+                <v-data-table-server v-model:items-per-page="pageParams.limit" :headers="headers" :items="subjects"
+                    :style="{ width: '2000px', padding: '50px' }" class="elevation-1 styled-table" show-expand
+                    :items-length="subjectStore.totalSubjects" :loading="loading" @update:options="updateOptions"
+                    :class="rounded - table">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon size="small" class="mr-2 edit-icon" @click="editItem(item)"> mdi-pencil</v-icon>
+                        <v-icon size="small" class="mr-2 delete-icon" @click="deleteItem(item)">mdi-delete</v-icon>
+                    </template>
+                    <template v-slot:top>
+                        <v-toolbar color="white">
+                            <v-toolbar-title>รายวิชา</v-toolbar-title>
+                            <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
+                            <v-spacer></v-spacer>
+                            <v-dialog v-model="dialog" max-width="600px">
+                                <template v-slot:activator="{ props }">
+                                    <!--search-->
+                                    <v-text-field v-model="pageParams.search" label="Search" @input="fetchSubjects"
+                                        class="mx-4" prepend-inner-icon="mdi-magnify" clearable density="compact"
+                                        single-line flat hide-details variant="solo-filled"></v-text-field>
 
-                            <v-btn color="blue" dark v-bind="props">เพิ่มรายวิชา</v-btn>
-                        </template>
-                        <v-card>
-                            <v-card-title>
-                                <span class="text-h5">{{ formTitle }}</span>
-                                เพิ่ม/แก้ไขรายวิชา
-                            </v-card-title>
+                                    <v-btn color="blue" dark v-bind="props">เพิ่มรายวิชา</v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-title>
+                                        <span class="text-h5">{{ formTitle }}</span>
+                                        เพิ่ม/แก้ไขรายวิชา
+                                    </v-card-title>
 
-                            <v-card-text>
-                                <v-form ref="refForm">
-                                    <v-container>
-                                        <v-row>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-text-field v-model="subjectStore.editedSubject.id"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label="รหัสรายวิชา"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-text-field v-model="subjectStore.editedSubject.thaiName"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label=" ชื่อรายวิชา"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-text-field v-model="subjectStore.editedSubject.engName"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label="ชื่อรายวิชา(ภาษาอังกฤษ)"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-text-field v-model.number="subjectStore.editedSubject.credit"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label="หน่วยกิต"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-text-field v-model="subjectStore.editedSubject.studyTime"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label="จำนวนชั่วโมงเรียน"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" md="4" sm="6">
-                                                <v-textarea v-model="subjectStore.editedSubject.description"
-                                                    :rules="[(v) => !!v || 'Field is required']"
-                                                    label="คำอธิบายรายวิชา"></v-textarea>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </v-form>
-                            </v-card-text>
-                            <!--action of card-->
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="closeDialog()">
-                                    Cancel
-                                </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save()">
-                                    Save
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
-                </v-toolbar>
-            </template>
-            <template v-slot:expanded-row="{ columns, item }">
-                <tr>
-                    <td :colspan="columns.length">
-                        More info about {{ item.description }}
-                    </td>
-                </tr>
-            </template>
-        </v-data-table>
-    </v-responsive>
-
+                                    <v-card-text>
+                                        <v-form ref="refForm">
+                                            <v-container>
+                                                <v-row>
+                                                    <v-col cols="12">
+                                                        <v-text-field v-model="subjectStore.editedSubject.id"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label="รหัสรายวิชา"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="12">
+                                                        <v-text-field v-model="subjectStore.editedSubject.thaiName"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label=" ชื่อรายวิชา"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="12">
+                                                        <v-text-field v-model="subjectStore.editedSubject.engName"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label="ชื่อรายวิชา(ภาษาอังกฤษ)"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="6">
+                                                        <v-text-field v-model.number="subjectStore.editedSubject.credit"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label="หน่วยกิต"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="6">
+                                                        <v-text-field v-model="subjectStore.editedSubject.studyTime"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label="จำนวนชั่วโมงเรียน"></v-text-field>
+                                                    </v-col>
+                                                    <v-col cols="12">
+                                                        <v-textarea v-model="subjectStore.editedSubject.description"
+                                                            :rules="[(v) => !!v || 'Field is required']"
+                                                            label="คำอธิบายรายวิชา"></v-textarea>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-container>
+                                        </v-form>
+                                    </v-card-text>
+                                    <!--action of card-->
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue-darken-1" variant="text" @click="closeDialog()">
+                                            Cancel
+                                        </v-btn>
+                                        <v-btn color="blue-darken-1" variant="text" @click="save()">
+                                            Save
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-toolbar>
+                    </template>
+                    <!--description-->
+                    <template v-slot:expanded-row="{ columns, item }">
+                        <tr>
+                            Course Description
+                        </tr>
+                        <tr>
+                            <td :colspan="columns.length">
+                                {{ item.description }}
+                            </td>
+                        </tr>
+                    </template>
+                </v-data-table-server>
+            </v-responsive>
+        </v-card>
+    </v-container>
     <v-dialog v-model="dialogDelete" max-width="500px">
         <v-card>
             <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
@@ -280,7 +289,7 @@ const expanded = [subjectStore.editedSubject.description]
             </v-card-actions>
         </v-card>
     </v-dialog>
-</template> --> -->
+</template> -->
 <style scoped>
 .rounded-circle {
     border-radius: 50%;
@@ -311,5 +320,11 @@ const expanded = [subjectStore.editedSubject.description]
     font-family: 'Arial', sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.rounded-table {
+    border-radius: 16px;
+    overflow: hidden;
+    /* To ensure the content follows the rounded corners */
 }
 </style>

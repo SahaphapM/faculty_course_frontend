@@ -1,3 +1,4 @@
+import type { PageParams } from '@/types/PageParams';
 import http from './http';
 import type { Subject } from '@/types/Subjects';
 
@@ -13,7 +14,6 @@ function delSubject(id: string) {
     return http.delete(`/subjects/${id}`);
 }
 function getSubjects() {
-
     return http.get('/subjects');
 }
 // function getSubjects() {
@@ -27,6 +27,9 @@ function addCoordinator(subjectId: string, userId: string) {
     return http.patch(`/subjects/${subjectId}/coordinators`, { id: userId });
 }
 
+function getSubjectsByPage(params: PageParams) {
+    return http.get<{ data: Subject[]; total: number }>(`/subjects/pages`, { params })
+}
 
 export default {
     addSubject,
@@ -34,5 +37,6 @@ export default {
     delSubject,
     getSubjects,
     getSubject,
-    addCoordinator
+    addCoordinator,
+    getSubjectsByPage,
 };
