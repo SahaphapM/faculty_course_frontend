@@ -28,6 +28,12 @@ import authService from '@/service/auth'
 
 //   return { login, loginGoogle, email, password }
 // })
+import Cookies from 'js-cookie'
+import router from '@/router'
+
+interface Profile {
+  email: string | undefined
+}
 
 export const useAuthStore = defineStore('auth', {
   state() {
@@ -35,23 +41,35 @@ export const useAuthStore = defineStore('auth', {
       user: {
         email: '',
         password: ''
+      },
+      profile: {
+        email: undefined
       }
     }
+  },
+  getters: {
+    getToken: () => Cookies.get('access_token') || null,
+    getProfile: (s): Profile => s.profile
   },
   actions: {
     async fetchProfile() {
       try {
         const res = await authService.profile()
-        return res.data.email
+        this.profile.email = res.data.email
       } catch (e) {
         console.error(e)
       }
     },
     async login() {
-      return await authService.login(this.user.email, this.user.password)
+      const res = await authService.login(this.user.email, this.user.password)
+      Cookies.set('access_token', res.data, { expires: 7 })
     },
     loginGoogle() {
       authService.loginGoogle()
+    },
+    logout() {
+      Cookies.remove('access_token')
+      router.replace('/')
     }
   }
 })
