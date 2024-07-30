@@ -29,40 +29,46 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
-    <template v-slot:divider>
-      <v-icon icon="mdi-chevron-right"></v-icon>
-    </template>
-  </v-breadcrumbs>
-  <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
-
-  <v-row>
-    <v-col></v-col>
-    <v-col></v-col>
-    <v-col></v-col>
-    <v-col></v-col>
-    <v-col><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-col>
-  </v-row>
-  <v-row> <v-col></v-col></v-row>
-  <v-card class="mx-auto">
-    <v-data-table :headers="headers" :items="skills" items-per-page="5">
-      <template v-slot:item="{ item }">
-        <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
-          <td>
-            <v-btn icon="mdi-information" class="rounded-circle" @click="navigateToDetail(item.id)">
-              edit</v-btn
-            >
-            <v-btn icon="mdi-information" class="rounded-circle" @click="deleteSkill(item.id)">
-              delete</v-btn
-            >
-          </td>
-        </tr>
+  <v-container>
+    <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
+      <template v-slot:divider>
+        <v-icon icon="mdi-chevron-right"></v-icon>
       </template>
-    </v-data-table>
-  </v-card>
+    </v-breadcrumbs>
+    <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
+
+    <v-row>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-col>
+    </v-row>
+    <v-row> <v-col></v-col></v-row>
+    <v-card class="mx-auto">
+      <v-data-table :headers="headers" :items="skills" items-per-page="5">
+        <template v-slot:item="{ item }">
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+              <v-btn
+                icon="mdi-information"
+                class="rounded-circle"
+                @click="navigateToDetail(item.id)"
+              >
+                edit</v-btn
+              >
+              <v-btn icon="mdi-information" class="rounded-circle" @click="deleteSkill(item.id)">
+                delete</v-btn
+              >
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+    </v-card>
+  </v-container>
 </template>
 
 <style scoped>

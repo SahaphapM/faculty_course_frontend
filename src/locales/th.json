@@ -9,5 +9,13 @@
     "news": "ข่าวสาร",
     "curriculums": "หลักสูตร",
     "contact": "ติดต่อ",
-    "data center": "ศูนย์ข้อมูล"
+    "data center": "ศูนย์ข้อมูล",
+    "$vuetify": {
+        "noDataText": "ไม่มีข้อมูล",
+        "dataFooter": {
+            "pageText": "หน้า",
+            "itemsPerPageText": "จำนวนต่อหน้า",
+            "itemsPerPageAll": "ทั้งหมด"
+        }
+    }
 }
