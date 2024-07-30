@@ -154,7 +154,7 @@ async function save() {
   curriculumStore.editedCurriculum.thaiDegreeName = select1.value ?? ''
   curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
   curriculumStore.editedCurriculum.description = ''
-  curriculumStore.editedCurriculum.period = 4
+  curriculumStore.editedCurriculum.period = '4 ปี'
   curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
