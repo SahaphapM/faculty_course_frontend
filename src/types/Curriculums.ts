@@ -11,7 +11,7 @@ export type Curriculum = {
   engDegreeName: string
   branch: Branch[]
   description: string
-  period: number
+  period: string
   minimumGrade: number
   // plos: Plo[];
   coordinators: User[]

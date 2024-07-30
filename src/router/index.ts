@@ -90,7 +90,7 @@ const router = createRouter({
     {
       path: '/users',
       name: 'users',
-      component: () => import('../views/users/userView.vue'),
+      component: () => import('../views/users/UserView.vue'),
 
       meta: {
         layout: 'MainLayout',
@@ -124,8 +124,8 @@ const router = createRouter({
     //   }
     // },
     {
-      path: '/MainAdmin',
-      name: 'MainAdmin',
+      path: '/MainIFAdmin',
+      name: 'MainIFAdmin',
       component: () => import('../views/IFCurriculum/admin/MainAdmin.vue'),
       meta: {
         layout: 'MainLayout',
@@ -138,7 +138,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/IFCurriculum/admin/SubjectView.vue'),
+      component: () => import('../views/subjects/SubjectView.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true

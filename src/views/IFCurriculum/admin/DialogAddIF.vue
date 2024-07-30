@@ -39,7 +39,33 @@ const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
+const hover = ref<boolean>(false)
+const forms = ref([{ label: 'Plo1', description: '', select5: null }])
+const filteredPlos = computed(() => PloStore.filteredPlos)
+onMounted(async () => {
+  await curriculumStore.fetchCurriculums()
+  await PloStore.fetchPlos()
+})
 
+watch(
+  () => curriculumStore.currentCurriculum,
+  async (newCurriculum) => {
+    if (newCurriculum) {
+      await PloStore.fetchPlos()
+    }
+  }
+)
+
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
+}
 onMounted(async () => {
   await branchStore.getBranches()
   curriculumStore.fetchCurriculums()
@@ -179,7 +205,7 @@ async function save() {
   curriculumStore.editedCurriculum.thaiDegreeName = select1.value ?? ''
   curriculumStore.editedCurriculum.engDegreeName = engDegreeName.value
   curriculumStore.editedCurriculum.description = ''
-  curriculumStore.editedCurriculum.period = 4
+  curriculumStore.editedCurriculum.period = '4 ปี'
   curriculumStore.editedCurriculum.branch = select2.value.substring(0, select2.value.indexOf(' '))
   curriculumStore.editedCurriculum.minimumGrade = 0
   overlay.value = !overlay.value
@@ -201,9 +227,7 @@ async function saveC() {
   if (!valid) return
   const userId = select3.value.substring(0, select3.value.indexOf(' '))
   console.log(userId)
-  if (!userId) {
-    return
-  }
+  console.log(curriculumStore.editedCurriculum.id)
 
   curriculumStore.editedCurriculum.id = id.value
   overlay.value = !overlay.value
@@ -212,28 +236,45 @@ async function saveC() {
 }
 </script>
 <template>
-  <v-dialog max-width="1000px" v-model="localVisible" persistent>
+  <v-dialog
+    max-width="1000px"
+    v-model="localVisible"
+    persistent
+    style="height: 100vh; overflow-y: auto"
+  >
     <v-card
       class="elevation-5"
       rounded="lg"
       max-width="1000px"
       width="100%"
       height="100%"
-      min-height="82vh"
-      style="min-width: 40vh"
+      style="min-width: 200px"
       v-if="reveal2"
     >
-      <v-container style="width: 100%">
+      <v-container style="width: 100%; height: 100%">
         <div style="display: flex; justify-content: flex-end">
           <v-btn
             color="primary"
-            variant="text"
+            variant="plain"
             @click="closeDialog"
-            style="height: auto"
+            style="height: 40px; width: 40px"
             class="circular-btn"
             icon="mdi-close"
+            rounded="lg"
           >
           </v-btn>
+
+          <!-- <v-btn
+            color="primary"
+            variant="text"
+            class="circular-btn"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >
+            <v-icon :class="{ 'icon-large': true, 'icon-hover': hover }">
+              {{ hover ? 'mdi-delete-empty' : 'mdi-delete' }}
+            </v-icon>
+          </v-btn> -->
         </div>
       </v-container>
       <v-tabs-window v-model="tab">
@@ -251,16 +292,16 @@ async function saveC() {
                     prepend-icon="mdi-book"
                     text="รายละเอียด"
                     value="option-1"
-                    width="31vh"
+                    width="100%"
                   ></v-tab>
                   <v-tab
-                    max-width="30vh"
+                    width="100%"
                     prepend-icon="mdi-account"
                     text="อาจารย์ผู้รับผิดชอบหลักสูตร"
                     value="option-2"
                   ></v-tab>
                   <v-tab
-                    max-width="30vh"
+                    width="100%"
                     prepend-icon="mdi-human-male-board"
                     text="ผลการเรียนรู้ที่คาดหวังของหลักสูตร"
                     value="option-3"
@@ -282,7 +323,13 @@ async function saveC() {
                   </div>
                   <div>
                     <v-form ref="form" class="form-container">
-                      <v-sheet width="90%" min-height="20vh" max-height="80vh" height="100%">
+                      <v-sheet
+                        width="100%"
+                        min-height="100px"
+                        max-height="1000px"
+                        height="500px"
+                        class="pa-6"
+                      >
                         <p style="font-size: 1.5vh">ชื่อหลักสูตร</p>
                         <v-text-field
                           v-model="thaiName"
@@ -351,37 +398,109 @@ async function saveC() {
                       </p>
                     </div>
                   </div>
+                  <div>
+                    <v-form ref="form" class="form-container">
+                      <v-sheet
+                        width="100%"
+                        min-height="20vh"
+                        max-height="50vh"
+                        height="60vh"
+                        class="pa-6"
+                      >
+                        <p style="font-size: 1.5vh">เลือก</p>
+                        <v-combobox
+                          clearable
+                          v-model="select3"
+                          :items="userOptions"
+                          variant="outlined"
+                          rounded="lg"
+                        ></v-combobox>
+                        <p style="font-size: 1.5vh">รายชื่อ</p>
+                        <v-card
+                          style="border-color: #bdbdbd"
+                          variant="outlined"
+                          rounded="lg"
+                          v-for="(curriculum, index) in curriculumStore.currentCurriculum
+                            ?.coordinators"
+                          :key="curriculum.id || index"
+                          class="pa-3 mt-3"
+                        >
+                          <v-row>
+                            <v-col>
+                              <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon
+                              >&nbsp; {{ curriculum.id }}&nbsp; {{ curriculum.firstName }}&nbsp;
+                              {{ curriculum.lastName }}
+                            </v-col>
+                            <v-col class="d-flex justify-end" cols="auto">
+                              <v-btn
+                                color="red"
+                                variant="text"
+                                @click="closeDialog"
+                                style="height: auto"
+                                class="circular-btn"
+                                icon="mdi-minus"
+                              >
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+
+                        <v-overlay :model-value="overlay" class="align-center justify-center">
+                          <v-progress-circular
+                            color="primary"
+                            size="64"
+                            indeterminate
+                          ></v-progress-circular>
+                        </v-overlay>
+                        <v-row class="justify-center">
+                          <v-btn
+                            icon="mdi-plus"
+                            class="ma-4 rounded-circle mt-9"
+                            size="40px"
+                            variant="outlined"
+                            @click="saveC"
+                          ></v-btn>
+                        </v-row>
+                        &nbsp;
+                        <v-row class="justify-end mt-8">
+                          <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+                          ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+                        >
+                      </v-sheet>
+                    </v-form>
+                  </div>
+                </v-tabs-window-item>
+
+                <v-tabs-window-item value="option-3">
+                  <div style="display: flex; align-items: center; margin-bottom: 5vh">
+                    <div style="flex-grow: 1; display: flex; align-items: center">
+                      <div class="rounded-rectangle"></div>
+                      <p class="details-text" style="font-size: 2.5vh; margin-left: 1vh">
+                        ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+                      </p>
+                    </div>
+                  </div>
                   <div height="80vh">
                     <v-form ref="form" class="ma-2">
-                      <p style="font-size: 1.5vh">เลือก</p>
-                      <v-combobox
-                        clearable
-                        v-model="select3"
-                        :items="userOptions"
-                        variant="outlined"
-                        rounded="lg"
-                      ></v-combobox>
                       <p style="font-size: 1.5vh">รายชื่อ</p>
                       <v-card
+                        v-for="(plo, index) in filteredPlos"
+                        :key="plo.id"
                         style="border-color: #bdbdbd"
                         variant="outlined"
                         rounded="lg"
-                        v-for="(curriculum, index) in curriculumStore.currentCurriculum
-                          ?.coordinators"
-                        :key="curriculum.id"
                         class="pa-3 mt-3"
                       >
                         <v-row>
                           <v-col>
-                            <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon
-                            >&nbsp; {{ curriculum.id }}&nbsp; {{ curriculum.firstName }}&nbsp;
-                            {{ curriculum.lastName }}
+                            <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>
+                            &nbsp; {{ plo.num_plo }} - {{ plo.description }}
                           </v-col>
                           <v-col class="d-flex justify-end" cols="auto">
                             <v-btn
                               color="red"
                               variant="text"
-                              @click="closeDialog"
+                              @click="PloStore.deletePlo(plo.id)"
                               style="height: auto"
                               class="circular-btn"
                               icon="mdi-minus"
@@ -409,9 +528,9 @@ async function saveC() {
                       </v-row>
                       &nbsp;
                       <v-row class="justify-end mt-8">
-                        <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-                        ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
-                      >
+                        <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
+                        <v-btn @click="saveC" variant="plain">บันทึก</v-btn>
+                      </v-row>
                     </v-form>
                   </div>
                 </v-tabs-window-item>
@@ -442,17 +561,35 @@ async function saveC() {
   font-weight: bold;
   font-size: large;
 }
-.circular-btn {
-  width: 40px; /* Adjust width as needed */
-  height: 40px; /* Adjust height as needed */
-  border-radius: 50%; /* Makes the button circular */
-  min-width: 0; /* Remove default min-width */
-  display: flex; /* Center content */
-  align-items: center; /* Center content vertically */
-  justify-content: center; /* Center content horizontally */
-}
+
 .form-container {
   overflow-y: auto;
   height: 100%;
+}
+
+.circular-btn {
+  width: 60px; /* Adjust as needed */
+  height: 60px; /* Adjust as needed */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  transition: background-color 0.3s ease;
+}
+
+.icon-large {
+  font-size: 2rem; /* Adjust the icon size as needed */
+  transition: transform 0.3s ease;
+}
+
+.circular-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Change as needed */
+}
+
+.icon-hover {
+  transform: scale(1.2); /* Optional: adds a scaling effect on hover */
 }
 </style>

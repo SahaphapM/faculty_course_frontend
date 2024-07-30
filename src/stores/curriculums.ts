@@ -16,7 +16,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     engDegreeName: '',
     description: '',
     coordinators: [],
-    period: 0,
+    period: '',
     minimumGrade: 0,
     branch: []
   };
