@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
-import type { PageParams } from '@/types/PageParams'
+import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
+import Pagination from '../../components/Pagination.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
 
 const headers = [
-  { title: 'ID', value: 'id' },
-  { title: 'Email', value: 'email' },
-  { title: 'First Name', value: 'firstName' },
-  { title: 'Last Name', value: 'lastName' },
+  { title: 'ID', value: 'id', key: 'id' },
+  { title: 'Email', value: 'email', key: 'email' },
+  { title: 'First Name', value: 'firstName', key: 'firstName' },
+  { title: 'Last Name', value: 'lastName', key: 'lastName' },
   { title: 'Gender', value: 'gender' },
   { title: 'Phone', value: 'phone' },
   { title: 'Roles', value: 'roles' },
   { title: 'Actions', value: 'actions', sortable: false }
 ]
-const genders = ['Male', 'Female']
 
 const dialog = ref(false)
 const editedUser = ref(Object.assign({}, userStore.initialUser))
@@ -27,6 +27,8 @@ const isUpdate = ref(false)
 const isCreate = ref(false)
 const selectedRoles = ref()
 const loading = ref(false)
+const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
+const sortDesc = ref(false)
 const pageParams = ref<PageParams>({
   page: 1,
   limit: 10,
@@ -67,14 +69,6 @@ const addUser = () => {
   dialog.value = true
 }
 
-const closeDialog = () => {
-  userStore.clearForm()
-  editedUser.value = Object.assign({}, userStore.initialUser)
-  dialog.value = false
-  isCreate.value = false
-  isUpdate.value = false
-}
-
 const saveUser = async (user: User) => {
   userStore.editedUser = user
 
@@ -90,10 +84,37 @@ const saveUser = async (user: User) => {
   dialog.value = false
 }
 
+const closeDialog = () => {
+  userStore.clearForm()
+  editedUser.value = Object.assign({}, userStore.initialUser)
+  dialog.value = false
+  isCreate.value = false
+  isUpdate.value = false
+}
+
 const updateOptions = (options: any) => {
-  pageParams.value.page = options.page
-  pageParams.value.limit = options.itemsPerPage
+  if (options.sortBy.length === 0) {
+    // Set default sort when sortBy is empty
+    sortBy.value = [{ key: 'id', order: 'asc' }]
+  } else {
+    // Update sortBy and sortDesc based on user selection
+    sortBy.value = options.sortBy
+    sortDesc.value = options.sortDesc
+  }
+  // toUpperCase
+  pageParams.value.sort = sortBy.value[0].key
+  if (sortBy.value[0].order === 'desc') {
+    pageParams.value.order = 'DESC'
+  } else {
+    pageParams.value.order = 'ASC'
+  }
+  // fetchUser
   fetchUsers()
+}
+
+const clickHandler = (page: number) => {
+  fetchUsers()
+  console.log(page)
 }
 
 // watch(pageParams, fetchUsers, { deep: true })
@@ -133,28 +154,47 @@ onMounted(async () => {
 
         <v-divider class="ma-2"></v-divider>
 
-        <v-data-table-server
-          v-model:items-per-page="pageParams.limit"
-          :headers="headers"
-          :items="userStore.users"
-          :items-length="userStore.totalUsers"
-          :loading="loading"
-          item-value="name"
-          @update:options="updateOptions"
-          class="custom-header"
-        >
-          <template v-slot:item.roles="{ item }">
-            <v-chip-group>
-              <v-chip v-for="role in item.roles" :key="role.id">
-                {{ role.name }}
-              </v-chip>
-            </v-chip-group>
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <v-icon small @click="editUser(item)">mdi-pencil</v-icon>
-            <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon>
-          </template>
-        </v-data-table-server>
+        <v-row>
+          <v-col>
+            <v-data-table-server
+              density="default"
+              v-model:items-per-page="pageParams.limit"
+              :headers="headers"
+              :items="userStore.users"
+              :items-length="userStore.totalUsers"
+              v-model:sort-desc="sortDesc"
+              :loading="loading"
+              item-value="name"
+              class="custom-header"
+              @update:options="updateOptions"
+              hide-default-footer
+            >
+              <template v-slot:item.roles="{ item }">
+                <v-chip-group>
+                  <v-chip v-for="role in item.roles" :key="role.id">
+                    {{ role.name }}
+                  </v-chip>
+                </v-chip-group>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-icon small @click="editUser(item)">mdi-pencil</v-icon>
+                <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon>
+              </template></v-data-table-server
+            >
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <Pagination
+              :current-page="pageParams.page"
+              :items-per-page="pageParams.limit"
+              :total-items="userStore.totalUsers"
+              v-model="pageParams.page"
+              :max-pages-shown="3"
+              @click="clickHandler"
+            ></Pagination>
+          </v-col>
+        </v-row>
       </v-card>
 
       <v-dialog max-width="1000px" persistent v-model="dialog">
@@ -179,8 +219,48 @@ onMounted(async () => {
   margin-right: 8px;
   /* Add some spacing between icons */
 }
-.custom-header {
-  /* background-color: #2b5ec3;
-  color: #ffffff; */
+
+.pagination-container {
+  display: flex;
+  column-gap: 5px;
+}
+.paginate-buttons {
+  height: 35px;
+  width: 50px;
+  border-radius: 15px;
+  background-color: #2d487e;
+
+  color: rgb(255, 255, 255);
+  font-size: 12px;
+  font-weight: 600;
+}
+.paginate-buttons:hover {
+  background-color: #4a5670;
+}
+.active-page {
+  border: 1.5px solid #2d487e;
+  background-color: #ffffff;
+  color: #2d487e;
+}
+.active-page:hover {
+  background-color: #ffffff;
+}
+/* Pagination Mobile responsive styling */
+@media (max-width: 600px) {
+  .pagination-container {
+    column-gap: 2px;
+  }
+
+  .paginate-buttons {
+    height: 25px;
+    width: 35px;
+    font-size: 10px;
+  }
+
+  .active-page {
+    height: 30px;
+    width: 40px;
+    font-size: 10px;
+  }
 }
 </style>
