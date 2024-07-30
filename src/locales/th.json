@@ -10,12 +10,24 @@
     "curriculums": "หลักสูตร",
     "contact": "ติดต่อ",
     "data center": "ศูนย์ข้อมูล",
+    "profile": "โปรไฟล์",
+    "logout": "ออกสู่ระบบ",
     "$vuetify": {
         "noDataText": "ไม่มีข้อมูล",
         "dataFooter": {
             "pageText": "หน้า",
             "itemsPerPageText": "จำนวนต่อหน้า",
             "itemsPerPageAll": "ทั้งหมด"
+        },
+        "carousel": {
+            "prev": "ก่อนหน้า",
+            "next": "ต่อไป",
+            "ariaLabel": {
+                "delimiter": "ตัวคั่น"
+            }
+        },
+        "input": {
+            "clear": "ล้าง"
         }
     }
 }

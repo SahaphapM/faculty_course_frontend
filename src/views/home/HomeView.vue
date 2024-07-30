@@ -25,8 +25,5 @@ import { listFaculties } from '@/models/faculties'
         </v-col>
       </v-row>
     </v-container>
-    <p class="text-header">testtt เทสสส</p>
-    <p class="text-subtitle">testtt เทสสส</p>
-    <p class="text-content">testtt เทสสส</p>
   </v-container>
 </template>
