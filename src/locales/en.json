@@ -9,5 +9,13 @@
     "news": "News",
     "curriculums": "Curriculums",
     "contact": "Contact",
-    "data center": "Data Center"
+    "data center": "Data Center",
+    "$vuetify": {
+        "noDataText": "No data",
+        "dataFooter": {
+            "pageText": "page",
+            "itemsPerPageText": "Item per page",
+            "itemsPerPageAll": "All"
+        }
+    }
 }

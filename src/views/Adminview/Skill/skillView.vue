@@ -56,64 +56,46 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
-    <template v-slot:divider>
-      <v-icon icon="mdi-chevron-right"></v-icon>
-    </template>
-  </v-breadcrumbs>
-
-  <p style="font-size: 30px">Skill</p>
-
-  <v-spacer></v-spacer>
-
-  <v-row cols="12">
-    <v-col cols="5">
-      <v-text-field
-        :loading="loading"
-        append-inner-icon="mdi-magnify"
-        density="compact"
-        label="Search templates"
-        v-model="pageParams.search"
-        variant="solo"
-        rounded="xl"
-        hide-details
-        single-line
-        @click:append-inner="fetchSkill()"
-      ></v-text-field>
-    </v-col>
-
-    <v-spacer></v-spacer>
-    <!-- ใช้ spacer -->
-
-    <v-col cols="auto">
-      <!-- เปลี่ยน cols เป็น auto -->
-      <v-btn width="120" height="40" rounded="xl" @click="navigateToDetail('addSkill')">
-        Add
-      </v-btn>
-    </v-col>
-  </v-row>
-  <v-row> <v-col></v-col></v-row>
-  <v-card class="mx-auto">
-    <v-data-table-server
-      v-model:items-per-page="pageParams.limit"
-      :headers="headers"
-      :items="skills"
-      :items-length="skillStore.totalSkills"
-      :loading="loading"
-      item-value="name"
-      @update:options="updateOptions"
-      class="custom-header"
-      rounded="lg"
-    >
-      <template v-slot:item="{ item }">
-        <tr @click="navigateToDetail(item.id)" class="clickable-row">
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
-        </tr>
+  <v-container>
+    <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
+      <template v-slot:divider>
+        <v-icon icon="mdi-chevron-right"></v-icon>
       </template>
-    </v-data-table-server>
-  </v-card>
+    </v-breadcrumbs>
+    <p style="font-size: xx-large; margin-left: 3%">สกิล</p>
+
+    <v-row>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col></v-col>
+      <v-col><v-btn @click="navigateToDetail('addSkill')"> Add </v-btn></v-col>
+    </v-row>
+    <v-row> <v-col></v-col></v-row>
+    <v-card class="mx-auto">
+      <v-data-table :headers="headers" :items="skills" items-per-page="5">
+        <template v-slot:item="{ item }">
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+              <v-btn
+                icon="mdi-information"
+                class="rounded-circle"
+                @click="navigateToDetail(item.id)"
+              >
+                edit</v-btn
+              >
+              <v-btn icon="mdi-information" class="rounded-circle" @click="deleteSkill(item.id)">
+                delete</v-btn
+              >
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+    </v-card>
+  </v-container>
 </template>
 
 <style>

@@ -2,7 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
-import _ from 'lodash'
+// import _ from 'lodash'
 
 const route = useRoute()
 const router = useRouter()
