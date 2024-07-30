@@ -1,0 +1,13 @@
+{
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "login": "login",
+    "register": "register",
+    "forgetPassword": "Forget password ?",
+    "home": "Home",
+    "news": "News",
+    "curriculums": "Curriculums",
+    "contact": "Contact",
+    "data center": "Data Center"
+}

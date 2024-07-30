@@ -1,11 +1,9 @@
 <script setup lang="ts"></script>
 
 <template>
-  <v-layout>
-    <v-main class="align-center justify-center" style="min-height: 300px">
-      <div class="pa-16">
-        <RouterView />
-      </div>
+  <v-layout class="h-screen d-flex justify-center align-center bg-surface-light">
+    <v-main class="pa-8">
+      <RouterView />
     </v-main>
   </v-layout>
 </template>

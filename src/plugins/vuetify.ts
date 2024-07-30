@@ -1,8 +1,12 @@
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import { md1 } from 'vuetify/blueprints'
+// import * as components from 'vuetify/components'
+// import * as directives from 'vuetify/directives'
+import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
+import { md2 } from 'vuetify/blueprints'
+import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
+import { useI18n } from 'vue-i18n'
+import i18n from './i18n'
+import { createVuetify } from 'vuetify'
 
 const myCustomLightTheme = {
   dark: false,
@@ -13,9 +17,9 @@ const myCustomLightTheme = {
     'surface-light': '#EEEEEE',
     'surface-variant': '#424242',
     'on-surface-variant': '#EEEEEE',
-    primary: '#1C2350',
-    secondary: '#2D3B6B',
-    trinary: '#436894',
+    primary: '#00396B',
+    secondary: '#012A4F',
+    trinary: '#1B2432',
     'accent-1': '#62A3B2',
     'accent-2': '#20819C',
     'accent-3': '#14668C',
@@ -55,9 +59,9 @@ const myCustomDarkTheme = {
     'surface-light': '#EEEEEE',
     'surface-variant': '#424242',
     'on-surface-variant': '#EEEEEE',
-    primary: '#1C2350',
-    secondary: '#2D3B6B',
-    trinary: '#436894',
+    primary: '#00396B',
+    secondary: '#012A4F',
+    trinary: '#1B2432',
     'accent-1': '#62A3B2',
     'accent-2': '#20819C',
     'accent-3': '#14668C',
@@ -89,17 +93,26 @@ const myCustomDarkTheme = {
 }
 
 export default createVuetify({
-  blueprint: md1,
+  blueprint: md2,
   icons: {
     defaultSet: 'mdi'
   },
-  components,
-  directives,
   theme: {
     defaultTheme: 'myCustomLightTheme',
     themes: {
       myCustomLightTheme,
       myCustomDarkTheme
+    }
+  },
+  locale: {
+    adapter: createVueI18nAdapter({ i18n, useI18n })
+  },
+  defaults: {
+    VBtn: {
+      variant: 'flat'
+    },
+    VTextField: {
+      variant: 'outlined'
     }
   }
 })
