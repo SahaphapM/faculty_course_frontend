@@ -96,57 +96,60 @@ const headers = [
 </script>
 <template>
   <v-container>
-    <div class="bg-grey-lighten-4" style="height: 1000px">
-      <v-card class="pa-3" rounded="lg">
-        <v-card flat>
-          <v-card-title class="d-flex align-center pa-2">
-            &nbsp; เล่มหลักสูตร
+    &nbsp;
+    <h2 style="margin-left: 2%">เล่มหลักสูตร</h2>
 
-            <v-spacer></v-spacer>
+    <v-spacer></v-spacer>
 
-            <v-text-field
-              clearable
-              label="หลักสูตร"
-              variant="outlined"
-              prepend-inner-icon="mdi-magnify"
-              v-model="pageParams.search"
-              rounded="lg"
-              @keydown.enter="fetchCurriculum"
-              style="margin-right: 3%; width: 300px"
-            ></v-text-field>
-
-            <v-combobox
-              clearable
-              label="คณะ"
-              @keydown.enter="fetchCurriculum"
-              v-model="select.search"
-              :items="facultiesOptions"
-              variant="outlined"
-              rounded="lg"
-            ></v-combobox>
-            <v-btn
-              rounded="lg"
-              style="height: 55px; margin-bottom: 2%; margin-left: 1.6%; width: 150px"
-              to="/AddIFAAIView"
-            >
-              <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
-            >
-          </v-card-title>
-
-          <v-divider class="ma-2"></v-divider>
-
-          <v-data-table-server
-            v-model:items-per-page="pageParams.limit"
-            :headers="headers"
-            :items="curriculumStore.curriculums"
-            :items-length="curriculumStore.totalCurriculums"
-            :loading="loading"
-            item-value="name"
-            @update:options="updateOptions"
-            class="custom-header"
+    <v-container>
+      <v-row>
+        <v-col cols="8">
+          <v-text-field
+            clearable
+            label="หลักสูตร"
+            variant="outlined"
+            prepend-inner-icon="mdi-magnify"
+            v-model="pageParams.search"
             rounded="lg"
-          >
-            <!-- <template v-slot:top>
+            @keydown.enter="fetchCurriculum"
+            style="height: 55px; width: 100%; min-width: 310px"
+          ></v-text-field>
+        </v-col>
+
+        <v-col>
+          <v-combobox
+            clearable
+            label="คณะ"
+            @keydown.enter="fetchCurriculum"
+            v-model="select.search"
+            :items="facultiesOptions"
+            variant="outlined"
+            rounded="lg"
+            style="height: 55px; min-width: 150px"
+          ></v-combobox>
+        </v-col>
+        <v-col>
+          <v-btn rounded="lg" style="height: 55px; min-width: 150px" to="/AddIFAAIView">
+            <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
+          ></v-col
+        >
+      </v-row>
+    </v-container>
+
+    <v-divider class="ma-2"></v-divider>
+    <v-card rounded="lg">
+      <div>
+        <v-data-table-server
+          v-model:items-per-page="pageParams.limit"
+          :headers="headers"
+          :items="curriculumStore.curriculums"
+          :items-length="curriculumStore.totalCurriculums"
+          :loading="loading"
+          item-value="name"
+          @update:options="updateOptions"
+          class="custom-header"
+        >
+          <!-- <template v-slot:top>
               <v-text-field
                 v-model="pageParams.search"
                 label="Search"
@@ -154,23 +157,22 @@ const headers = [
                 class="mx-4"
               ></v-text-field>
             </template> -->
-            <template v-slot:item="{ item, index }">
-              <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
-                <td>{{ item.id }}</td>
-                <td>{{ item.thaiName }}</td>
-                <td>{{ item.period }}</td>
+          <template v-slot:item="{ item, index }">
+            <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+              <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
+              <td style="height: 55px; min-width: 200px">{{ item.thaiName }}</td>
+              <td style="height: 55px; min-width: 90px">{{ item.period }}</td>
 
-                <td>
-                  <v-btn variant="text" @click="() => showDialog(item)">
-                    <v-icon>mdi-file-document-edit-outline</v-icon>
-                  </v-btn>
-                </td>
-              </tr>
-            </template>
-          </v-data-table-server>
-        </v-card>
-      </v-card>
-    </div>
+              <td>
+                <v-btn variant="text" @click="() => showDialog(item)">
+                  <v-icon>mdi-file-document-edit-outline</v-icon>
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table-server>
+      </div>
+    </v-card>
   </v-container>
   <DialogAddIF :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog" />
 </template>
@@ -182,7 +184,7 @@ const headers = [
 }
 
 .custom-header {
-  background-color: #2b5ec3; /* Blue header color */
+  background-color: #2d487e; /* Blue header color */
   color: #ffffff;
 }
 .even-row {

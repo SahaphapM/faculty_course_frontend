@@ -9,6 +9,7 @@ export const usePloStore = defineStore('plo', () => {
 
   const initialPlos: Plos = {
     id: '',
+    num_plo: '',
     description: '',
     resultTypes: '',
     curriculum: {
@@ -17,6 +18,7 @@ export const usePloStore = defineStore('plo', () => {
       engName: '',
       thaiDegreeName: '',
       engDegreeName: '',
+      branch: [],
       description: '',
       coordinators: [],
       period: 0,
