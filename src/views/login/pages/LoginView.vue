@@ -33,7 +33,6 @@ const { t } = useLocale()
         <div class="text-subtitle-1 text-medium-emphasis">{{ t('email') }}</div>
 
         <v-text-field
-          rounded="lg"
           density="compact"
           placeholder="Email address"
           prepend-inner-icon="mdi-email-outline"
@@ -55,7 +54,6 @@ const { t } = useLocale()
         </div>
 
         <v-text-field
-          rounded="lg"
           :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
           :type="visible ? 'text' : 'password'"
           density="compact"
@@ -70,7 +68,6 @@ const { t } = useLocale()
           class="mb-8 customHover"
           color="buu-gold"
           size="large"
-          rounded="xl"
           width="100%"
           v-on:click="authStore.login()"
         >

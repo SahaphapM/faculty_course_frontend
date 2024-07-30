@@ -137,7 +137,6 @@
     variant="outlined"
     color="buu-black"
     width="100%"
-    rounded="xl"
     size="large"
     @click="() => auth.loginGoogle()"
   >

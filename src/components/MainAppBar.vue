@@ -30,7 +30,6 @@ const drawerS = useDrawerStore()
         min-width="300"
         class="mt-5"
         density
-        rounded
         append-inner-icon="mdi-magnify"
         variant="solo"
         placeholder="ค้นหา..."
@@ -43,7 +42,7 @@ const drawerS = useDrawerStore()
         <LanguageBtns />
         <v-menu>
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
+            <v-btn density v-bind="props" icon="mdi-dots-vertical"></v-btn>
           </template>
           <v-list>
             <v-list-item title="Login" to="/login" append-icon="mdi-login"> </v-list-item>
@@ -58,7 +57,7 @@ const drawerS = useDrawerStore()
       </div>
       <div v-else>
         <LanguageBtns />
-        <v-btn class="rounded-xl bg-buu-gold" to="/login">
+        <v-btn class="bg-buu-gold" to="/login">
           <p class="font-weight-bold">{{ t('login') }}</p>
         </v-btn>
       </div>
@@ -66,7 +65,7 @@ const drawerS = useDrawerStore()
   </v-app-bar>
   <v-app-bar class="bg-primary">
     <v-container style="max-width: 1440px">
-      <v-btn v-for="nav in menu" :key="nav.title" class="rounded-xl" color="white" :to="nav.to">
+      <v-btn v-for="nav in menu" :key="nav.title" color="white" :to="nav.to">
         {{ t(nav.title) }}
       </v-btn>
     </v-container>

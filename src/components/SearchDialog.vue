@@ -1,9 +1,12 @@
 <template>
   <v-dialog v-model="store.isDialogOpen" max-width="500">
-    <v-card class="rounded-lg"
-      ><v-card-text>
+    <v-card>
+      <v-card-title class="d-flex justify-end" @click="closeAndClear()">
+        <v-btn variant="plain" icon="mdi-close"></v-btn>
+      </v-card-title>
+      <v-card-text>
         <v-text-field
-          prepend-icon="mdi-magnify"
+          prepend-inner-icon="mdi-magnify"
           v-model="searchText"
           clearable
           placeholder="Search..."

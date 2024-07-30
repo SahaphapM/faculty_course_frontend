@@ -2,7 +2,7 @@
 // import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
-import { md1 } from 'vuetify/blueprints'
+import { md2 } from 'vuetify/blueprints'
 import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import { useI18n } from 'vue-i18n'
 import i18n from './i18n'
@@ -93,7 +93,7 @@ const myCustomDarkTheme = {
 }
 
 export default createVuetify({
-  blueprint: md1,
+  blueprint: md2,
   icons: {
     defaultSet: 'mdi'
   },
@@ -108,13 +108,11 @@ export default createVuetify({
     adapter: createVueI18nAdapter({ i18n, useI18n })
   },
   defaults: {
-    VCard: {
-      rounded: 'md'
-    },
     VBtn: {
-      variant: 'flat',
-      rounded: 'xl',
-      minWidth: '100px'
+      variant: 'flat'
+    },
+    VTextField: {
+      variant: 'outlined'
     }
   }
 })

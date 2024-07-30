@@ -1,17 +1,8 @@
 <template>
-  <v-btn
-    density
-    rounded="xl"
-    variant="text"
-    flat
-    v-if="current === 'th'"
-    @click="() => changeLocale('en')"
-  >
+  <v-btn variant="text" flat v-if="current === 'th'" @click="() => changeLocale('en')">
     🇬🇧 EN
   </v-btn>
-  <v-btn v-else density rounded="xl" variant="text" @click="() => changeLocale('th')">
-    🇹🇭 TH
-  </v-btn>
+  <v-btn v-else variant="text" @click="() => changeLocale('th')"> 🇹🇭 TH </v-btn>
 </template>
 
 <script lang="ts" setup>

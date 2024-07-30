@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="n in 12" :key="n" cols="12" sm="4">
+      <v-col v-for="n in 12" :key="n" cols="6" md="3">
         <BasicCard
           :title="`News ${n}`"
           :subtitle="new Date().toLocaleDateString()"

@@ -15,7 +15,7 @@ import { listFaculties } from '@/models/faculties'
     </v-carousel>
     <v-container fluid rounded>
       <v-row>
-        <v-col cols="12" md="4" v-for="(data, index) in listFaculties" :key="data.eng">
+        <v-col cols="6" md="3" v-for="(data, index) in listFaculties" :key="data.eng">
           <BasicCard
             :title="data.thai"
             :subtitle="data.eng"
@@ -25,5 +25,8 @@ import { listFaculties } from '@/models/faculties'
         </v-col>
       </v-row>
     </v-container>
+    <p class="text-header">testtt เทสสส</p>
+    <p class="text-subtitle">testtt เทสสส</p>
+    <p class="text-content">testtt เทสสส</p>
   </v-container>
 </template>
