@@ -29,7 +29,6 @@ import authService from '@/service/auth'
 //   return { login, loginGoogle, email, password }
 // })
 import Cookies from 'js-cookie'
-import router from '@/router'
 
 interface Profile {
   email: string | undefined
@@ -71,8 +70,9 @@ export const useAuthStore = defineStore('auth', {
       authService.loginGoogle()
     },
     logout() {
-      Cookies.remove('access_token')
-      router.replace('/')
+      authService.logout()
+      this.fetchProfile()
+      window.location.reload()
     }
   }
 })
