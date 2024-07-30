@@ -14,6 +14,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/auth/google/success',
+      name: 'GoogleSuccess',
+      component: () => import('../views/login/pages/GoogleLoginSuccess.vue'),
+      meta: {
+        layout: 'FullLayout',
+        requireAuth: false
+      }
+    },
+    {
       path: '/news',
       name: 'news',
       component: () => import('../views/news/NewsView.vue'),
@@ -39,9 +48,25 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/login/LoginView.vue'),
+      component: () => import('../views/login/pages/LoginView.vue'),
       meta: {
         layout: 'FullLayout'
+      }
+    },
+    {
+      path: '/forbidden',
+      name: 'Forbidden',
+      component: () => import('../views/Forbidden/ForbiddenView.vue'),
+      meta: {
+        layout: 'FullLayout'
+      }
+    },
+    {
+      path: '/dataCenter',
+      name: 'Data Center',
+      component: () => import('../views/DataCenter/DataCenterView.vue'),
+      meta: {
+        layout: 'MainLayout'
       }
     },
     {
@@ -65,7 +90,7 @@ const router = createRouter({
     {
       path: '/users',
       name: 'users',
-      component: () => import('../views/users/userView.vue'),
+      component: () => import('../views/users/UserView.vue'),
 
       meta: {
         layout: 'MainLayout',
@@ -113,7 +138,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/IFCurriculum/admin/SubjectView.vue'),
+      component: () => import('../views/subjects/SubjectView.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true

@@ -1,6 +1,6 @@
 <template>
   <v-footer class="bg-primary">
-    <v-container flat>
+    <v-container flat style="max-width: 1440px">
       <v-row>
         <v-col v-for="n in navFooter" :key="n.title" cols="12" sm="3">
           <h3>{{ n.title }}</h3>
