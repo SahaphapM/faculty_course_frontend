@@ -2,7 +2,6 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
-import _ from 'lodash'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,14 +42,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
-    <template v-slot:divider>
-      <v-icon icon="mdi-chevron-right"></v-icon>
-    </template>
-  </v-breadcrumbs>
-  <p style="font-size: xx-large; margin-left: 3%">รายละเอียดสกิล</p>
-  <v-container style="mx-auto"
-    ><v-row>
+  <v-container>
+    <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
+      <template v-slot:divider>
+        <v-icon icon="mdi-chevron-right"></v-icon>
+      </template>
+    </v-breadcrumbs>
+
+    <p style="font-size: 30px">รายละเอียดสกิล</p>
+
+    <v-row>
       <v-col cols="12">
         <v-text-field
           v-model="skills.name"
@@ -77,9 +78,14 @@ onMounted(() => {
           hide-details
           required
         ></v-text-field>
-      </v-col> </v-row
-    ><v-row><v-btn @click="saveSkill()"> Button </v-btn></v-row></v-container
-  >
+      </v-col>
+    </v-row>
+    <v-row
+      ><v-col>
+        <v-btn @click="saveSkill()"> Button </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
