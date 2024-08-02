@@ -101,6 +101,7 @@ const closeDialog = () => {
 }
 
 const updateOptions = (options: any) => {
+  //sorting
   if (options.sortBy.length === 0) {
     // Set default sort when sortBy is empty
     sortBy.value = [{ key: 'id', order: 'asc' }]
@@ -137,9 +138,8 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <v-container>
-    &nbsp;
-    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2>
+  <v-container class="w-75">
+    <h2 style="font-size: 24px" class="pa-5">รายชื่อผู้ใช้งาน</h2>
 
     <v-row class="d-flex justify-end ga-5" no-gutters>
       <v-col class="d-flex justify-end flex-grow-1">
@@ -152,7 +152,7 @@ onMounted(async () => {
       </v-col>
       <v-col class="d-flex justify-end flex-grow-0">
         <AddButton
-          style="min-width: 300px"
+          style="width: 300px"
           :to-link="null"
           :label="'เพิ่มข้อมูลผู้ใช้'"
           :clickFucntion="addUser"
@@ -214,7 +214,7 @@ onMounted(async () => {
       </v-col>
     </v-row> -->
   </v-container>
-  <v-dialog max-width="1080px" v-model="dialog">
+  <v-dialog max-width="1200px" v-model="dialog" persistent>
     <FormDialog
       :item="editedUser"
       :method="saveUser"

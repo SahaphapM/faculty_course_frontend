@@ -8,7 +8,7 @@ const props = defineProps<{
 <template>
   <v-btn
     rounded="lg"
-    style="height: 55px; min-width: 170px; width: 100%"
+    style="height: 55px"
     v-bind="{ to: props.toLink || undefined }"
     @click="clickFucntion"
   >
