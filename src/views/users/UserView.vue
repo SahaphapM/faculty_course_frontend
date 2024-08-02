@@ -7,12 +7,13 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
+import AddButton from '@/components/AddButton.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
 
 const headers = [
-  { title: 'รหัส', value: 'id', key: 'id' },
+  { title: 'รหัสผู้ใช้', value: 'id', key: 'id' },
   { title: 'อีเมลล์', value: 'email', key: 'email' },
   { title: 'ชื่อ', value: 'firstName', key: 'firstName' },
   { title: 'นามสกุล', value: 'lastName', key: 'lastName' },
@@ -128,8 +129,6 @@ const clickHandler = (page: number) => {
   console.log(page)
 }
 
-// watch(pageParams, fetchUsers, { deep: true })
-
 onMounted(async () => {
   await roleStore.getRoles()
   console.log(userStore.users)
@@ -138,94 +137,92 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <v-container width="1000">
-    <v-card rounded="lg" flat>
-      <v-card flat>
-        <v-card-title class="d-flex align-center pa-2">
-          <v-row>
-            <v-col cols="12" md="1"></v-col>
-            <v-col cols="12" md="3" style="font-size: xx-large">User </v-col>
-            <v-col cols="12" md="6">
-              <SearchData
-                :label="'ค้นหาผู้ใช้'"
-                :search="pageParams.search"
-                :fetch-data="fetchUsers"
-              ></SearchData>
-            </v-col>
-            <v-col cols="12" md="2">
-              <v-btn width="90px" height="30px" rounded="lg" @click="addUser"> ADD NEW</v-btn>
-            </v-col>
-          </v-row>
-        </v-card-title>
+  <v-container>
+    &nbsp;
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2>
 
-        <v-divider class="ma-2"></v-divider>
-
-        <v-row>
-          <v-col>
-            <v-card>
-              <v-data-table-server
-                density="default"
-                v-model:items-per-page="pageParams.limit"
-                :headers="headers"
-                :items="userStore.users"
-                :items-length="userStore.totalUsers"
-                :loading="loading"
-                item-value="name"
-                class="custom-header"
-                @update:options="updateOptions"
-              >
-                <template v-slot:item="{ item, index }">
-                  <tr :class="[{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }]">
-                    <td style="min-width: 150px">{{ item.id }}</td>
-                    <td>{{ item.email }}</td>
-                    <td style="min-width: 200px">{{ item.firstName }}</td>
-                    <td style="min-width: 200px">{{ item.lastName }}</td>
-                    <!-- <td style="min-width: 120px">{{ item.gender }}</td> -->
-                    <!-- <td style="min-width: 150px">{{ item.phone }}</td> -->
-                    <td>
-                      <v-chip-group>
-                        <v-chip v-for="role in item.roles" :key="role.id">
-                          {{ role.name }}
-                        </v-chip>
-                      </v-chip-group>
-                    </td>
-                    <td style="text-align: left; min-width: 90px; padding-left: 40px">
-                      <v-icon primary small @click="editUser(item)"
-                        >mdi-file-document-edit-outline</v-icon
-                      >
-                      <!-- <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon> -->
-                    </td>
-                  </tr>
-                </template>
-              </v-data-table-server>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <!-- <Pagination
+    <v-row class="d-flex justify-end ga-5" no-gutters>
+      <v-col class="d-flex justify-end flex-grow-1">
+        <SearchData
+          style="min-width: 250px"
+          :label="'ค้นหาผู้ใช้'"
+          :search="pageParams.search"
+          :fetch-data="fetchUsers"
+        ></SearchData>
+      </v-col>
+      <v-col class="d-flex justify-end flex-grow-0">
+        <AddButton
+          style="min-width: 300px"
+          :to-link="null"
+          :label="'เพิ่มข้อมูลผู้ใช้'"
+          :clickFucntion="addUser"
+        ></AddButton>
+      </v-col>
+    </v-row>
+    <v-row no-gutters>
+      <v-col>
+        <v-card class="mt-4">
+          <div>
+            <v-data-table-server
+              v-model:items-per-page="pageParams.limit"
+              :headers="headers"
+              :items="userStore.users"
+              :items-length="userStore.totalUsers"
+              :loading="loading"
+              item-value="name"
+              class="bg-primary"
+              @update:options="updateOptions"
+            >
+              <template v-slot:item="{ item, index }">
+                <tr :class="[{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }]">
+                  <td style="min-width: 130px">{{ item.id }}</td>
+                  <td style="min-width: 220px">{{ item.email }}</td>
+                  <td style="min-width: 180px">{{ item.firstName }}</td>
+                  <td style="min-width: 180px">{{ item.lastName }}</td>
+                  <!-- <td style="min-width: 120px">{{ item.gender }}</td> -->
+                  <!-- <td style="min-width: 150px">{{ item.phone }}</td> -->
+                  <td>
+                    <v-chip-group>
+                      <v-chip v-for="role in item.roles" :key="role.id">
+                        {{ role.name }}
+                      </v-chip>
+                    </v-chip-group>
+                  </td>
+                  <td style="text-align: left; min-width: 90px; padding-left: 40px">
+                    <v-icon primary small @click="editUser(item)"
+                      >mdi-file-document-edit-outline</v-icon
+                    >
+                    <!-- <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon> -->
+                  </td>
+                </tr>
+              </template>
+            </v-data-table-server>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+    <!-- <v-row>
+      <v-col>
+        <Pagination
               :current-page="pageParams.page"
               :items-per-page="pageParams.limit"
               :total-items="userStore.totalUsers"
               v-model="pageParams.page"
               :max-pages-shown="3"
               @click="clickHandler"
-            ></Pagination> -->
-          </v-col>
-        </v-row>
-      </v-card>
-
-      <v-dialog max-width="1000px" persistent v-model="dialog">
-        <FormDialog
-          :item="editedUser"
-          :method="saveUser"
-          :isUpdate="isUpdate"
-          :roles="roleStore.roles"
-          @close-dialog="closeDialog"
-        ></FormDialog>
-      </v-dialog>
-    </v-card>
+            ></Pagination>
+      </v-col>
+    </v-row> -->
   </v-container>
+  <v-dialog max-width="1080px" v-model="dialog">
+    <FormDialog
+      :item="editedUser"
+      :method="saveUser"
+      :isUpdate="isUpdate"
+      :roles="roleStore.roles"
+      @close-dialog="closeDialog"
+    ></FormDialog>
+  </v-dialog>
 </template>
 <style scoped>
 .details-text {
@@ -234,10 +231,6 @@ onMounted(async () => {
   font-size: large;
 }
 
-.custom-header {
-  background-color: #2d487e; /* Blue header color */
-  color: #ffffff;
-}
 .even-row {
   background-color: #f9f9f9;
   color: black;
