@@ -51,8 +51,8 @@ const rail = ref(false)
 
 const navMenu = [
   { title: 'curriculums', to: 'MainIFAdmin' },
-  { title: 'subject', to: '/SkillView' },
-  { title: 'skill', to: '/manageSubject' },
+  { title: 'subject', to: '/manageSubject' },
+  { title: 'skill', to: '/skillView' },
   { title: 'user', to: '/users' }
 ]
 </script>
