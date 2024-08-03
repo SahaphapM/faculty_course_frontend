@@ -4,15 +4,15 @@ import { listFaculties } from '@/models/faculties'
 </script>
 
 <template>
-  <v-carousel show-arrows="hover" cycle continuous height="240">
-    <v-carousel-item
-      v-for="n in 3"
-      :key="n"
-      :src="`https://picsum.photos/seed/${n}/1280/720`"
-      cover
-    ></v-carousel-item>
-  </v-carousel>
-  <v-container fluid rounded>
+  <v-container fluid>
+    <v-carousel show-arrows="hover" cycle continuous height="240">
+      <v-carousel-item
+        v-for="n in 3"
+        :key="n"
+        :src="`https://picsum.photos/seed/${n}/1280/720`"
+        cover
+      ></v-carousel-item>
+    </v-carousel>
     <v-row>
       <v-col cols="6" md="3" v-for="(data, index) in listFaculties" :key="data.eng">
         <BasicCard

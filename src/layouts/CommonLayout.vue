@@ -9,16 +9,14 @@ const { t } = useLocale()
 <template>
   <MainAppBar></MainAppBar>
   <v-app-bar class="bg-primary" flat scroll-behavior="fully-hide">
-    <v-container>
+    <v-container style="max-width: 1440px">
       <v-btn v-for="nav in appBarMenu" :key="nav.title" color="white" :to="nav.to">
         {{ t(nav.title) }}
       </v-btn>
     </v-container>
   </v-app-bar>
   <v-main app>
-    <v-container>
-      <RouterView class="mx-auto overflow-y-auto" style="min-height: 100vh; max-width: 1440px" />
-    </v-container>
+    <RouterView class="mx-auto overflow-y-auto" style="min-height: 100vh; max-width: 1440px" />
   </v-main>
   <MainFooter></MainFooter>
   <!-- <div :style="{ zIndex: 1000, position: 'fixed', right: '28px', bottom: '28px' }">
