@@ -3,7 +3,10 @@ import type { Role } from '@/types/Role'
 import type { User } from '@/types/User'
 import { computed, onMounted, ref } from 'vue'
 import UploadImage from '@/components/UploadImage.vue'
+import instance from '@/service/http'
+import { useUserStore } from '@/stores/user'
 
+const userStore = useUserStore()
 const props = defineProps<{
   item: User | null
   isUpdate: boolean
@@ -19,7 +22,6 @@ const previewUrl = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 const imageFile = ref<File | null>(null)
 const imageUpdate = ref(false)
-const imageURL = ref('https://www.informatics.buu.ac.th/2020/wp-content/uploads/2022/03/23.png')
 
 const uploadFile = async (file: File) => {
   imageFile.value = file
@@ -38,19 +40,37 @@ const imageSrc = computed(() => {
   if (imageUpdate.value && imageFile.value) {
     return URL.createObjectURL(imageFile.value)
   }
-  return imageURL.value
+  return getImageUrl(user.value)
 })
 
-const saveImage = (file: File | null) => {
-  try {
-    //Save image
-  } catch (error) {
-    //Show error
+const saveImage = (userId: string | null, file: File) => {
+  if (imageUpdate.value && userId) {
+    try {
+      //Save image
+      userStore.updateImage(userId, file)
+    } catch (error) {
+      //Show error
+    }
+  }
+}
+
+const deleteImage = () => {
+  user.value.image = 'unknown.jpg'
+  imageUpdate.value = true
+}
+
+function getImageUrl(user: User) {
+  // Use the base URL from Axios instance
+  if (user.image) {
+    return `${instance.defaults.baseURL}/public/users/images/${user.image}`
+  } else {
+    return `${instance.defaults.baseURL}/public/users/images/unknown.jpg`
   }
 }
 
 const reset = () => {
   user.value = Object.assign({}, props.item)
+  imageUpdate.value = false
 }
 
 const closeDialog = () => {
@@ -96,7 +116,7 @@ onMounted(async () => {
               style="border-radius: 10px; align-items: end; text-align: end"
             >
               <v-icon
-                @click=""
+                @click="deleteImage"
                 style="background-color: white; border-radius: 20%"
                 size="45px"
                 icon="mdi-delete-circle-outline"
@@ -218,7 +238,9 @@ onMounted(async () => {
             variant="plain"
             color="error"
             >ล้าง</v-btn
-          ><v-btn @click="method(user), saveImage(imageFile)" variant="plain">บันทึก</v-btn></v-row
+          ><v-btn @click="method(user), saveImage(user.id, imageFile)" variant="plain"
+            >บันทึก</v-btn
+          ></v-row
         >
       </v-col>
     </v-row>
