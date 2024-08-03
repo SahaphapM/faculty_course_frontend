@@ -1,23 +1,33 @@
 {
-    "username": "Username",
-    "email": "Email",
-    "password": "Password",
+    "username": "username",
+    "email": "email",
+    "password": "password",
     "login": "login",
     "register": "register",
-    "forgetPassword": "Forget password ?",
-    "home": "Home",
-    "news": "News",
-    "curriculums": "Curriculums",
-    "contact": "Contact",
-    "data center": "Data Center",
-    "profile": "Profile",
-    "logout": "Logout",
+    "forgetPassword": "forget password ?",
+    "home": "home",
+    "news": "news",
+    "curriculums": "curriculums",
+    "contact": "contact",
+    "data center": "data Center",
+    "profile": "profile",
+    "logout": "logout",
+    "search": "search",
+    "manage": "manage",
+    "management": "management",
+    "subject": "subject",
+    "skill": "skill",
+    "user": "user",
     "$vuetify": {
         "noDataText": "No data",
         "dataFooter": {
-            "pageText": "page",
-            "itemsPerPageText": "Item per page",
-            "itemsPerPageAll": "All"
+            "itemsPerPageText": "Items per page:",
+            "itemsPerPageAll": "All",
+            "nextPage": "Next page",
+            "prevPage": "Previous page",
+            "firstPage": "First page",
+            "lastPage": "Last page",
+            "pageText": "{0}-{1} of {2}"
         },
         "carousel": {
             "prev": "Back",
@@ -28,6 +38,7 @@
         },
         "input": {
             "clear": "Clear"
-        }
+        },
+        "open": "Open"
     }
 }

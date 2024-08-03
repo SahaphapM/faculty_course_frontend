@@ -2,14 +2,14 @@
   <v-dialog v-model="store.isDialogOpen" max-width="500">
     <v-card>
       <v-card-title class="d-flex justify-end" @click="closeAndClear()">
-        <v-btn variant="plain" icon="mdi-close"></v-btn>
+        <v-btn variant="plain" icon="mdi-close" color="error"></v-btn>
       </v-card-title>
       <v-card-text>
         <v-text-field
           prepend-inner-icon="mdi-magnify"
           v-model="searchText"
           clearable
-          placeholder="Search..."
+          :placeholder="`${t('search')}...`"
         >
         </v-text-field>
         <v-list v-if="searchText.length > 0">
@@ -31,7 +31,9 @@
 import { getAllAppMenu } from '@/models/navigation'
 import { useSearchStore } from '@/stores/search'
 import { ref, computed } from 'vue'
+import { useLocale } from 'vuetify'
 
+const { t } = useLocale()
 const store = useSearchStore()
 const searchText = ref('')
 
