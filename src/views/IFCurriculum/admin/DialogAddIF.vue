@@ -44,7 +44,7 @@ const tab = ref<string>('option-1')
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 
 type userIds = { id: string }
-const filteredPlos = computed(() => PloStore.filteredPlos)
+
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
   await PloStore.fetchPlos()
@@ -541,56 +541,53 @@ const getUserInfoById = (id: any) => {
                     </div>
                   </div>
                   <div height="80vh">
-                    <v-form ref="form" class="ma-2">
-                      <p style="font-size: 1.5vh">รายชื่อ</p>
-                      <v-card
-                        v-for="(plo, index) in filteredPlos"
-                        :key="plo.id"
-                        style="border-color: #bdbdbd"
-                        variant="outlined"
-                        rounded="lg"
-                        class="pa-3 mt-3"
-                      >
-                        <v-row>
-                          <v-col>
-                            <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>
-                            &nbsp; {{ plo.num_plo }} - {{ plo.description }}
-                          </v-col>
-                          <v-col class="d-flex justify-end" cols="auto">
-                            <v-btn
-                              color="red"
-                              variant="text"
-                              @click="PloStore.deletePlo(plo.id)"
-                              style="height: auto"
-                              class="circular-btn"
-                              icon="mdi-minus"
-                            >
-                            </v-btn>
-                          </v-col>
-                        </v-row>
-                      </v-card>
-
-                      <v-overlay :model-value="overlay" class="align-center justify-center">
-                        <v-progress-circular
-                          color="primary"
-                          size="64"
-                          indeterminate
-                        ></v-progress-circular>
-                      </v-overlay>
-                      <v-row class="justify-center">
-                        <v-btn
-                          icon="mdi-plus"
-                          class="ma-4 rounded-circle mt-9"
-                          size="40px"
+                    <v-form ref="form" class="form-container">
+                      <v-sheet width="90%" min-height="20vh" max-height="80vh" height="100%">
+                        <p style="font-size: 3vh">PLO</p>
+                        <v-card
+                          style="border-color: #bdbdbd"
                           variant="outlined"
-                          @click="saveC"
-                        ></v-btn>
-                      </v-row>
-                      &nbsp;
-                      <v-row class="justify-end mt-8">
-                        <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
-                        <v-btn @click="saveC" variant="plain">บันทึก</v-btn>
-                      </v-row>
+                          rounded="lg"
+                          v-for="(curriculum, index) in curriculumStore.currentCurriculum?.plos"
+                          :key="curriculum.id"
+                          class="pa-3 mt-3"
+                        >
+                          <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
+                          {{ curriculum.num_plo }}
+                          <v-text-field
+                            v-model="curriculum.num_plo"
+                            :rules="nameRules"
+                            variant="outlined"
+                            rounded="lg"
+                            class="small-input"
+                          ></v-text-field>
+                          <p style="font-size: 1.5vh">รายละเอียด</p>
+                          <v-text-field
+                            v-model="curriculum.description"
+                            :rules="nameRules"
+                            variant="outlined"
+                            rounded="lg"
+                          ></v-text-field>
+                          <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+                          <v-select
+                            v-model="curriculum.resultTypes"
+                            :items="items4"
+                            variant="outlined"
+                            rounded="lg"
+                          ></v-select>
+                          <v-overlay :model-value="overlay" class="align-center justify-center">
+                            <v-progress-circular
+                              color="red"
+                              size="64"
+                              indeterminate
+                            ></v-progress-circular>
+                          </v-overlay>
+                          <v-row class="justify-end">
+                            <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
+                            <v-btn @click="save2" variant="plain">บันทึก</v-btn>
+                          </v-row>
+                        </v-card>
+                      </v-sheet>
                     </v-form>
                   </div>
                 </v-tabs-window-item>

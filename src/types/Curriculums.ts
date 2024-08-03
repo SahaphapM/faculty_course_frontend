@@ -1,5 +1,5 @@
 import type { Branch } from './Branch'
-// import type { Plo } from 'src/plos/entities/plo.entity';
+import type { Plos } from './Plos'
 // import type { Subject } from 'src/subjects/entities/subject.entity';
 import type { User } from './User'
 
@@ -13,7 +13,7 @@ export type Curriculum = {
   description: string
   period: string
   minimumGrade: number
-  // plos: Plo[];
+  plos: Plos[]
   coordinators: User[]
   // subjects: Subject[];
 }

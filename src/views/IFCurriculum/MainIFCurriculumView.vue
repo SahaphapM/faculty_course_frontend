@@ -123,7 +123,20 @@ const filteredCurriculums = computed(() => {
         <div v-show="show3">
           <v-divider></v-divider>
 
-          <v-card-text> 3 </v-card-text>
+          <v-card-text>
+            <v-list>
+              <v-list-item
+                v-for="curriculum in curriculumStore.currentCurriculum?.plos"
+                :key="curriculum.id"
+              >
+                <v-list-item-content>
+                  <v-list-item-title>{{ curriculum.num_plo }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ curriculum.description }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ curriculum.resultTypes }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
         </div>
       </v-expand-transition>
       <v-card-actions>
