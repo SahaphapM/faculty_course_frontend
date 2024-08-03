@@ -7,19 +7,19 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
+import AddButton from '@/components/AddButton.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
 
 const headers = [
-  { title: 'ID', value: 'id', key: 'id' },
-  { title: 'Email', value: 'email', key: 'email' },
-  { title: 'First Name', value: 'firstName', key: 'firstName' },
-  { title: 'Last Name', value: 'lastName', key: 'lastName' },
-  { title: 'Gender', value: 'gender' },
-  { title: 'Phone', value: 'phone' },
-  { title: 'Roles', value: 'roles' },
-  { title: 'Actions', value: 'actions', sortable: false }
+  { title: 'รหัสผู้ใช้', value: 'id', key: 'id' },
+  { title: 'อีเมลล์', value: 'email', key: 'email' },
+  { title: 'ชื่อ', value: 'firstName', key: 'firstName' },
+  { title: 'นามสกุล', value: 'lastName', key: 'lastName' },
+  // { title: 'เพศ', value: 'gender' },
+  // { title: 'เบอร์โทรศัพท์', value: 'phone' },
+  { title: 'ตำแหน่ง', value: 'roles' }
 ]
 
 const dialog = ref(false)
@@ -101,6 +101,7 @@ const closeDialog = () => {
 }
 
 const updateOptions = (options: any) => {
+  //sorting
   if (options.sortBy.length === 0) {
     // Set default sort when sortBy is empty
     sortBy.value = [{ key: 'id', order: 'asc' }]
@@ -115,6 +116,11 @@ const updateOptions = (options: any) => {
   } else {
     pageParams.value.order = 'ASC'
   }
+
+  // current page
+  pageParams.value.page = options.page
+  // item per page
+  pageParams.value.limit = options.itemsPerPage
   // fetchUser
   fetchUsers()
 }
@@ -124,79 +130,80 @@ const clickHandler = (page: number) => {
   console.log(page)
 }
 
-// watch(pageParams, fetchUsers, { deep: true })
-
 onMounted(async () => {
   await roleStore.getRoles()
+  console.log(userStore.users)
   fetchUsers()
   console.log(userStore.totalUsers)
 })
 </script>
 <template>
-  <v-container class="pa-8">
-    <v-card rounded="lg" flat>
-      <v-card flat>
-        <v-card-title class="d-flex align-center pa-2">
-          <v-row>
-            <v-col cols="12" md="1"></v-col>
-            <v-col cols="12" md="3" style="font-size: xx-large">User </v-col>
-            <v-col cols="12" md="6">
-              <!-- <v-text-field
-                clearable
-                label="Name"
-                variant="outlined"
-                prepend-inner-icon="mdi-magnify"
-                v-model="pageParams.search"
-                rounded="lg"
-                @keydown.enter="fetchUsers"
-              ></v-text-field> -->
-              <SearchData
-                :label="'ค้นหาผู้ใช้'"
-                :search="pageParams.search"
-                :fetch-data="fetchUsers"
-              ></SearchData>
-            </v-col>
-            <v-col cols="12" md="2">
-              <v-btn width="90px" height="30px" rounded="lg" @click="addUser"> ADD NEW</v-btn>
-            </v-col>
-          </v-row>
+  <v-container class="w-75">
+    <h2 style="font-size: 24px" class="pa-5">รายชื่อผู้ใช้งาน</h2>
 
-          <!-- <v-spacer></v-spacer> -->
-        </v-card-title>
-
-        <v-divider class="ma-2"></v-divider>
-
-        <v-row>
-          <v-col>
+    <v-row class="d-flex justify-end ga-5" no-gutters>
+      <v-col class="d-flex justify-end flex-grow-1">
+        <SearchData
+          style="min-width: 250px"
+          :label="'ค้นหาผู้ใช้'"
+          :search="pageParams.search"
+          :fetch-data="fetchUsers"
+        ></SearchData>
+      </v-col>
+      <v-col class="d-flex justify-end flex-grow-0">
+        <AddButton
+          style="width: 300px"
+          :to-link="null"
+          :label="'เพิ่มข้อมูลผู้ใช้'"
+          :clickFucntion="addUser"
+        ></AddButton>
+      </v-col>
+    </v-row>
+    <v-row no-gutters>
+      <v-col>
+        <v-card class="mt-4">
+          <div>
             <v-data-table-server
-              density="default"
               v-model:items-per-page="pageParams.limit"
               :headers="headers"
               :items="userStore.users"
               :items-length="userStore.totalUsers"
               :loading="loading"
               item-value="name"
-              class="custom-header"
+              class="bg-primary"
               @update:options="updateOptions"
-              hide-default-footer
             >
-              <template v-slot:item.roles="{ item }">
-                <v-chip-group>
-                  <v-chip v-for="role in item.roles" :key="role.id">
-                    {{ role.name }}
-                  </v-chip>
-                </v-chip-group>
+              <template v-slot:item="{ item, index }">
+                <tr :class="[{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }]">
+                  <td style="min-width: 130px">{{ item.id }}</td>
+                  <td style="min-width: 220px">{{ item.email }}</td>
+                  <td style="min-width: 180px">{{ item.firstName }}</td>
+                  <td style="min-width: 180px">{{ item.lastName }}</td>
+                  <!-- <td style="min-width: 120px">{{ item.gender }}</td> -->
+                  <!-- <td style="min-width: 150px">{{ item.phone }}</td> -->
+                  <td>
+                    <v-chip-group>
+                      <v-chip v-for="role in item.roles" :key="role.id">
+                        {{ role.name }}
+                      </v-chip>
+                    </v-chip-group>
+                  </td>
+                  <td style="text-align: left; min-width: 90px; padding-left: 40px">
+                    <v-icon primary small @click="editUser(item)"
+                      >mdi-file-document-edit-outline</v-icon
+                    >
+                    <!-- <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon> -->
+                  </td>
+                </tr>
               </template>
-              <template v-slot:item.actions="{ item }">
-                <v-icon small @click="editUser(item)">mdi-pencil</v-icon>
-                <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon>
-              </template></v-data-table-server
-            >
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <Pagination
+            </v-data-table-server>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+    <!-- <v-row>
+      <v-col>
+        <Pagination
               :current-page="pageParams.page"
               :items-per-page="pageParams.limit"
               :total-items="userStore.totalUsers"
@@ -204,34 +211,53 @@ onMounted(async () => {
               :max-pages-shown="3"
               @click="clickHandler"
             ></Pagination>
-          </v-col>
-        </v-row>
-      </v-card>
-
-      <v-dialog max-width="1000px" persistent v-model="dialog">
-        <FormDialog
-          :item="editedUser"
-          :method="saveUser"
-          :isUpdate="isUpdate"
-          :roles="roleStore.roles"
-          @close-dialog="closeDialog"
-        ></FormDialog>
-      </v-dialog>
-    </v-card>
+      </v-col>
+    </v-row> -->
   </v-container>
+  <v-dialog max-width="1200px" v-model="dialog" persistent>
+    <FormDialog
+      :item="editedUser"
+      :method="saveUser"
+      :isUpdate="isUpdate"
+      :roles="roleStore.roles"
+      @close-dialog="closeDialog"
+    ></FormDialog>
+  </v-dialog>
 </template>
-<style>
-.icon-container {
+<style scoped>
+.details-text {
+  margin-left: 10px; /* Adjust the spacing between the div and p as needed */
+  font-weight: bold;
+  font-size: large;
+}
+
+.even-row {
+  background-color: #f9f9f9;
+  color: black;
+  text-align: left;
+}
+.odd-row {
+  background-color: #ffffff;
+  color: black;
+  text-align: left;
+}
+/* Custom table styles */
+.custom-table td {
+  border: none; /* Remove border between columns */
+  height: 55px;
+}
+
+/* .icon-container {
   display: flex;
   align-items: center;
 }
 
 .icon-container > * {
   margin-right: 8px;
-  /* Add some spacing between icons */
-}
 
-.pagination-container {
+} */
+
+/* .pagination-container {
   column-gap: 5px;
 }
 .paginate-buttons {
@@ -254,9 +280,9 @@ onMounted(async () => {
 }
 .active-page:hover {
   background-color: #ffffff;
-}
+} */
 /* Pagination Mobile responsive styling */
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .pagination-container {
     column-gap: 2px;
   }
@@ -272,5 +298,5 @@ onMounted(async () => {
     width: 40px;
     font-size: 10px;
   }
-}
+} */
 </style>
