@@ -54,6 +54,11 @@ const saveImage = (userId: string | null, file: File) => {
   }
 }
 
+const deleteImage = () => {
+  user.value.image = 'unknown.jpg'
+  imageUpdate.value = true
+}
+
 function getImageUrl(user: User) {
   // Use the base URL from Axios instance
   if (user.image) {
@@ -111,7 +116,7 @@ onMounted(async () => {
               style="border-radius: 10px; align-items: end; text-align: end"
             >
               <v-icon
-                @click=""
+                @click="deleteImage"
                 style="background-color: white; border-radius: 20%"
                 size="45px"
                 icon="mdi-delete-circle-outline"
