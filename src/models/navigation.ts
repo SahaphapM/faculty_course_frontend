@@ -1,3 +1,5 @@
+import router from '@/router'
+
 interface Menu {
   title: string
   to: string
@@ -6,7 +8,6 @@ interface Menu {
 export const appBarMenu: Menu[] = [
   { title: 'home', to: '/' },
   { title: 'news', to: '/news' },
-  { title: 'curriculums', to: '/mainIFCurriculumView' },
   { title: 'data center', to: '/dataCenter' },
   { title: 'contact', to: '/contacts' }
 ]
@@ -18,6 +19,11 @@ export const adminMenu: Menu[] = [
   { title: 'skill view', to: '/SkillView' }
 ]
 
+export const allPage = () => {
+  return router.getRoutes().map((n) => ({ title: n.name?.toString(), to: n.path }))
+}
+
 export function getAllAppMenu() {
-  return appBarMenu.concat(adminMenu)
+  // return appBarMenu.concat(adminMenu)
+  return allPage()
 }

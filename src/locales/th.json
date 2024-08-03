@@ -13,12 +13,21 @@
     "profile": "โปรไฟล์",
     "logout": "ออกสู่ระบบ",
     "search": "ค้นหา",
+    "manage": "จัดการ",
+    "management": "การจัดการ",
+    "subject": "รายวิชา",
+    "skill": "ทักษะ",
+    "user": "ผู้ใช้งาน",
     "$vuetify": {
         "noDataText": "ไม่มีข้อมูล",
         "dataFooter": {
-            "pageText": "หน้า",
-            "itemsPerPageText": "จำนวนต่อหน้า",
-            "itemsPerPageAll": "ทั้งหมด"
+            "itemsPerPageText": "รายการต่อหน้า:",
+            "itemsPerPageAll": "ทั้งหมด",
+            "nextPage": "หน้าต่อไป",
+            "prevPage": "หน้าที่แล้ว",
+            "firstPage": "หน้าแรก",
+            "lastPage": "หน้าสุดท้าย",
+            "pageText": "{0}-{1} จาก {2}"
         },
         "carousel": {
             "prev": "ก่อนหน้า",

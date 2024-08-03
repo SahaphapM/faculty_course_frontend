@@ -6,7 +6,7 @@
           <template #text>
             <v-row class="d-flex justify-center">
               <v-img
-                :src="profile.picture"
+                :src="profile?.picture"
                 min-width="200"
                 min-height="200"
                 max-width="200"
@@ -15,8 +15,8 @@
               ></v-img>
             </v-row>
             <div class="mt-5 text-center">
-              <p>{{ profile.email }}</p>
-              <p>{{ profile.name }}</p>
+              <p>{{ profile?.email }}</p>
+              <p>{{ profile?.name }}</p>
             </div>
           </template>
         </v-card>
@@ -39,5 +39,5 @@
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
-const profile = auth.profile
+const profile = auth.user
 </script>

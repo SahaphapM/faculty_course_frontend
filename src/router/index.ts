@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/home/HomeView.vue'
+import http from '@/service/http'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,7 +10,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        layout: 'MainLayout',
+        layout: 'CommonLayout',
         requireAuth: false
       }
     },
@@ -27,7 +28,7 @@ const router = createRouter({
       name: 'news',
       component: () => import('../views/news/NewsView.vue'),
       meta: {
-        layout: 'MainLayout',
+        layout: 'CommonLayout',
         requireAuth: false
       }
     },
@@ -36,14 +37,18 @@ const router = createRouter({
       name: 'contacts',
       component: () => import('../views/contacts/ContactsView.vue'),
       meta: {
-        layout: 'MainLayout',
+        layout: 'CommonLayout',
         requireAuth: false
       }
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('../views/AboutView.vue')
+      component: () => import('../views/AboutView.vue'),
+      meta: {
+        layout: 'CommonLayout',
+        requireAuth: false
+      }
     },
     {
       path: '/login',
@@ -66,7 +71,7 @@ const router = createRouter({
       name: 'Profile',
       component: () => import('../views/profile/ProfileView.vue'),
       meta: {
-        layout: 'MainLayout'
+        layout: 'CommonLayout'
       }
     },
     {
@@ -74,7 +79,7 @@ const router = createRouter({
       name: 'Data Center',
       component: () => import('../views/DataCenter/DataCenterView.vue'),
       meta: {
-        layout: 'MainLayout'
+        layout: 'CommonLayout'
       }
     },
     {
@@ -162,17 +167,31 @@ const router = createRouter({
     }
   ]
 })
-function isLogin() {
-  const user = localStorage.getItem('user')
-  // const member = localStorage.getItem('member')
-  if (user) {
+// function isLogin() {
+//   const user = localStorage.getItem('user')
+//   // const member = localStorage.getItem('member')
+//   if (user) {
+//     return true
+//   }
+//   return false
+// }
+
+async function isAuthenticated() {
+  try {
+    await http.get('auth/profile')
     return true
+  } catch (err) {
+    return false
   }
-  return false
 }
-router.beforeEach((to, from) => {
-  if (to.meta.requireAuth && !isLogin()) {
-    router.replace('login')
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requireAuth) {
+    const authenticated = await isAuthenticated()
+    if (!authenticated) {
+      return next('/forbidden')
+    }
   }
+  next()
 })
 export default router

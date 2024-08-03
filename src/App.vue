@@ -2,14 +2,16 @@
 import { useRoute } from 'vue-router'
 import MainLayout from './layouts/MainLayout.vue'
 import FullLayout from './layouts/FullLayout.vue'
+import CommonLayout from './layouts/CommonLayout.vue'
 import SearchDialog from './components/SearchDialog.vue'
 const route = useRoute()
 </script>
 
 <template>
   <v-app>
-    <MainLayout v-if="route.meta.layout === 'MainLayout'"> </MainLayout>
-    <FullLayout v-if="route.meta.layout === 'FullLayout'"></FullLayout>
+    <MainLayout v-if="route.meta.layout === 'MainLayout'" />
+    <FullLayout v-if="route.meta.layout === 'FullLayout'" />
+    <CommonLayout v-if="route.meta.layout === 'CommonLayout'" />
     <SearchDialog />
   </v-app>
 </template>
