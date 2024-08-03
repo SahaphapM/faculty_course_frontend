@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col v-for="n in 12" :key="n" cols="6" md="3">
         <BasicCard

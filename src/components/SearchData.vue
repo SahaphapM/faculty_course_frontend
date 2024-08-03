@@ -16,7 +16,6 @@ const search = ref(props.search)
   <v-text-field
     :label="props.label"
     variant="outlined"
-    density="compact"
     :loading="loading"
     append-inner-icon="mdi-magnify"
     v-model="search"

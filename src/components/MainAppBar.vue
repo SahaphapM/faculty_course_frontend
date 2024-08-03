@@ -1,53 +1,73 @@
 <script setup lang="ts">
-import vuetify from '@/plugins/vuetify'
-import { useDrawerStore } from '@/stores/drawer'
 import { useSearchStore } from '@/stores/search'
-import { computed, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import LanguageBtns from './LanguageBtns.vue'
 import { useLocale } from 'vuetify'
-import { appBarMenu } from '@/models/navigation'
+import { useAuthStore } from '@/stores/auth'
+import { useDrawerStore } from '@/stores/drawer'
+import { appVersion, isSmallScreen } from '@/utils/screenSize'
+import type { Profile } from '@/types/Profile'
+import router from '@/router'
 
 const { t } = useLocale()
 
-const isSmallDisplay = computed(() => vuetify.display.smAndDown.value)
-
-const menu = ref(appBarMenu)
-
+const drawer = useDrawerStore()
 const searchS = useSearchStore()
-const drawerS = useDrawerStore()
+
+const auth = useAuthStore()
+const profile = ref<Profile | null>()
+
+onMounted(async () => {
+  profile.value = await auth.fetchProfile()
+})
 </script>
 
 <template>
   <v-app-bar class="w-screen bg-secondary px-3" height="65" flat>
-    <v-app-bar-prepend :style="{ width: '179px' }" class="d-flex">
-      <v-app-bar-nav-icon @click="() => drawerS.switchDrawer()" />
-      <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
-    </v-app-bar-prepend>
+    <template #prepend>
+      <div v-if="isSmallScreen" class="d-flex ga-3" :style="{ width: '200px' }">
+        <v-app-bar-nav-icon
+          v-if="isSmallScreen && auth.isAuthenticated"
+          @click="() => drawer.switchDrawer()"
+        />
+        <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
+      </div>
+      <div v-else :style="{ width: '179px' }">
+        <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
+      </div>
+    </template>
     <v-app-bar-title class="d-flex justify-center">
       <v-text-field
         @click="() => searchS.switchToggle()"
-        v-if="!isSmallDisplay"
+        v-if="!isSmallScreen"
         min-width="300"
         class="mt-5"
-        density
         append-inner-icon="mdi-magnify"
         variant="solo"
-        placeholder="ค้นหา..."
+        density="compact"
+        :placeholder="`${t('search')}...`"
         readonly
       ></v-text-field>
     </v-app-bar-title>
-
-    <v-app-bar-append>
-      <div class="d-flex" v-if="isSmallDisplay">
+    <template #append>
+      <div class="d-flex" v-if="isSmallScreen">
         <LanguageBtns />
         <v-menu>
           <template #activator="{ props }">
-            <v-btn density v-bind="props" icon="mdi-dots-vertical"></v-btn>
+            <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
           </template>
           <v-list>
-            <v-list-item title="Login" to="/login" append-icon="mdi-login"> </v-list-item>
             <v-list-item
-              title="Search"
+              v-if="!auth.isAuthenticated"
+              :title="t('login')"
+              to="/login"
+              append-icon="mdi-login"
+            >
+            </v-list-item>
+            <v-list-item v-else :title="t('profile')" to="/profile" append-icon="mdi-account">
+            </v-list-item>
+            <v-list-item
+              :title="t('search')"
               append-icon="mdi-magnify"
               @click="() => searchS.switchToggle()"
             >
@@ -56,18 +76,39 @@ const drawerS = useDrawerStore()
         </v-menu>
       </div>
       <div v-else>
-        <LanguageBtns />
-        <v-btn class="bg-buu-gold" to="/login">
-          <p class="font-weight-bold">{{ t('login') }}</p>
-        </v-btn>
+        <div v-if="!auth.isAuthenticated">
+          <LanguageBtns />
+          <v-btn class="bg-buu-gold" to="/login">
+            <p class="font-weight-bold">{{ t('login') }}</p>
+          </v-btn>
+        </div>
+        <div v-else>
+          <v-btn
+            prepend-icon="mdi-cog"
+            variant="outlined"
+            color="buu-gold"
+            @click="() => router.push('/MainIFAdmin')"
+            >{{ t('manage') }}</v-btn
+          >
+          <LanguageBtns />
+          <v-btn size="large">
+            <v-avatar color="white">
+              <v-img :src="profile?.picture" draggable="false"></v-img>
+            </v-avatar>
+            <v-menu activator="parent">
+              <v-list>
+                <v-list-item to="/profile"> {{ t('profile') }} </v-list-item>
+                <v-list-item @click="auth.logout()"> {{ t('logout') }} </v-list-item>
+                <v-list-item>
+                  <p class="text-center text-medium-emphasis">
+                    {{ appVersion }}
+                  </p></v-list-item
+                >
+              </v-list>
+            </v-menu>
+          </v-btn>
+        </div>
       </div>
-    </v-app-bar-append>
-  </v-app-bar>
-  <v-app-bar class="bg-primary">
-    <v-container style="max-width: 1440px">
-      <v-btn v-for="nav in menu" :key="nav.title" color="white" :to="nav.to">
-        {{ t(nav.title) }}
-      </v-btn>
-    </v-container>
+    </template>
   </v-app-bar>
 </template>

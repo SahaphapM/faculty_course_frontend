@@ -2,8 +2,11 @@
 import type { Role } from '@/types/Role'
 import type { User } from '@/types/User'
 import { computed, onMounted, ref } from 'vue'
-import UploadImage3 from '@/components/UploadImage.vue'
+import UploadImage from '@/components/UploadImage.vue'
+import instance from '@/service/http'
+import { useUserStore } from '@/stores/user'
 
+const userStore = useUserStore()
 const props = defineProps<{
   item: User | null
   isUpdate: boolean
@@ -19,7 +22,6 @@ const previewUrl = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 const imageFile = ref<File | null>(null)
 const imageUpdate = ref(false)
-const imageURL = ref('https://www.informatics.buu.ac.th/2020/wp-content/uploads/2022/03/23.png')
 
 const uploadFile = async (file: File) => {
   imageFile.value = file
@@ -27,24 +29,48 @@ const uploadFile = async (file: File) => {
   console.log(file)
 }
 
+const isFormValid = ref(false)
+
+const rules = {
+  required: (value: any) => !!value || ''
+}
+
 // Computed property to handle the image source dynamically
 const imageSrc = computed(() => {
   if (imageUpdate.value && imageFile.value) {
     return URL.createObjectURL(imageFile.value)
   }
-  return imageURL.value
+  return getImageUrl(user.value)
 })
 
-const saveImage = (file: File | null) => {
-  try {
-    //Save image
-  } catch (error) {
-    //Show error
+const saveImage = (userId: string | null, file: File) => {
+  if (imageUpdate.value && userId) {
+    try {
+      //Save image
+      userStore.updateImage(userId, file)
+    } catch (error) {
+      //Show error
+    }
+  }
+}
+
+const deleteImage = () => {
+  user.value.image = 'unknown.jpg'
+  imageUpdate.value = true
+}
+
+function getImageUrl(user: User) {
+  // Use the base URL from Axios instance
+  if (user.image) {
+    return `${instance.defaults.baseURL}/public/users/images/${user.image}`
+  } else {
+    return `${instance.defaults.baseURL}/public/users/images/unknown.jpg`
   }
 }
 
 const reset = () => {
   user.value = Object.assign({}, props.item)
+  imageUpdate.value = false
 }
 
 const closeDialog = () => {
@@ -60,128 +86,120 @@ onMounted(async () => {
   <v-card
     class="elevation-5"
     rounded="lg"
-    style="padding-bottom: 30px"
-    min-width="100"
-    max-width="1440"
+    style="padding: 20px"
+    min-width="300px"
+    max-width="1440px"
+    max-height="800px"
   >
-    <v-row class="d-flex justify-end pt-9 pr-9">
-      <!-- <v-col cols="12" md="11"> -->
-      <!-- <p class="details-text" style="font-size: 2.5vh; margin-left: 1vh">โปรไฟล์</p> -->
-      <!-- </v-col> -->
-      <!-- class="justify-end" -->
-
-      <v-btn rounded="lg" icon="$close" variant="text" color="error" @click="closeDialog"></v-btn>
+    <v-row>
+      <v-col class="d-flex justify-end" style="margin-bottom: -10px">
+        <v-icon @click="closeDialog" size="x-large" icon="mdi-close-box-outline"></v-icon>
+      </v-col>
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="6" class="px-9">
+      <v-col cols="12" md="4">
         <v-row>
-          <v-col>
+          <v-col style="margin-top: -30px" class="d-flex justify-center">
+            <p style="font-size: 24px; font-weight: bold">โปรไฟล์</p>
+          </v-col></v-row
+        >
+        <v-row>
+          <v-col class="pt-10 d-flex justify-center">
             <v-img
-              :aspect-ratio="1"
-              class="bg-white rounded-lg"
-              style="margin-top: 40px"
-              :src="imageSrc"
-              min-width="100"
               cover
-            ></v-img>
+              :src="imageSrc"
+              class="elevation-2"
+              max-height="300px"
+              max-width="300px"
+              rounded="10"
+              style="border-radius: 10px; align-items: end; text-align: end"
+            >
+              <v-icon
+                @click="deleteImage"
+                style="background-color: white; border-radius: 20%"
+                size="45px"
+                icon="mdi-delete-circle-outline"
+              ></v-icon>
+            </v-img>
           </v-col>
         </v-row>
         <v-row>
-          <v-col col="12" md="5">
-            <!-- <label for="image_uploads">Choose images to upload (PNG, JPG)</label> -->
-            <!-- <input
-              type="file"
-              accept=".jpg, .jpeg, .png"
-              id="image_uploads"
-              name="image_uploads"
-              content="choose file"
-            /> -->
-
-            <!-- <v-btn class="btn-warning" prepend-icon="mdi-cloud-upload"> Button </v-btn>
-            <button type="button" class="btn-warning">Upload</button> -->
-
-            <UploadImage3
-              class="mx-auto"
+          <v-col class="d-flex justify-center">
+            <UploadImage
+              :width="'200px'"
+              :height="'45px'"
               :initialPreviewUrl="previewUrl"
               :initialErrorMessage="errorMessage"
               :uploadFile="uploadFile"
-              :alertMessage="'Change Image Profile'"
-            ></UploadImage3>
-          </v-col>
-          <v-col class="my-1" v-if="imageUpdate">
-            <v-btn
-              class="mx-3"
-              density="compact"
-              color="green"
-              icon="mdi-check"
-              @click="saveImage(imageFile)"
-            ></v-btn>
-            <v-btn
-              density="compact"
-              color="red"
-              icon="mdi-close"
-              @click="(imageFile = null), (imageUpdate = false)"
-            ></v-btn>
+              :lebel="'อัพเดตรูปภาพ'"
+            ></UploadImage>
           </v-col>
         </v-row>
       </v-col>
-      <v-col class="px-9" cols="12" md="6">
+      <v-col cols="12" md="8">
         <v-row class="my-1">
-          <p class="details-text">รายละเอียด</p>
+          <p style="font-size: 20px; margin-left: 10px">รายละเอียดผู้ใช้</p>
         </v-row>
         <v-row>
           <v-col>
-            <v-form ref="form">
+            <v-form ref="form" v-model="isFormValid">
               <v-text-field
                 v-model="user.id"
-                label="Id"
+                label="รหัสประจำตัว"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-model="user.email"
-                label="Email"
+                label="อีเมลล์"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-if="!isUpdate"
                 v-model="user.password"
-                label="Password"
+                label="รหัสผ่าน"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-model="user.firstName"
-                label="First Name"
+                label="ชื่อ"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-model="user.middleName"
-                label="Middle Name"
+                label="ชื่อกลาง"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-model="user.lastName"
-                label="Last Name"
+                label="นามสกุล"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
                 v-model="user.phone"
-                label="Phone"
+                label="เบอร์โทรศัพท์"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
+                :rules="[rules.required]"
               ></v-text-field>
             </v-form>
           </v-col>
@@ -192,10 +210,11 @@ onMounted(async () => {
               v-model="user.gender"
               :items="genders"
               item-title="name"
-              label="Base Gender"
+              label="เพศ"
               variant="outlined"
               rounded="lg"
               class="small-input"
+              :rules="[rules.required]"
             ></v-select>
           </v-col>
           <v-col>
@@ -203,7 +222,7 @@ onMounted(async () => {
               v-model="user.roles"
               variant="outlined"
               multiple
-              label="Roles"
+              label="ตำแหน่ง"
               :items="roles"
               item-title="name"
               item-value="id"
@@ -214,27 +233,28 @@ onMounted(async () => {
           </v-col>
         </v-row>
         <v-row class="justify-end">
-          <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-          ><v-btn @click="method(user)" variant="plain">บันทึก</v-btn></v-row
+          <v-btn
+            @click="reset, (imageFile = null), (imageUpdate = false)"
+            variant="plain"
+            color="error"
+            >ล้าง</v-btn
+          ><v-btn @click="method(user), saveImage(user.id, imageFile)" variant="plain"
+            >บันทึก</v-btn
+          ></v-row
         >
       </v-col>
     </v-row>
   </v-card>
-
-  >
 </template>
 
 <style scoped>
 .v-text-field {
-  height: 65px;
+  height: 55px;
+  margin-bottom: 15px;
 }
 .details-text {
   margin-left: 10px; /* Adjust the spacing between the div and p as needed */
   font-weight: bold;
-  font-size: large;
-}
-
-.btn-warning input[type='file'] {
-  opacity: 0;
+  font-size: 20px;
 }
 </style>

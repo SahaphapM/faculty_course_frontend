@@ -11,6 +11,20 @@ function updateUser(user: User) {
   return http.patch(`/users/${user.id}`, user)
 }
 
+function updateImageUser1(userId: string, file: File) {
+  return http.post(`/users/${userId}/image/upload`, file)
+}
+
+function updateImageUser(userId: string, file: File) {
+  const formData = new FormData()
+  formData.append('image', file) // 'image' should match the name in the @UseInterceptors(FileInterceptor('image'))
+  return http.post(`/users/${userId}/image/upload`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
 function delUser(id: string) {
   return http.delete(`/users/${id}`)
 }
@@ -33,5 +47,6 @@ export default {
   delUser,
   getUsers,
   getUser,
-  getUsersByPage
+  getUsersByPage,
+  updateImageUser
 }

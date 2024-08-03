@@ -6,7 +6,9 @@ const props = defineProps<{
   initialPreviewUrl: string | null
   initialErrorMessage: string | null
   uploadFile: (file: File) => Promise<void>
-  alertMessage: string
+  lebel: string
+  width: string
+  height: string
 }>()
 
 // const emits = defineEmits<{
@@ -88,32 +90,16 @@ const onFileChange = async (event: Event) => {
       accept="image/*"
       style="display: none"
     />
-    <v-btn @click="triggerFileInput" color="primary"> Upload Image </v-btn>
-    <div v-if="previewUrl" class="image-preview">
-      <!-- <img :src="previewUrl" alt="Image Preview" /> -->
-    </div>
-    <!-- <div v-if="alert">
-      <AlertMessage style="width: fit-content" :message="alertMessage" />
-    </div> -->
+    <v-btn :width="props.width" :height="props.height" @click="triggerFileInput" color="primary">
+      {{ props.lebel }}</v-btn
+    >
+    <div v-if="previewUrl" class="image-preview"></div>
 
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
 </template>
 
 <style scoped>
-/* .upload-container {
-  text-align: center;
-}
-
-.image-preview {
-  margin-top: 20px;
-}
-
-.image-preview img {
-  max-width: 100%;
-  max-height: 200px;
-} */
-
 .error-message {
   color: red;
   margin-top: 10px;

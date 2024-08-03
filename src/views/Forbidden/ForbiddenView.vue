@@ -13,7 +13,6 @@
         <p class="text-medium-emphasis">Redirect to home page in {{ countdown }} seconds</p>
       </v-col>
     </v-row>
-    <v-data-table> </v-data-table>
   </v-container>
 </template>
 
