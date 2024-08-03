@@ -72,9 +72,17 @@ onMounted(async () => {
               @click="() => searchS.switchToggle()"
             >
             </v-list-item>
+            <v-list-item
+              v-if="auth.isAuthenticated"
+              :title="t('logout')"
+              append-icon="mdi-logout"
+              @click="() => searchS.switchToggle()"
+            >
+            </v-list-item>
           </v-list>
         </v-menu>
       </div>
+      <!-- large screen -->
       <div v-else>
         <div v-if="!auth.isAuthenticated">
           <LanguageBtns />
@@ -97,8 +105,12 @@ onMounted(async () => {
             </v-avatar>
             <v-menu activator="parent">
               <v-list>
-                <v-list-item to="/profile"> {{ t('profile') }} </v-list-item>
-                <v-list-item @click="auth.logout()"> {{ t('logout') }} </v-list-item>
+                <v-list-item append-icon="mdi-account" to="/profile">
+                  {{ t('profile') }}
+                </v-list-item>
+                <v-list-item append-icon="mdi-logout" @click="auth.logout()">
+                  {{ t('logout') }}
+                </v-list-item>
                 <v-list-item>
                   <p class="text-center text-medium-emphasis">
                     {{ appVersion }}
