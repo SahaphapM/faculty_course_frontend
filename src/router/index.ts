@@ -61,9 +61,10 @@ const router = createRouter({
     {
       path: '/forbidden',
       name: 'Forbidden',
-      component: () => import('../views/forbidden/ForbiddenView.vue'),
+      component: () => import('../views/Forbidden/ForbiddenView.vue'),
       meta: {
-        layout: 'FullLayout'
+        layout: 'MainLayout',
+        requireAuth: true
       }
     },
     {
