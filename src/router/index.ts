@@ -63,8 +63,7 @@ const router = createRouter({
       name: 'Forbidden',
       component: () => import('../views/Forbidden/ForbiddenView.vue'),
       meta: {
-        layout: 'MainLayout',
-        requireAuth: true
+        layout: 'FullLayout'
       }
     },
     {
@@ -185,9 +184,8 @@ async function isAuthenticated() {
     return false
   }
 }
-
 router.beforeEach(async (to, from, next) => {
-  if (to.meta.requireAuth) {
+  if (to.path !== '/forbidden' && to.meta.requireAuth) {
     const authenticated = await isAuthenticated()
     if (!authenticated) {
       return next('/forbidden')
