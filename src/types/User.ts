@@ -8,8 +8,10 @@ type User = {
   lastName: string
   gender: string
   phone: string
+  image: string
   googleId: string
   roles: Role[] | null
 }
+
 
 export type { User }

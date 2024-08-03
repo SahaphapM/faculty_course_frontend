@@ -138,7 +138,7 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <v-container class="w-75">
+  <v-container fluid>
     <h2 style="font-size: 24px" class="pa-5">รายชื่อผู้ใช้งาน</h2>
 
     <v-row class="d-flex justify-end ga-5" no-gutters>
