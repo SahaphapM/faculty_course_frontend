@@ -68,6 +68,17 @@ const waitForOverlay = () => {
   })
 }
 
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
+}
+
 const validate = async () => {
   setTimeout(() => {
     reveal.value = true
