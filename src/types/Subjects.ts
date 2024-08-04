@@ -1,4 +1,5 @@
 import type { Curriculum } from "./Curriculums";
+import type { Skill } from "./Skills";
 import type { User } from "./User";
 
 type Subject = {
@@ -9,5 +10,6 @@ type Subject = {
     credit: number;
     type: string;
     studyTime: string;
+    // descriptionEng: string;
 }
 export type { Subject }
