@@ -52,7 +52,6 @@ export const useUserStore = defineStore('user', () => {
 
   async function saveUser() {
     const user = editedUser.value
-    user.id = null
     await userService.addUser(user)
   }
 
