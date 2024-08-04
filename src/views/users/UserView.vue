@@ -145,7 +145,8 @@ onMounted(async () => {
 </script>
 <template>
   <v-container fluid>
-    <h2 style="font-size: 24px" class="pa-5">รายชื่อผู้ใช้งาน</h2>
+    &nbsp;
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2>
 
     <v-row class="d-flex justify-end ga-5" no-gutters>
       <v-col class="d-flex justify-end flex-grow-1">
