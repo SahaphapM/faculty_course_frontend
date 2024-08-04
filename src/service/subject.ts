@@ -3,7 +3,7 @@ import http from './http';
 import type { Subject } from '@/types/Subjects';
 
 function addSubject(subject: Subject) {
-    console.log('Call from service' + subject)
+    console.log(subject)
     return http.post('/subjects', subject);
 }
 function updateSubject(subject: Subject) {
