@@ -52,7 +52,6 @@ const filteredCurriculums = computed(() => {
       <v-card-actions>
         <p class="font-weight-black ma-2" style="font-size: small">รายละเอียด</p>
         <v-spacer></v-spacer>
-
         <v-btn
           :icon="show1 ? 'mdi-chevron-up' : 'mdi-chevron-down'"
           @click="show1 = !show1"
@@ -62,7 +61,6 @@ const filteredCurriculums = computed(() => {
       <v-expand-transition>
         <div v-show="show1">
           <v-divider></v-divider>
-
           <v-card-text>
             <v-list>
               <v-list-item v-for="curriculum in filteredCurriculums" :key="curriculum.id">
@@ -71,7 +69,6 @@ const filteredCurriculums = computed(() => {
                   <v-list-item-subtitle>{{ curriculum.engName }}</v-list-item-subtitle>
                   <v-list-item-subtitle>{{ curriculum.thaiDegreeName }}</v-list-item-subtitle>
                   <v-list-item-subtitle>{{ curriculum.engDegreeName }}</v-list-item-subtitle>
-                  <!-- <v-list-item-subtitle>{{ curriculum.branch }}</v-list-item-subtitle> -->
                   <v-list-item-subtitle
                     >Duration: {{ curriculum.period }} years</v-list-item-subtitle
                   >
@@ -80,8 +77,8 @@ const filteredCurriculums = computed(() => {
                   >
                 </v-list-item-content>
               </v-list-item>
-            </v-list></v-card-text
-          >
+            </v-list>
+          </v-card-text>
         </div>
       </v-expand-transition>
       <v-card-actions>
@@ -113,29 +110,32 @@ const filteredCurriculums = computed(() => {
           ผลการเรียนรู้ที่คาดหวังของหลักสูตร
         </p>
         <v-spacer></v-spacer>
-
         <v-btn
           :icon="show3 ? 'mdi-chevron-up' : 'mdi-chevron-down'"
           @click="show3 = !show3"
         ></v-btn>
       </v-card-actions>
+
       <v-expand-transition>
         <div v-show="show3">
           <v-divider></v-divider>
-
           <v-card-text>
-            <v-list>
-              <v-list-item
-                v-for="curriculum in curriculumStore.currentCurriculum?.plos"
-                :key="curriculum.id"
-              >
+            <v-list v-if="filteredCurriculums.length && filteredCurriculums[0].plos">
+              <v-list-item v-for="plo in filteredCurriculums[0].plos" :key="plo.id">
                 <v-list-item-content>
-                  <v-list-item-title>{{ curriculum.num_plo }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ curriculum.description }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>{{ curriculum.resultTypes }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ plo.num_plo }}</v-list-item-title>
+                  <v-list-item-subtitle class="plo-description">
+                    รายละเอียด: {{ plo.description }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    >ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ:
+                    {{ plo.resultTypes }}</v-list-item-subtitle
+                  >
                 </v-list-item-content>
               </v-list-item>
+              <br />
             </v-list>
+            <v-alert v-else type="info">No learning outcomes available.</v-alert>
           </v-card-text>
         </div>
       </v-expand-transition>
@@ -374,5 +374,12 @@ Software Development
 .container {
   display: flex;
   justify-content: center;
+}
+.plo-description {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: inline-block;
+  width: 200%;
 }
 </style>
