@@ -304,7 +304,7 @@ const getUserInfoById = (id: any) => {
     max-width="1000px"
     v-model="localVisible"
     persistent
-    style="height: 100vh; overflow-y: auto"
+    style="height: 900px; overflow-y: auto"
   >
     <v-card
       class="elevation-5"
@@ -387,13 +387,7 @@ const getUserInfoById = (id: any) => {
                   </div>
                   <div>
                     <v-form ref="form" class="form-container">
-                      <v-sheet
-                        width="100%"
-                        min-height="100px"
-                        max-height="1000px"
-                        height="500px"
-                        class="pa-6"
-                      >
+                      <v-sheet width="100%" min-height="100px" max-height="1000px" class="pa-6">
                         <p style="font-size: 1.5vh">ชื่อหลักสูตร</p>
                         <v-text-field
                           v-model="thaiName"
@@ -444,7 +438,7 @@ const getUserInfoById = (id: any) => {
                             indeterminate
                           ></v-progress-circular>
                         </v-overlay>
-                        <v-row class="justify-end">
+                        <v-row class="justify-end mt-4 mb-1">
                           <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
                           <v-btn @click="save" variant="plain">บันทึก</v-btn>
                         </v-row>
@@ -501,6 +495,7 @@ const getUserInfoById = (id: any) => {
                                 style="height: auto"
                                 class="circular-btn"
                                 icon="mdi-minus"
+                                @click="removeCoordinator(curriculum.id)"
                               >
                               </v-btn>
                             </v-col>
@@ -522,7 +517,7 @@ const getUserInfoById = (id: any) => {
                             @click="addc"
                           ></v-btn>
                         </v-row>
-                        <v-row class="justify-end mt-8">
+                        <v-row class="justify-end mt-4 mb-1">
                           <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
                           ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
                         >
