@@ -2,12 +2,12 @@ import type { PageParams } from '@/types/PageParams'
 import http from './http'
 import type { Clos } from '@/types/Clos'
 
-function addClos(skill: Clos) {
-  return http.post('/clos', skill)
+function addClos(clos: Clos) {
+  return http.post('/clos', clos)
 }
 
-function updateClos(skill: Clos) {
-  return http.patch(`/clos/${skill.id}`, skill)
+function updateClos(clos: Clos) {
+  return http.patch(`/clos/${clos.id}`, clos)
 }
 
 function delClos(id: string) {

@@ -67,7 +67,7 @@ onMounted(async () => {
 <template>
   <v-container>
     &nbsp;
-    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">เล่มหลักสูตร</h2>
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">ทักษะ</h2>
 
     <v-spacer></v-spacer>
 
