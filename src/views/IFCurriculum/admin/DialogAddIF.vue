@@ -540,9 +540,15 @@ const getUserInfoById = (id: any) => {
                       </p>
                     </div>
                   </div>
-                  <div height="80vh">
+                  <div>
                     <v-form ref="form" class="form-container">
-                      <v-sheet width="90%" min-height="20vh" max-height="80vh" height="100%">
+                      <v-sheet
+                        width="100%"
+                        min-height="20vh"
+                        max-height="50vh"
+                        height="60vh"
+                        class="pa-6"
+                      >
                         <p style="font-size: 3vh">PLO</p>
                         <v-card
                           style="border-color: #bdbdbd"
@@ -552,6 +558,7 @@ const getUserInfoById = (id: any) => {
                           :key="curriculum.id"
                           class="pa-3 mt-3"
                         >
+                          <v-form> </v-form>
                           <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
                           {{ curriculum.num_plo }}
                           <v-text-field
@@ -562,12 +569,15 @@ const getUserInfoById = (id: any) => {
                             class="small-input"
                           ></v-text-field>
                           <p style="font-size: 1.5vh">รายละเอียด</p>
-                          <v-text-field
+                          <v-textarea
                             v-model="curriculum.description"
                             :rules="nameRules"
                             variant="outlined"
                             rounded="lg"
-                          ></v-text-field>
+                            rows="5"
+                            autosize
+                            style="min-height: 200px; white-space: pre-line"
+                          ></v-textarea>
                           <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
                           <v-select
                             v-model="curriculum.resultTypes"
@@ -582,6 +592,7 @@ const getUserInfoById = (id: any) => {
                               indeterminate
                             ></v-progress-circular>
                           </v-overlay>
+
                           <v-row class="justify-end">
                             <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
                             <v-btn @click="save2" variant="plain">บันทึก</v-btn>
@@ -648,5 +659,9 @@ const getUserInfoById = (id: any) => {
 
 .icon-hover {
   transform: scale(1.2); /* Optional: adds a scaling effect on hover */
+}
+
+.custom-text-field .v-input__control {
+  min-height: 4000px; /* ปรับขนาดความสูงตามต้องการ */
 }
 </style>
