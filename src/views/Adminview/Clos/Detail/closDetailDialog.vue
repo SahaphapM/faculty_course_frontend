@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSkillStore } from '@/stores/skills'
+import { useCloStore } from '@/stores/clos'
 
 const route = useRoute()
 const router = useRouter()
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
-const skillStore = useSkillStore()
-const skills = computed(() => skillStore.editedSkill)
+const cloStore = useCloStore()
+const clos = computed(() => cloStore.editedClo)
 const localVisible = ref(props.visible)
 
 watch(
@@ -18,40 +18,40 @@ watch(
   }
 )
 
-async function fetchSkillDetail(id: string) {
+async function fetchCloDetail(id: string) {
   try {
-    await skillStore.fetchSkill(id)
+    await cloStore.fetchClo(id)
   } catch (error) {
-    console.error('Failed to fetch skill details:', error)
+    console.error('Failed to fetch clo details:', error)
   }
 }
 
 const closeDialog = async () => {
   emit('close-dialog')
-  // await skillStore.fetchSkills()
-  // skillStore.clearForm()
+  // await cloStore.fetchClos()
+  // cloStore.clearForm()
 }
 
-function saveSkill() {
-  let skill = { ...skills.value }
-  if (route.params.id !== 'addSkill') {
-    skillStore.updateSkill(skill)
+function saveClo() {
+  let clo = { ...clos.value }
+  if (route.params.id !== 'addClo') {
+    cloStore.updateClo(clo)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; colorsTag: string } = {
-      name: skill.name,
-      description: skill.description,
-      colorsTag: skill.colorsTag
+    const payload: { name: string; description: string; subject: object } = {
+      name: clo.name,
+      description: clo.description,
+      subject: clo.subject
     }
-    skillStore.addSkill(payload)
+    cloStore.addClo(payload)
     closeDialog()
   }
 }
 
 onMounted(() => {
   if (!route.params.id) return
-  // if (route.params.id !== 'addSkill') {
-  //   fetchSkillDetail(route.params.id as string)
+  // if (route.params.id !== 'addClo') {
+  //   fetchCloDetail(route.params.id as string)
   // }
 })
 </script>
@@ -88,7 +88,7 @@ onMounted(() => {
         <v-row>
           <v-col cols="12">
             <v-text-field
-              v-model="skills.name"
+              v-model="clos.name"
               :counter="10"
               label="Name"
               hide-details
@@ -97,7 +97,7 @@ onMounted(() => {
           </v-col>
           <v-col cols="12">
             <v-text-field
-              v-model="skills.description"
+              v-model="clos.description"
               :counter="10"
               label="Description"
               hide-details
@@ -106,9 +106,18 @@ onMounted(() => {
           </v-col>
           <v-col cols="12">
             <v-text-field
-              v-model="skills.colorsTag"
+              v-model="clos.subject"
               :counter="10"
-              label="Colors Tag"
+              label="Subject"
+              hide-details
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="clos.plos"
+              :counter="10"
+              label="Plo"
               hide-details
               required
             ></v-text-field>
@@ -116,7 +125,7 @@ onMounted(() => {
         </v-row>
         <v-row>
           <v-col>
-            <v-btn @click="saveSkill">Save</v-btn>
+            <v-btn @click="saveClo">Save</v-btn>
           </v-col>
         </v-row>
       </v-container>

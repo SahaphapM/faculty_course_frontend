@@ -10,9 +10,10 @@ export const useCloStore = defineStore('clo', () => {
   const totalClos = ref(0)
   const initialClo: Clos = {
     id: '',
+    name: '',
     description: '',
-    subject: '',
-    clos: ''
+    subject: [],
+    plos: []
   }
 
   const editedClo = ref<Clos>({ ...initialClo })
@@ -44,16 +45,16 @@ export const useCloStore = defineStore('clo', () => {
 
   async function addClo(addClo: any) {
     console.log(addClo)
-    await cloService.addClo(addClo)
+    await cloService.addClos(addClo)
   }
 
-  async function updateClo(updatedClo: Clo) {
+  async function updateClo(updatedClo: Clos) {
     console.log(updatedClo)
-    await cloService.updateClo(updatedClo)
+    await cloService.updateClos(updatedClo)
   }
 
   async function deleteClo(id: string) {
-    await cloService.delClo(id)
+    await cloService.delClos(id)
     // await fetchClos()
   }
 

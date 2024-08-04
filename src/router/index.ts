@@ -111,6 +111,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/ClosView',
+      name: 'ClosView',
+      component: () => import('../views/Adminview/Clos/closView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
       path: '/SkillView',
       name: 'SkillView',
       component: () => import('../views/Adminview/Skill/skillView.vue'),
