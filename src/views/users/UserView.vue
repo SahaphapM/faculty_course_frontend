@@ -78,6 +78,7 @@ const addUser = () => {
 }
 
 const saveUser = async (user: User) => {
+  console.log(user.id)
   userStore.editedUser = user
 
   if (isUpdate.value) {
@@ -214,7 +215,7 @@ onMounted(async () => {
       </v-col>
     </v-row> -->
   </v-container>
-  <v-dialog max-width="1200px" v-model="dialog" persistent>
+  <v-dialog max-width="1000px" v-model="dialog" persistent>
     <FormDialog
       :item="editedUser"
       :method="saveUser"

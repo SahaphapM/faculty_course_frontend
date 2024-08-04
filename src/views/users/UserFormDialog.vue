@@ -22,6 +22,7 @@ const previewUrl = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 const imageFile = ref<File | null>(null)
 const imageUpdate = ref(false)
+const showPassword = ref(false)
 
 const uploadFile = async (file: File) => {
   imageFile.value = file
@@ -43,8 +44,8 @@ const imageSrc = computed(() => {
   return getImageUrl(user.value)
 })
 
-const saveImage = (userId: string | null, file: File) => {
-  if (imageUpdate.value && userId) {
+const saveImage = (userId: string | null, file: File | null) => {
+  if (imageUpdate.value && userId && file) {
     try {
       //Save image
       userStore.updateImage(userId, file)
@@ -88,7 +89,7 @@ onMounted(async () => {
     rounded="lg"
     style="padding: 20px"
     min-width="300px"
-    max-width="1440px"
+    max-width="1000px"
     max-height="800px"
   >
     <v-row>
@@ -163,6 +164,9 @@ onMounted(async () => {
               <v-text-field
                 v-if="!isUpdate"
                 v-model="user.password"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="showPassword = !showPassword"
+                :type="showPassword ? 'text' : 'password'"
                 label="รหัสผ่าน"
                 variant="outlined"
                 rounded="lg"
