@@ -40,14 +40,14 @@ const pageParams = ref<PageParams>({
   column2: ''
 })
 
-const fetchUsers = async (search: string = '', facultyId: string = '', branchId: string = '') => {
+const fetchUsers = async (search?: string, facultyId?: string, branchId?: string) => {
   loading.value = true
-  if (search !== '') {
+  if (search !== '' && search) {
     pageParams.value.search = search
   } else {
     pageParams.value.search = ''
   }
-  if (facultyId !== '' && branchId !== '') {
+  if (facultyId && branchId) {
     pageParams.value.column1 = facultyId
     pageParams.value.column2 = branchId
   }

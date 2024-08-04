@@ -10,6 +10,7 @@ const faculties = ref<any[]>([])
 const selectedFaculty = ref<any>(null)
 const selectedBranch = ref<any>(null)
 const branches = ref<any[]>([])
+const disabled = ref(true)
 
 // Fetch faculties and branches
 const fetchFacultiesAndBranches = async () => {
@@ -26,9 +27,11 @@ watch(selectedFaculty, (newFaculty) => {
   if (newFaculty && newFaculty.branches) {
     branches.value = newFaculty.branches
     selectedBranch.value = branches.value[0]
+    disabled.value = false
   } else {
     branches.value = []
     selectedBranch.value = null
+    disabled.value = true
   }
 })
 
@@ -68,13 +71,13 @@ onMounted(() => {
       ></v-select>
     </v-col>
     <v-col cols="12" md="5">
+      <!-- :disabled="disabled" -->
       <v-select
         v-model="selectedBranch"
         :items="branches"
         item-title="name"
         item-value="id"
         label="Branch"
-        clearable
         variant="outlined"
         rounded="lg"
         :return-object="true"

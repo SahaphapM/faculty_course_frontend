@@ -110,7 +110,6 @@ onMounted(async () => {
             <v-img
               cover
               :src="imageSrc"
-              class="elevation-2"
               max-height="300px"
               max-width="300px"
               rounded="10"
