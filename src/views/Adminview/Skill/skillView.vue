@@ -13,7 +13,9 @@ const pageParams = ref<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 
 const headers = computed(() => [
@@ -65,7 +67,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     &nbsp;
     <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">ทักษะ</h2>
 

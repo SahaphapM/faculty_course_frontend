@@ -2,15 +2,22 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCloStore } from '@/stores/clos'
+import { usePloStore } from '@/stores/plos'
 
 const route = useRoute()
-const router = useRouter()
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const cloStore = useCloStore()
+const plosStore = usePloStore()
+const plos = computed(() => plosStore.plos)
 const clos = computed(() => cloStore.editedClo)
 const localVisible = ref(props.visible)
-
+const select2 = ref<any | null>(null)
+const plosOptions = computed(() => {
+  return plos.value.map((plos) => {
+    return `${plos.id} ${plos.description}`
+  })
+})
 watch(
   () => props.visible,
   (newVal) => {
@@ -18,18 +25,8 @@ watch(
   }
 )
 
-async function fetchCloDetail(id: string) {
-  try {
-    await cloStore.fetchClo(id)
-  } catch (error) {
-    console.error('Failed to fetch clo details:', error)
-  }
-}
-
 const closeDialog = async () => {
   emit('close-dialog')
-  // await cloStore.fetchClos()
-  // cloStore.clearForm()
 }
 
 function saveClo() {
@@ -38,21 +35,20 @@ function saveClo() {
     cloStore.updateClo(clo)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; subject: object } = {
+    const payload: { name: string; description: string; subject: object[]; plos: object[] } = {
       name: clo.name,
       description: clo.description,
-      subject: clo.subject
+      subject: clo.subject,
+      plos: select2.value
     }
+    console.log(payload)
+
     cloStore.addClo(payload)
     closeDialog()
   }
 }
-
 onMounted(() => {
-  if (!route.params.id) return
-  // if (route.params.id !== 'addClo') {
-  //   fetchCloDetail(route.params.id as string)
-  // }
+  plosStore.fetchPlos()
 })
 </script>
 
@@ -83,7 +79,7 @@ onMounted(() => {
             rounded="lg"
           />
         </div>
-        <p style="font-size: 30px">รายละเอียดสกิล</p>
+        <p style="font-size: 30px">CloDetail</p>
 
         <v-row>
           <v-col cols="12">
@@ -105,22 +101,23 @@ onMounted(() => {
             ></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field
+            <v-select
               v-model="clos.subject"
-              :counter="10"
+              item-text="name"
+              item-value="id"
               label="Subject"
               hide-details
               required
-            ></v-text-field>
+            ></v-select>
           </v-col>
           <v-col cols="12">
-            <v-text-field
-              v-model="clos.plos"
-              :counter="10"
-              label="Plo"
-              hide-details
-              required
-            ></v-text-field>
+            <p style="font-size: 1.5vh">สาขาวิชา</p>
+            <v-select
+              v-model="select2"
+              :items="plosOptions"
+              variant="outlined"
+              rounded="lg"
+            ></v-select>
           </v-col>
         </v-row>
         <v-row>

@@ -39,7 +39,6 @@ export const useCloStore = defineStore('clo', () => {
   async function setCurrentClo(id: string) {
     const res = await cloService.getClo(id)
     editedClo.value = res.data
-    // currentClo.value = editedClo.value
     console.log(editedClo.value)
   }
 
