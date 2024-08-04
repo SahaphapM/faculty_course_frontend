@@ -52,33 +52,36 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container>
-    <v-select
-      v-model="selectedFaculty"
-      :items="faculties"
-      item-title="name"
-      item-value="id"
-      label="Faculty"
-      clearable
-      variant="outlined"
-      rounded="lg"
-      :return-object="true"
-      style="height: 55px; width: 100%; min-width: 150px"
-    ></v-select>
-
-    <v-select
-      v-model="selectedBranch"
-      :items="branches"
-      item-title="name"
-      item-value="id"
-      label="Branch"
-      clearable
-      variant="outlined"
-      rounded="lg"
-      :return-object="true"
-      style="height: 55px; width: 100%; min-width: 150px"
-    ></v-select>
-  </v-container>
+  <v-row>
+    <v-col cols="12" md="7">
+      <v-select
+        v-model="selectedFaculty"
+        :items="faculties"
+        item-title="name"
+        item-value="id"
+        label="Faculty"
+        clearable
+        variant="outlined"
+        rounded="lg"
+        :return-object="true"
+        style="height: 55px; width: 100%; min-width: 150px"
+      ></v-select>
+    </v-col>
+    <v-col cols="12" md="5">
+      <v-select
+        v-model="selectedBranch"
+        :items="branches"
+        item-title="name"
+        item-value="id"
+        label="Branch"
+        clearable
+        variant="outlined"
+        rounded="lg"
+        :return-object="true"
+        style="height: 55px; width: 100%; min-width: 150px"
+      ></v-select>
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped>
