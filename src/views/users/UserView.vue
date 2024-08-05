@@ -7,6 +7,8 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
+import MainTable from '@/components/MainTable.vue'
+import type { HeaderItem } from '@/types/HeaderItem'
 import AddButton from '@/components/AddButton.vue'
 import SearchByFaculty from '@/components/SearchByFaculty.vue'
 
@@ -221,6 +223,35 @@ onMounted(async () => {
               :max-pages-shown="3"
               @click="clickHandler"
             ></Pagination>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-dialog max-width="1000px" persistent v-model="dialog">
+        <FormDialog
+          :item="editedUser"
+          :method="saveUser"
+          :isUpdate="isUpdate"
+          :roles="roleStore.roles"
+          @close-dialog="closeDialog"
+        ></FormDialog>
+      </v-dialog>
+    </v-card>
+    <MainTable
+      :items="userStore.users"
+      :headers="headers"
+      :fetch-data="fetchUsers"
+      :btnAddAction="() => {}"
+      :combobox-items="['yes', 'no']"
+      :faculty-items="['yai', 'lek']"
+      :action="() => {}"
+      :items-per-page="10"
+      customColumnName="gender"
+    >
+      <template #gender="{ item }">
+        {{ item }}
+      </template>
+    </MainTable>
       </v-col>
     </v-row> -->
   </v-container>

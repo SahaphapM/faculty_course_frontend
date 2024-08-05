@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User'
 import type { PageParams } from '@/types/PageParams'
+import MainTable from '@/components/MainTable.vue'
+import type { BreadItem } from '@/types/Breaditem'
+import SearchData from '@/components/SearchData.vue'
 
 const userStore = useUserStore()
 
 const headers = [
-  { title: 'Email', value: 'email' },
-  { title: 'First Name', value: 'firstName' },
-  { title: 'Last Name', value: 'lastName' },
-  { title: 'Gender', value: 'gender' },
-  { title: 'Phone', value: 'phone' },
-  { title: 'Roles', value: 'roles' },
-  { title: 'Actions', value: 'actions', sortable: false }
+  { title: 'Email', key: 'email', value: 'email', sortable: false },
+  { title: 'First Name', key: 'firstName', value: 'firstName', sortable: false },
+  { title: 'Last Name', key: 'lastName', value: 'lastName', sortable: false },
+  { title: 'Phone', key: 'phone', value: 'phone', sortable: true }
 ]
 
+const items = [
+  { email: 'john@gmail.com', firstName: 'john', lastName: 'wick', phone: '0888527971' }
+]
 const loading = ref(false)
 const pageParams = ref<PageParams>({
   page: 1,
@@ -47,16 +49,21 @@ const updateOptions = (options: any) => {
   pageParams.value.limit = options.itemsPerPage
 }
 
-watch(pageParams, fetchUsers, { deep: true })
+// watch(pageParams, fetchUsers, { deep: true })
 
-onMounted(async () => {
-  await fetchUsers()
-  console.log(userStore.totalUsers)
-})
+// onMounted(async () => {
+//   await fetchUsers()
+//   console.log(userStore.totalUsers)
+// })
+
+const breads: BreadItem[] = [
+  { title: 'home', disabled: false, href: '/' },
+  { title: 'admin', disabled: true, href: '/MainIFAdmin' }
+]
 </script>
 
 <template>
-  <div>
+  <!-- <div>
     <v-data-table-server
       v-model:items-per-page="pageParams.limit"
       :headers="headers"
@@ -86,12 +93,31 @@ onMounted(async () => {
         <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon>
       </template>
     </v-data-table-server>
-  </div>
+  </div> -->
+  <v-container fluid>
+    <v-breadcrumbs :items="breads"></v-breadcrumbs>
+    <MainTable
+      :items="items"
+      :headers="headers"
+      :fetch-data="async () => {}"
+      :btnAddAction="() => {}"
+      :combobox-items="['yes', 'no']"
+      :faculty-items="['yai', 'lek']"
+      :action="() => {}"
+      :items-per-page="10"
+    />
+  </v-container>
 </template>
 
 <style scoped>
-.mx-4 {
-  margin-left: 16px;
-  margin-right: 16px;
+.even-row {
+  background-color: #f9f9f9;
+  color: black;
+  text-align: left;
+}
+.odd-row {
+  background-color: #ffffff;
+  color: black;
+  text-align: left;
 }
 </style>

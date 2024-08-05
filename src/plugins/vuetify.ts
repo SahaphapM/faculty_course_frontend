@@ -112,6 +112,11 @@ export default createVuetify({
       variant: 'flat'
     },
     VTextField: {
+      density: 'comfortable',
+      variant: 'outlined'
+    },
+    VCombobox: {
+      density: 'comfortable',
       variant: 'outlined'
     }
   }

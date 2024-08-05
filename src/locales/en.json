@@ -18,6 +18,9 @@
     "subject": "subject",
     "skill": "skill",
     "user": "user",
+    "add": "add",
+    "branch": "branch",
+    "faculty": "faculty",
     "$vuetify": {
         "noDataText": "No data",
         "dataFooter": {

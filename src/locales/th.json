@@ -18,6 +18,9 @@
     "subject": "รายวิชา",
     "skill": "ทักษะ",
     "user": "ผู้ใช้งาน",
+    "add": "เพิ่ม",
+    "branch": "สาขา",
+    "faculty": "คณะ",
     "$vuetify": {
         "noDataText": "ไม่มีข้อมูล",
         "dataFooter": {
