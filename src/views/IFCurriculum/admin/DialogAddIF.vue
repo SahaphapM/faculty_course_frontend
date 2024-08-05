@@ -300,12 +300,7 @@ const getUserInfoById = (id: any) => {
 }
 </script>
 <template>
-  <v-dialog
-    max-width="1000px"
-    v-model="localVisible"
-    persistent
-    style="height: 900px; overflow-y: auto"
-  >
+  <v-dialog max-width="1000px" v-model="localVisible" persistent style="overflow-y: auto">
     <v-card
       class="elevation-5"
       rounded="lg"
@@ -525,7 +520,6 @@ const getUserInfoById = (id: any) => {
                     </v-form>
                   </div>
                 </v-tabs-window-item>
-
                 <v-tabs-window-item value="option-3">
                   <div style="display: flex; align-items: center; margin-bottom: 5vh">
                     <div style="flex-grow: 1; display: flex; align-items: center">
@@ -537,7 +531,7 @@ const getUserInfoById = (id: any) => {
                   </div>
                   <div height="80vh">
                     <v-form ref="form" class="form-container">
-                      <v-sheet width="90%" min-height="20vh" max-height="80vh" height="100%">
+                      <v-sheet width="90%" min-height="20vh" max-height="70vh" height="100%">
                         <p style="font-size: 3vh">PLO</p>
                         <v-card
                           style="border-color: #bdbdbd"
@@ -545,10 +539,13 @@ const getUserInfoById = (id: any) => {
                           rounded="lg"
                           v-for="(curriculum, index) in curriculumStore.currentCurriculum?.plos"
                           :key="curriculum.id"
-                          class="pa-3 mt-3"
+                          class="pa-3 mt-3 bg-blue-grey-lighten-5"
                         >
-                          <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
+                          <v-icon color="primary" class="mb-1"
+                            >mdi-numeric-{{ index + 1 }}-circle</v-icon
+                          >&nbsp;
                           {{ curriculum.num_plo }}
+
                           <v-text-field
                             v-model="curriculum.num_plo"
                             :rules="nameRules"

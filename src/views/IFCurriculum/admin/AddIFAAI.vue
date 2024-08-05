@@ -11,6 +11,8 @@ import type { VForm } from 'vuetify/components'
 import { usePloStore } from '@/stores/plos'
 import type { User } from '@/types/User'
 import { useDisplay } from 'vuetify'
+import { useRouter } from 'vue-router'
+
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
@@ -44,6 +46,7 @@ const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 type userIds = { id: string }
 const tab = ref<string>('option-1')
 const value = ref('one')
+const router = useRouter()
 onMounted(async () => {
   await branchStore.getBranches()
   curriculumStore.fetchCurriculums()
@@ -101,6 +104,26 @@ const resetValidation = () => {
   form.value!.resetValidation()
 }
 
+watch(
+  () => curriculumStore.currentCurriculum,
+  async (newCurriculum) => {
+    if (newCurriculum) {
+      await PloStore.fetchPlos()
+    }
+  }
+)
+
+function addForm() {
+  const newIndex = forms.value.length + 1
+  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
+}
+
+const removeForm = () => {
+  if (forms.value.length > 1) {
+    forms.value.pop()
+  }
+}
+
 //***************************************coordinator*************************************************** */
 const initialCoordinators: userIds[] = []
 const coordinator = ref<userIds[]>(
@@ -119,10 +142,7 @@ const getCoordinatorName = (id: string | null) => {
 }
 
 async function saveC() {
-  const { valid } = await form.value!.validate()
-  if (!valid) return
   console.log(coordinator.value, 'from vue') // Log the data to be sent
-
   if (curriculumStore.editedCurriculum?.id) {
     try {
       // Log request URL and payload
@@ -130,7 +150,6 @@ async function saveC() {
         `Sending request to: /curriculums/${curriculumStore.editedCurriculum.id}/coordinators`
       )
       console.log('Payload:', coordinator.value)
-
       await curriculumStore.addCoordinatorToCurriculum(
         curriculumStore.editedCurriculum.id,
         coordinator.value
@@ -242,6 +261,14 @@ const scrollToElement = () => {
     detailsSection.value.scrollIntoView({ behavior: 'smooth' })
   }
 }
+const over = async () => {
+  overlay.value = !overlay.value
+
+  await nextTick()
+
+  await waitForOverlay()
+  router.push({ name: 'MainIFAdmin' })
+}
 
 const { mdAndDown } = useDisplay()
 
@@ -265,7 +292,8 @@ const isMobile = computed(() => mdAndDown.value)
         <v-tab value="option-1">รายละเอียด</v-tab>
         <v-tab value="option-2">อาจารย์ผู้รับผิดชอบหลักสูตร</v-tab>
         <v-tab value="option-3">ผลการเรียนรู้ที่คาดหวังของหลักสูตร</v-tab>
-        <v-tab value="option-4">ผลการเรียนรู้ที่คาดหวังของหลักสูตร</v-tab>
+        <v-tab value="option-4">โครงสร้างหลักสูตร รายวิชาและหน่วยกิต</v-tab>
+        <v-tab value="option-5">ภาพรวม</v-tab>
       </v-tabs>
       <v-tabs-window v-model="tab">
         <v-tabs-window-item value="option-1">
@@ -393,39 +421,218 @@ const isMobile = computed(() => mdAndDown.value)
           </v-container>
         </v-tabs-window-item>
 
+        <v-tabs-window-item value="option-3">
+          <v-container>
+            <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
+              <div class="rounded-rectangle"></div>
+              <p class="details-text" style="font-size: 2.5vh">
+                ผลการเรียนรู้ที่คาดหวังของหลักสูตร
+              </p>
+            </div>
+            <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
+              <p class="details-text" style="font-size: 2.5vh">{{ form.label }}</p>
+              <br />
+              <p style="font-size: 1.5vh">รายละเอียด</p>
+              <v-text-field
+                v-model="form.description"
+                :rules="nameRules"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
+              <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+              <v-select
+                v-model="form.select5"
+                :items="items4"
+                variant="outlined"
+                rounded="lg"
+              ></v-select>
+            </v-form>
+            <v-row class="justify-center">
+              <v-btn
+                icon="mdi-plus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="addForm"
+              ></v-btn>
+              <v-btn
+                color="error"
+                icon="mdi-minus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="removeForm"
+              ></v-btn>
+            </v-row>
+            <v-row class="justify-end mt-8 mb-1">
+              <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+              ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+            >
+          </v-container>
+        </v-tabs-window-item>
+
         <v-tabs-window-item value="option-4">
+          <v-container>
+            <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
+              <div class="rounded-rectangle"></div>
+              <p class="details-text" style="font-size: 2.5vh">
+                โครงสร้างหลักสูตร รายวิชาและหน่วยกิต
+              </p>
+            </div>
+            <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
+              <p class="details-text" style="font-size: 2.5vh">วิชาที่ 1</p>
+              <br />
+              <p style="font-size: 1.5vh">รายละเอียด</p>
+              <v-text-field
+                v-model="form.description"
+                :rules="nameRules"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
+              <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+              <v-select
+                v-model="form.select5"
+                :items="items4"
+                variant="outlined"
+                rounded="lg"
+              ></v-select>
+            </v-form>
+            <v-row class="justify-center">
+              <v-btn
+                icon="mdi-plus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="addForm"
+              ></v-btn>
+              <v-btn
+                color="error"
+                icon="mdi-minus"
+                class="ma-4 rounded-circle"
+                size="40px"
+                variant="outlined"
+                @click="removeForm"
+              ></v-btn>
+            </v-row>
+            <v-row class="justify-end mt-8 mb-1">
+              <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
+              ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+            >
+          </v-container>
+        </v-tabs-window-item>
+
+        <v-tabs-window-item value="option-5">
           <v-container class="mt-2">
             <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
               <div class="rounded-rectangle"></div>
               <p class="details-text" style="font-size: 2.5vh">ภาพรวม</p>
             </div>
 
-            <v-form ref="form" class="ma-2">
-              <p style="font-size: 18px">ชื่อหลักสูตร : &nbsp;{{ thaiName }}</p>
-              &nbsp;
-              <p style="font-size: 18px">ชื่อหลักสูตร (อังกฤษ) : &nbsp;{{ engName }}</p>
-              &nbsp;
-              <p style="font-size: 18px">รหัสหลักสูตร : &nbsp;{{ id }}</p>
-              &nbsp;
-              <p style="font-size: 18px">ชื่อปริญญา : &nbsp;{{ thaiDegreeName }}</p>
-              &nbsp;
-              <p style="font-size: 18px">ชื่อปริญญา ( อังกฤษ) : &nbsp;{{ engDegreeName }}</p>
-              &nbsp;
-              <p style="font-size: 18px">สาขาวิชา : &nbsp;{{ select2 }}</p>
-              &nbsp;
-              <p style="font-size: 18px">รายชื่อผู้ดูแลหลักสูตร :</p>
-              &nbsp;
+            <p
+              style="
+                font-size: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span
+                >ชื่อหลักสูตร : &nbsp;{{ thaiName
+                }}<span style="color: red" v-if="engName == ''">ไม่มี</span></span
+              >
+              <v-icon size="20px" @click="tab = 'option-1'">mdi-pencil</v-icon>
+            </p>
+            &nbsp;
+            <p style="font-size: 18px">
+              ชื่อหลักสูตร (อังกฤษ) : &nbsp;{{ engName
+              }}<span style="color: red" v-if="engName == ''">ไม่มี</span>
+            </p>
+            &nbsp;
+            <p style="font-size: 18px">
+              รหัสหลักสูตร : &nbsp;{{ id
+              }}<span style="color: red" v-if="engName == ''">ไม่มี</span>
+            </p>
+            &nbsp;
+            <p style="font-size: 18px">
+              ชื่อปริญญา : &nbsp;{{ thaiDegreeName
+              }}<span style="color: red" v-if="engName == ''">ไม่มี</span>
+            </p>
+            &nbsp;
+            <p style="font-size: 18px">
+              ชื่อปริญญา ( อังกฤษ) : &nbsp;{{ engDegreeName
+              }}<span style="color: red" v-if="engName == ''">ไม่มี</span>
+            </p>
+            &nbsp;
+            <p style="font-size: 18px">
+              สาขาวิชา : &nbsp;{{ select2
+              }}<span style="color: red" v-if="engName == ''">ไม่มี</span>
+            </p>
+            &nbsp;
+            <p
+              style="
+                font-size: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span>รายชื่อผู้ดูแลหลักสูตร :</span>
+              <v-icon size="20px" @click="tab = 'option-2'">mdi-pencil</v-icon>
+            </p>
+            &nbsp;
+            <div v-if="coordinator && coordinator.length">
               <p
-                style="font-size: 18px"
                 v-for="(curriculum, index) in coordinator"
                 :key="curriculum.id || index"
+                style="font-size: 18px"
                 class="ml-8"
               >
                 ผู้ดูแลคนที่ {{ index + 1 }} : &nbsp;{{ getUserInfoById(curriculum.id) }}
               </p>
-              &nbsp;
-              <p style="font-size: 18px">ผลการเรียนรู้ที่คาดหวังของหลักสูตร :</p>
-            </v-form>
+            </div>
+
+            <div v-else>
+              <p class="ml-8" style="color: red">ไม่มี</p>
+            </div>
+
+            &nbsp;
+            <p
+              style="
+                font-size: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span>ผลการเรียนรู้ที่คาดหวังของหลักสูตร :</span>
+              <v-icon size="20px" @click="tab = 'option-3'">mdi-pencil</v-icon>
+            </p>
+            &nbsp;
+            <div>
+              <div v-if="forms.length && forms[0].description">
+                <div
+                  v-for="(item, index) in forms"
+                  :key="index"
+                  class="ml-8"
+                  style="font-size: 18px"
+                >
+                  <p>{{ item.label }}</p>
+                  <p>รายละเอียด : &nbsp;{{ item.description }}</p>
+                  <p>ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ : &nbsp;{{ item.select5 }}</p>
+                  <v-divider></v-divider>
+                </div>
+              </div>
+
+              <div v-else>
+                <p class="ml-8" style="color: red">ไม่มี</p>
+              </div>
+            </div>
+
+            <v-row class="justify-end mt-8 mb-1">
+              <v-btn @click="over" variant="plain">ยืนยัน</v-btn></v-row
+            >
           </v-container>
         </v-tabs-window-item>
       </v-tabs-window>
