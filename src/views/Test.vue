@@ -3,9 +3,9 @@ import { onMounted, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User'
 import type { PageParams } from '@/types/PageParams'
-import MainTable from '@/components/MainTable.vue'
+import MainTable from '@/components/table/MainTable.vue'
 import type { BreadItem } from '@/types/Breaditem'
-import SearchData from '@/components/SearchData.vue'
+import SearchData from '@/components/table/SearchTextfield.vue'
 
 const userStore = useUserStore()
 
@@ -99,10 +99,10 @@ const breads: BreadItem[] = [
     <MainTable
       :items="items"
       :headers="headers"
-      :fetch-data="async () => {}"
+      :fetchSearch="async () => {}"
       :btnAddAction="() => {}"
-      :combobox-items="['yes', 'no']"
-      :faculty-items="['yai', 'lek']"
+      :hasCombobox="['yes', 'no']"
+      :hasFaculty="['yai', 'lek']"
       :action="() => {}"
       :items-per-page="10"
     />

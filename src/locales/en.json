@@ -21,6 +21,8 @@
     "add": "add",
     "branch": "branch",
     "faculty": "faculty",
+    "actions": "actions",
+    "list user": "Users",
     "$vuetify": {
         "noDataText": "No data",
         "dataFooter": {

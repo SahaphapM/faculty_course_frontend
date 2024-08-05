@@ -5,24 +5,20 @@ import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
-import Pagination from '../../components/Pagination.vue'
-import SearchData from '@/components/SearchData.vue'
-import MainTable from '@/components/MainTable.vue'
-import type { HeaderItem } from '@/types/HeaderItem'
-import AddButton from '@/components/AddButton.vue'
-import SearchByFaculty from '@/components/SearchByFaculty.vue'
+import MainTable from '@/components/table/MainTable.vue'
+import { useLocale } from 'vuetify'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
 
 const headers = [
-  { title: 'รหัสผู้ใช้', value: 'id', key: 'id' },
-  { title: 'อีเมลล์', value: 'email', key: 'email' },
-  { title: 'ชื่อ', value: 'firstName', key: 'firstName' },
-  { title: 'นามสกุล', value: 'lastName', key: 'lastName' },
+  { title: 'รหัสผู้ใช้', value: 'id', key: 'id', sortable: false },
+  { title: 'อีเมลล์', value: 'email', key: 'email', sortable: false },
+  { title: 'ชื่อ', value: 'firstName', key: 'firstName', sortable: false },
+  { title: 'นามสกุล', value: 'lastName', key: 'lastName', sortable: false },
   // { title: 'เพศ', value: 'gender' },
   // { title: 'เบอร์โทรศัพท์', value: 'phone' },
-  { title: 'ตำแหน่ง', value: 'roles' }
+  { title: 'ตำแหน่ง', value: 'roles', key: 'roles', sortable: false }
 ]
 
 const dialog = ref(false)
@@ -144,75 +140,14 @@ onMounted(async () => {
   console.log(userStore.users)
   console.log(userStore.totalUsers)
 })
+
+const { t } = useLocale()
 </script>
+
 <template>
   <v-container fluid>
-    &nbsp;
-    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2>
-
-    <v-row class="d-flex justify-end ga-5" no-gutters>
-      <v-col class="d-flex justify-end flex-grow-1">
-        <SearchData
-          :search="pageParams.search"
-          style="min-width: 250px"
-          :label="'ค้นหาผู้ใช้'"
-          :fetch-data="fetchUsers"
-        ></SearchData>
-      </v-col>
-      <v-col>
-        <SearchByFaculty :fetch-data="fetchUsers"></SearchByFaculty>
-      </v-col>
-      <v-col class="d-flex justify-end flex-grow-0">
-        <AddButton
-          style="width: 300px"
-          :to-link="null"
-          :label="'เพิ่มข้อมูลผู้ใช้'"
-          :clickFucntion="addUser"
-        ></AddButton>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
-      <v-col>
-        <v-card class="mt-4">
-          <div>
-            <v-data-table-server
-              v-model:items-per-page="pageParams.limit"
-              :headers="headers"
-              :items="userStore.users"
-              :items-length="userStore.totalUsers"
-              :loading="loading"
-              item-value="name"
-              class="bg-primary"
-              @update:options="updateOptions"
-            >
-              <template v-slot:item="{ item, index }">
-                <tr :class="[{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }]">
-                  <td style="min-width: 130px">{{ item.id }}</td>
-                  <td style="min-width: 220px">{{ item.email }}</td>
-                  <td style="min-width: 180px">{{ item.firstName }}</td>
-                  <td style="min-width: 180px">{{ item.lastName }}</td>
-                  <!-- <td style="min-width: 120px">{{ item.gender }}</td> -->
-                  <!-- <td style="min-width: 150px">{{ item.phone }}</td> -->
-                  <td>
-                    <v-chip-group>
-                      <v-chip v-for="role in item.roles" :key="role.id">
-                        {{ role.name }}
-                      </v-chip>
-                    </v-chip-group>
-                  </td>
-                  <td style="text-align: left; min-width: 90px; padding-left: 40px">
-                    <v-icon primary small @click="editUser(item)"
-                      >mdi-file-document-edit-outline</v-icon
-                    >
-                    <!-- <v-icon small @click="deleteUser(item.id!)">mdi-delete</v-icon> -->
-                  </td>
-                </tr>
-              </template>
-            </v-data-table-server>
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
+    <!-- &nbsp;
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2> -->
     <!-- <v-row>
       <v-col>
         <Pagination
@@ -237,23 +172,25 @@ onMounted(async () => {
         ></FormDialog>
       </v-dialog>
     </v-card>
-    <MainTable
-      :items="userStore.users"
-      :headers="headers"
-      :fetch-data="fetchUsers"
-      :btnAddAction="() => {}"
-      :combobox-items="['yes', 'no']"
-      :faculty-items="['yai', 'lek']"
-      :action="() => {}"
-      :items-per-page="10"
-      customColumnName="gender"
-    >
-      <template #gender="{ item }">
-        {{ item }}
-      </template>
-    </MainTable>
       </v-col>
     </v-row> -->
+    <MainTable
+      page-icon="mdi-account-group"
+      :page-title="t('list user')"
+      :items="userStore.users"
+      :headers="headers"
+      :fetchSearch="fetchUsers"
+      :fetchFab="fetchUsers"
+      :btnAddAction="addUser"
+      :action="editUser"
+      customCol="roles"
+    >
+      <template #roles="{ item }">
+        <v-chip>
+          {{ item.roles.map((n: any) => n.name)[0] }}
+        </v-chip>
+      </template>
+    </MainTable>
   </v-container>
   <v-dialog max-width="1000px" v-model="dialog" persistent>
     <FormDialog

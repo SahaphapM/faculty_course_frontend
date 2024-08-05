@@ -1,42 +1,28 @@
 <template>
   <div>
-    <v-container fluid class="d-flex ma-0 pa-0 ga-5">
-      <v-text-field
-        :label="t('search')"
-        prepend-inner-icon="mdi-magnify"
-        density="comfortable"
-        v-model="searchText"
-        @keydown.enter="fetchData(searchText)"
-      ></v-text-field>
-      <v-combobox
-        v-if="facultyItems"
-        :label="facultyLabel ?? t('faculty')"
-        :style="{ maxWidth: '300px' }"
-        :items="facultyItems"
-      >
-      </v-combobox>
-      <v-combobox
-        v-if="comboboxItems"
-        :label="comboboxLabel ?? t('branch')"
-        :style="{ maxWidth: '300px' }"
-        :items="comboboxItems"
-      >
-      </v-combobox>
+    <p class="text-header my-5 font-weight-bold ga-3 d-flex">
+      <v-icon :icon="pageIcon"></v-icon>
+      {{ pageTitle }}
+    </p>
+
+    <v-container fluid class="d-flex ma-0 pa-0 ga-4">
+      <FilterBox :fetch-search="fetchSearch" :fetch-fab="fetchFab" />
       <v-btn
         v-if="btnAddAction"
         prepend-icon="mdi-plus"
-        :style="{ minHeight: '48px', minWidth: '100px' }"
+        rounded="lg"
+        :style="{ minHeight: '48px', minWidth: '150px' }"
         @click="btnAddAction"
         >{{ t('add') }}
       </v-btn>
     </v-container>
-    <v-card>
+    <v-card rounded="lg">
       <v-data-table-server
         class="bg-primary"
-        :items-per-page="itemsPerPage"
+        :items-per-page="itemsPerPage ?? 10"
         :headers="
           props.headers.concat(
-            props.action ? [{ title: 'Actions', key: 'actions' }] : []
+            props.action ? [{ title: t('actions'), key: 'actions' }] : []
           ) as ReadonlyArray<any>
         "
         :items="items"
@@ -61,12 +47,15 @@
           <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
             <td v-for="column in columns" :key="column.key!">
               <v-btn
-                v-if="column.key === 'action'"
+                v-if="column.key === 'actions' && action"
                 icon="mdi-file-document-edit"
                 size="small"
                 variant="tonal"
-                @click="action"
+                @click="action(item)"
               ></v-btn>
+              <div v-if="column.key === customCol">
+                <slot :name="customCol" :item="item" :index="index"></slot>
+              </div>
               <p v-else>
                 {{ item[column.key as keyof typeof item] }}
               </p>
@@ -83,22 +72,21 @@ import type { HeaderItem } from '@/types/HeaderItem'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import { onMounted, reactive, ref } from 'vue'
 import { useLocale } from 'vuetify'
+import FilterBox from './FilterSection.vue'
 
 const { t } = useLocale()
-const searchText = ref('')
 
 const props = defineProps<{
+  pageIcon: string
+  pageTitle: string
   headers: HeaderItem[]
-  itemsPerPage: number
+  itemsPerPage?: number
   items: Record<string, any>[]
-  fetchData: (value?: string) => Promise<void>
-  comboboxItems?: any[]
-  comboboxLabel?: string
-  facultyItems?: any[]
-  facultyLabel?: string
+  fetchSearch: (value: string) => Promise<void>
+  fetchFab?: (value: string) => Promise<void>
   btnAddAction?: () => void
-  action?: () => void
-  customColumnName?: string
+  action?: (item: any) => void
+  customCol?: string
 }>()
 
 const params = reactive<PageParams>({
@@ -106,7 +94,9 @@ const params = reactive<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 
 const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
@@ -126,12 +116,12 @@ const updateOptions = (options: any) => {
   } else {
     params.order = 'ASC'
   }
-  props.fetchData
+  props.fetchSearch
 }
 
 onMounted(async () => {
-  if (props.fetchData) {
-    await props.fetchData
+  if (props.fetchSearch) {
+    await props.fetchSearch
   }
 })
 </script>
@@ -143,7 +133,7 @@ onMounted(async () => {
   text-align: left;
 }
 .odd-row {
-  background-color: #f9f9f9;
+  background-color: #efefef;
   color: black;
   text-align: left;
 }
