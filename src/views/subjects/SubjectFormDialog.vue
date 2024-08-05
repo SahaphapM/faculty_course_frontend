@@ -32,6 +32,7 @@ const pageParams = ref<PageParams>({
 })
 const subject = ref(Object.assign({}, props.item))
 const item = props.item?.id ?? '';
+const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 async function save() {
     const { valid } = await form.value!.validate()
     if (!valid) return
@@ -113,15 +114,15 @@ onMounted(async () => {
         </v-row>
 
         <v-row>
-            <!-- <v-col cols="12" md="4">
+            <v-col cols="12" md="4">
                 <v-row>
                     <v-col style="margin-top: -30px" class="d-flex justify-center">
-                        <p style="font-size: 24px; font-weight: bold">โปรไฟล์</p>
+                        <p style="font-size: 24px; font-weight: bold">เพิ่ม/แก้ไขรายวิชา</p>
                     </v-col></v-row>
-            </v-col> -->
-            <v-col cols="12" md="12">
+            </v-col>
+            <v-col cols="12" md="8">
                 <v-row class="my-1">
-                    <p style="font-size: 20px; margin-left: 30px; font-weight: bold;">รายละเอียดรายวิชา</p>
+                    <p style="font-size: 20px; margin-left: 10px; font-weight: bold;">รายละเอียดรายวิชา</p>
                 </v-row>
                 <v-row>
                     <v-col>
@@ -129,16 +130,18 @@ onMounted(async () => {
                             <v-text-field v-model="subject.id" label="รหัสรายวิชา" variant="outlined" rounded="lg"
                                 class="small-input" style="justify-content: center;"
                                 :rules="[rules.required]"></v-text-field>
-                            <v-text-field v-model="subject.thaiName" label="ชื่อภาษาไทย" variant="outlined" rounded="lg"
+                            <v-text-field v-model="subject.thaiName" label="ชื่อรายวิชา" variant="outlined" rounded="lg"
                                 class="small-input" :rules="[rules.required]"></v-text-field>
-                            <v-text-field v-model="subject.engName" label="ชื่อภาษาอังกฤษ" variant="outlined"
+                            <v-text-field v-model="subject.engName" label="ชื่อรายวิชา (อังกฤษ)" variant="outlined"
                                 rounded="lg" class="small-input" :rules="[rules.required]"></v-text-field>
                             <v-text-field v-model.number="subject.credit" label="หน่วยกิต" variant="outlined"
                                 rounded="lg" class="small-input" :rules="[rules.required]"></v-text-field>
                             <v-text-field v-model="subject.studyTime" label="จำนวนชั่วโมงเรียน" variant="outlined"
                                 rounded="lg" class="small-input" :rules="[rules.required]"></v-text-field>
-                            <v-textarea v-model="subject.description" label="คำอธิบายรายวิชา" variant="outlined"
-                                rounded="lg" class="small-input" :rules="[rules.required]"></v-textarea>
+                            <v-text-field v-model="subject.description" label="คำอธิบายรายวิชา" variant="outlined"
+                                rounded="lg" class="" :rules="[rules.required]"></v-text-field>
+                            <v-text-field v-model="subject.descriptionEng" label="คำอธิบายรายวิชา (อังกฤษ)"
+                                variant="outlined" rounded="lg" class="" :rules="[rules.required]"></v-text-field>
                         </v-form>
                     </v-col>
                 </v-row>
@@ -151,6 +154,71 @@ onMounted(async () => {
                         <!-- <v-combobox v-model="subject.roles" variant="outlined" multiple label="ตำแหน่ง" :items="roles"
                             item-title="name" item-value="id" :return-object="true" rounded="lg"
                             class="small-input"></v-combobox> -->
+                    </v-col>
+                </v-row>
+                <v-row class="justify-end">
+                    <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn><v-btn @click="save()"
+                        variant="plain">บันทึก</v-btn>
+                </v-row>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <!--add CLO-->
+            <v-col cols="12" md="4">
+                <v-row>
+                    <v-col style="margin-top: -30px" class="d-flex justify-center">
+                        <!-- <p style="font-size: 24px; font-weight: bold">เพิ่ม/แก้ไขรายวิชา</p> -->
+                    </v-col></v-row>
+            </v-col>
+            <v-col cols="12" md="8">
+                <v-row class="my-1">
+                    <p style="font-size: 20px; margin-left: 10px; font-weight: bold;">CLO</p>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-form ref="form" v-model="isFormValid">
+                            <v-row>
+                                <v-combobox :items="items1" variant="outlined" rounded="lg"
+                                    class="small-input"></v-combobox>
+                            </v-row>
+                            <v-row class="justify-center">
+                                <v-btn icon="mdi-plus" class="ma-8 rounded-circle" size="40px"
+                                    variant="outlined"></v-btn>
+                            </v-row>
+                        </v-form>
+                    </v-col>
+                </v-row>
+                <v-row class="justify-end">
+                    <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn><v-btn @click="save()"
+                        variant="plain">บันทึก</v-btn></v-row>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <!--add skill-->
+            <v-col cols="12" md="4">
+                <v-row>
+                    <v-col style="margin-top: -30px" class="d-flex justify-center">
+                        <!-- <p style="font-size: 24px; font-weight: bold">เพิ่ม/แก้ไขรายวิชา</p> -->
+                    </v-col></v-row>
+            </v-col>
+            <v-col cols="12" md="8">
+                <v-row class="my-1">
+                    <p style="font-size: 20px; margin-left: 10px; font-weight: bold;">Skill</p>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-form ref="form" v-model="isFormValid">
+                            <v-row>
+                                <v-combobox :items="items1" variant="outlined" rounded="lg"
+                                    class="small-input"></v-combobox>
+                            </v-row>
+                            <v-row class="justify-center">
+                                <v-btn icon="mdi-plus" class="ma-8 rounded-circle" size="40px"
+                                    variant="outlined"></v-btn>
+                            </v-row>
+                        </v-form>
                     </v-col>
                 </v-row>
                 <v-row class="justify-end">

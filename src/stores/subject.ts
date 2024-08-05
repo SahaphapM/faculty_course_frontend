@@ -15,8 +15,8 @@ export const useSubjectStore = defineStore('subjectStore', () => {
         description: "",
         credit: 0,
         type: "",
-        studyTime: ""
-        // descriptionEng: ""
+        studyTime: "",
+        descriptionEng: ""
     };
 
     const editedSubject = ref<Subject>(JSON.parse(JSON.stringify(initialSubject)));

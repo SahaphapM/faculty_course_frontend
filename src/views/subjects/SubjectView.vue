@@ -173,6 +173,8 @@ const updateOptions = (options: any) => {
                     :fetch-data="fetchSubjects"></SearchData>
             </v-col>
             <v-col class="d-flex justify-end flex-grow-0">
+                <!-- <AddButton style="width: 300px" :to-link="null" :label="'เพิ่มรายวิชา'" to="/AddSubject">
+                </AddButton> -->
                 <AddButton style="width: 300px" :to-link="null" :label="'เพิ่มรายวิชา'" :clickFucntion="addSubject">
                 </AddButton>
             </v-col>

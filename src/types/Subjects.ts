@@ -10,6 +10,6 @@ type Subject = {
     credit: number;
     type: string;
     studyTime: string;
-    // descriptionEng: string;
+    descriptionEng: string;
 }
 export type { Subject }
