@@ -300,12 +300,7 @@ const getUserInfoById = (id: any) => {
 }
 </script>
 <template>
-  <v-dialog
-    max-width="1000px"
-    v-model="localVisible"
-    persistent
-    style="height: 900px; overflow-y: auto"
-  >
+  <v-dialog max-width="1000px" v-model="localVisible" persistent style="overflow-y: auto">
     <v-card
       class="elevation-5"
       rounded="lg"
@@ -569,8 +564,6 @@ const getUserInfoById = (id: any) => {
                             :rules="nameRules"
                             variant="outlined"
                             rounded="lg"
-                            rows="5"
-                            autosize
                             style="min-height: 200px; white-space: pre-line"
                           ></v-textarea>
                           <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
