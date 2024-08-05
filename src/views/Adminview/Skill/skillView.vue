@@ -13,7 +13,9 @@ const pageParams = ref<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 
 const headers = computed(() => [
@@ -26,12 +28,16 @@ const skills = computed(() => skillStore.skills || [])
 
 const showDialog = async (item: any) => {
   selectedItem.value = item
-  dialogVisible.value = true
-  const setCurrentSkill = (skill: any) => {
-    skillStore.setCurrentSkill(skill.id)
-    console.log(skillStore.editedSkill)
+  if (item != null) {
+    dialogVisible.value = true
+    const setCurrentSkill = (skill: any) => {
+      skillStore.setCurrentSkill(skill.id)
+      console.log(skillStore.editedSkill)
+    }
+    setCurrentSkill(item)
+  } else {
+    dialogVisible.value = true
   }
-  setCurrentSkill(item)
   await fetchSkill()
 }
 
@@ -65,7 +71,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     &nbsp;
     <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">ทักษะ</h2>
 
@@ -87,7 +93,11 @@ onMounted(async () => {
 
       <v-col md="3"> </v-col>
       <v-col md="2">
-        <v-btn rounded="lg" style="height: 55px; min-width: 170px; width: 100%" to="/AddIFAAIView">
+        <v-btn
+          rounded="lg"
+          style="height: 55px; min-width: 170px; width: 100%"
+          @click="() => showDialog(null)"
+        >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
       >
