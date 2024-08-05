@@ -21,7 +21,9 @@ export const useUserStore = defineStore('user', () => {
     phone: '',
     googleId: '',
     roles: [],
-    image: 'unknown.jpg'
+    image: 'unknown.jpg',
+    facultyId: '',
+    branchId: ''
   }
 
   const editedUser = ref<User>({ ...initialUser })
@@ -52,7 +54,6 @@ export const useUserStore = defineStore('user', () => {
 
   async function saveUser() {
     const user = editedUser.value
-    user.id = null
     await userService.addUser(user)
   }
 

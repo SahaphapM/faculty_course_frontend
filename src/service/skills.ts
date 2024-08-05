@@ -19,7 +19,6 @@ function getSkills() {
 }
 function getSkillsByPage(params: PageParams) {
   console.log(params)
-
   return http.get<{ data: Skill[]; total: number }>(`/skills/pages`, { params })
 }
 
