@@ -11,6 +11,9 @@ import type { VForm } from 'vuetify/components'
 import { usePloStore } from '@/stores/plos'
 import type { User } from '@/types/User'
 import { useDisplay } from 'vuetify'
+
+import type { Plos } from '@/types/Plos'
+
 import { useRouter } from 'vue-router'
 
 const curriculumStore = useCurriculumStore()
@@ -36,7 +39,7 @@ const select2 = ref<any | null>(null)
 const branches = computed(() => branchStore.branches)
 const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
-const select5 = ref<string | null>(null)
+const select5 = ref<any | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จริยธรรม', 'ลักษณะบุคคล'])
@@ -115,6 +118,7 @@ const resetValidation = () => {
   form.value!.resetValidation()
 }
 
+
 watch(
   () => curriculumStore.currentCurriculum,
   async (newCurriculum) => {
@@ -123,6 +127,7 @@ watch(
     }
   }
 )
+
 
 //***************************************coordinator*************************************************** */
 const initialCoordinators: userIds[] = []
@@ -207,6 +212,28 @@ const getUserInfoById = (id: any) => {
 }
 
 //*************************************** end coordinator *************************************************** */
+const plos = ref<Plos[]>([])
+async function save2() {
+  console.log(plos.value, 'from vue') // Log the data to be sent
+
+  if (curriculumStore.editedCurriculum?.id) {
+    try {
+      // Log request URL and payload
+      console.log(
+        `Sending request to: /curriculums/${curriculumStore.editedCurriculum.id}/coordinators`
+      )
+      console.log('Payload:', coordinator.value)
+
+      await curriculumStore.addPlosToCurriculum(curriculumStore.editedCurriculum.id, plos.value)
+      overlay.value = !overlay.value
+      console.log('Coordinators updated successfully')
+    } catch (error) {
+      console.error('Error updating coordinators:')
+    }
+  } else {
+    console.error('Edited curriculum ID is missing')
+  }
+}
 
 //*************************************** curriculums ******************************************************* */
 
@@ -422,7 +449,10 @@ const isMobile = computed(() => mdAndDown.value)
         </v-tabs-window-item>
 
         <v-tabs-window-item value="option-3">
-          <v-container>
+
+          <v-container class="mt-2">
+
+
             <div style="display: flex; margin-bottom: 5vh; margin-top: 2vh">
               <div class="rounded-rectangle"></div>
               <p class="details-text" style="font-size: 2.5vh">
@@ -433,13 +463,18 @@ const isMobile = computed(() => mdAndDown.value)
               <p class="details-text" style="font-size: 2.5vh">{{ form.label }}</p>
               <br />
               <p style="font-size: 1.5vh">รายละเอียด</p>
-              <v-textarea
+
+              <v-text-field
+
+            
                 v-model="form.description"
                 :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
-              ></v-textarea>
+
+              ></v-text-field>
+
               <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
               <v-select
                 v-model="form.select5"
@@ -465,6 +500,7 @@ const isMobile = computed(() => mdAndDown.value)
                 @click="removeForm"
               ></v-btn>
             </v-row>
+
             <v-row class="justify-end mt-8 mb-1">
               <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
               ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row

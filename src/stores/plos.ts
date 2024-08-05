@@ -21,8 +21,9 @@ export const usePloStore = defineStore('plo', () => {
       branch: [],
       description: '',
       coordinators: [],
-      period: 0,
-      minimumGrade: 0
+      period: '',
+      minimumGrade: 0,
+      plos: []
     }
   }
 
