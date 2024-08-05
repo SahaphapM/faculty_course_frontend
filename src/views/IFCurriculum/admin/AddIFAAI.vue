@@ -124,17 +124,6 @@ watch(
   }
 )
 
-function addForm() {
-  const newIndex = forms.value.length + 1
-  forms.value.push({ label: `Plo${newIndex}`, description: '', select5: null })
-}
-
-const removeForm = () => {
-  if (forms.value.length > 1) {
-    forms.value.pop()
-  }
-}
-
 //***************************************coordinator*************************************************** */
 const initialCoordinators: userIds[] = []
 const coordinator = ref<userIds[]>(
@@ -444,13 +433,13 @@ const isMobile = computed(() => mdAndDown.value)
               <p class="details-text" style="font-size: 2.5vh">{{ form.label }}</p>
               <br />
               <p style="font-size: 1.5vh">รายละเอียด</p>
-              <v-text-field
+              <v-textarea
                 v-model="form.description"
                 :rules="nameRules"
                 variant="outlined"
                 rounded="lg"
                 class="small-input"
-              ></v-text-field>
+              ></v-textarea>
               <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
               <v-select
                 v-model="form.select5"
@@ -492,23 +481,23 @@ const isMobile = computed(() => mdAndDown.value)
               </p>
             </div>
             <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
-              <p class="details-text" style="font-size: 2.5vh">วิชาที่ 1</p>
               <br />
-              <p style="font-size: 1.5vh">รายละเอียด</p>
-              <v-text-field
-                v-model="form.description"
-                :rules="nameRules"
-                variant="outlined"
-                rounded="lg"
-                class="small-input"
-              ></v-text-field>
-              <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
-              <v-select
-                v-model="form.select5"
-                :items="items4"
-                variant="outlined"
-                rounded="lg"
-              ></v-select>
+
+              <p class="details-text" style="font-size: 2.5vh; margin: auto; margin-bottom: 1%">
+                วิชาที่ 1
+              </p>
+              <p style="font-size: 1.5vh">รหัสรายวิชา</p>
+              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <p style="font-size: 1.5vh">ชื่อรายวิชา</p>
+              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <p style="font-size: 1.5vh">ชื่อรายวิชา(ภาษาอังกฤษ)</p>
+              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <p style="font-size: 1.5vh">หน่วยกิต</p>
+              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <p style="font-size: 1.5vh">จำนวนชั่วโมงเรียน</p>
+              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <p style="font-size: 1.5vh">คำอธิบายรายวิชา</p>
+              <v-textarea text variant="outlined" rounded="lg" class="small-input"></v-textarea>
             </v-form>
             <v-row class="justify-center">
               <v-btn
@@ -620,7 +609,7 @@ const isMobile = computed(() => mdAndDown.value)
               <span>ผลการเรียนรู้ที่คาดหวังของหลักสูตร :</span>
               <v-icon size="20px" @click="tab = 'option-3'">mdi-pencil</v-icon>
             </p>
-            &nbsp;
+
             <div>
               <div v-if="forms.length && forms[0].description">
                 <div
@@ -629,10 +618,11 @@ const isMobile = computed(() => mdAndDown.value)
                   class="ml-8"
                   style="font-size: 18px"
                 >
+                  &nbsp;
                   <p>{{ item.label }}</p>
                   <p>รายละเอียด : &nbsp;{{ item.description }}</p>
                   <p>ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ : &nbsp;{{ item.select5 }}</p>
-                  <v-divider></v-divider>
+                  <v-divider class="mt-8"></v-divider>
                 </div>
               </div>
 
@@ -640,7 +630,12 @@ const isMobile = computed(() => mdAndDown.value)
                 <p class="ml-8" style="color: red">ไม่มี</p>
               </div>
             </div>
-
+            &nbsp;
+            <p style="font-size: 18px">
+              โครงสร้างหลักสูตร รายวิชาและหน่วยกิต :<span style="color: red" v-if="engName == ''"
+                >ไม่มี</span
+              >
+            </p>
             <v-row class="justify-end mt-8 mb-1">
               <v-btn @click="over" variant="plain">ยืนยัน</v-btn></v-row
             >
