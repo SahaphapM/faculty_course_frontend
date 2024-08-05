@@ -4,6 +4,22 @@ import { ref } from 'vue'
 import subjectService from '@/service/subject'
 import type { PageParams } from '@/types/PageParams'
 export const useSubjectStore = defineStore('subjectStore', () => {
+
+    const subjects = ref<Subject[]>([]);
+    const currentSubject = ref<Subject | null>(null);
+    const totalSubjects = ref(0)
+    const id = ref("")
+    const initialSubject: Subject = {
+        id: "",
+        thaiName: "",
+        engName: "",
+        description: "",
+        credit: 0,
+        type: "",
+        studyTime: "",
+        descriptionEng: ""
+    };
+
   const subjects = ref<Subject[]>([])
   const currentSubject = ref<Subject | null>(null)
   const totalSubjects = ref(0)
@@ -32,6 +48,37 @@ export const useSubjectStore = defineStore('subjectStore', () => {
     editedSubject.value = res.data
   }
 
+
+    async function fetchSubjects() {
+        const res = await subjectService.getSubjects()
+        subjects.value = res.data
+    }
+
+    // async function saveSubject(params: PageParams) {
+    //     const subject = editedSubject.value;
+    //     // if (!subject.id) { //if id is null
+    //     console.log(subject)
+    //     console.log('call funtion addSubject')
+    //     const res = await subjectService.addSubject(subject);
+    //     await fetchSubjects(params)
+    //     console.log('Save to service' + res)
+    //     // } else {
+    //     //     console.log('update subject')
+    //     //     const res = await subjectService.updateSubject(subject)
+    //     //     await fetchSubjects()
+    //     //     console.log(res)
+    //     // }
+
+    // }
+
+    async function saveSubject() {
+        const subject = editedSubject.value
+        console.log(subject)
+        // subject.id = null
+        const res = await subjectService.addSubject(subject)
+        // await fetchSubjects()
+        console.log('Save to Service' + res)
+
   async function fetchAllSubjects() {
     const res = await subjectService.getSubjects()
     subjects.value = res.data
@@ -48,8 +95,16 @@ export const useSubjectStore = defineStore('subjectStore', () => {
       console.log(subjects.value)
     } catch (error) {
       console.error('Error fetching subjects:', error)
+
     }
   }
+
+
+    async function updateSubject() {
+        const subject = editedSubject.value;
+        subject.id = id.value
+        await subjectService.updateSubject(subject);
+    }
 
   async function saveSubject(params: PageParams) {
     const subject = editedSubject.value
@@ -66,6 +121,7 @@ export const useSubjectStore = defineStore('subjectStore', () => {
     //     console.log(res)
     // }
   }
+
 
   async function updateSubject() {
     const subject = editedSubject.value
@@ -88,6 +144,43 @@ export const useSubjectStore = defineStore('subjectStore', () => {
     editedSubject.value = JSON.parse(JSON.stringify(initialSubject))
   }
 
+    async function fetchSubjectsPage(params: PageParams) {
+        // const res = await subjectService.getSubjectsByPage(params)
+        // subjects.value = res.data.data
+        // totalSubjects.value = res.data.total
+        try {
+            const res = await subjectService.getSubjectsByPage(params);
+            subjects.value = res.data.data;
+            totalSubjects.value = res.data.total
+            console.log(totalSubjects.value)
+            console.log('Call fetchSubjects')
+            console.log(res);
+            console.log(subjects.value);
+        } catch (error) {
+            console.error('Error fetching subjects:', error);
+        }
+
+    }
+
+    return {
+        subjects,
+        addSubject,
+        clearCurrentSubject,
+        initialSubject,
+        clearForm,
+        fetchSubject,
+        fetchSubjects,
+        editedSubject,
+        saveSubject,
+        updateSubject,
+        addCoordinatorToSubject,
+        deleteSubject,
+        totalSubjects,
+        fetchSubjectsPage,
+        id
+    };
+});
+
   return {
     subjects,
     addSubject,
@@ -104,3 +197,4 @@ export const useSubjectStore = defineStore('subjectStore', () => {
     totalSubjects
   }
 })
+
