@@ -21,7 +21,9 @@ const pageParams = ref<PageParams>({
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
-  { title: 'Description', key: 'description' }
+  { title: 'Description', key: 'description' },
+  { title: 'Subject', key: 'subject' },
+  { title: 'Plos', key: 'plos' }
 ])
 
 const clos = computed(() => cloStore.clos || [])
@@ -63,7 +65,7 @@ const fetchClo = async () => {
   } finally {
     loading.value = false
   }
-  console.log(pageParams.value)
+  // console.log(pageParams.value)
 }
 
 onMounted(async () => {
@@ -124,8 +126,8 @@ onMounted(async () => {
               <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
               <td style="height: 55px; min-width: 200px">{{ item.name }}</td>
               <td style="height: 55px; min-width: 90px">{{ item.description }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.subject }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.plos }}</td>
+              <td style="height: 55px; min-width: 90px">{{ item.subject.engName }}</td>
+              <td style="height: 55px; min-width: 90px">{{ item.plo.num_plo }}</td>
               <td>
                 <v-btn
                   variant="text"

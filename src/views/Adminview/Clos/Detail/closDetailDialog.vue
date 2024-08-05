@@ -18,6 +18,7 @@ const plosOptions = computed(() => {
     return `${plos.id} ${plos.description}`
   })
 })
+
 watch(
   () => props.visible,
   (newVal) => {
@@ -30,19 +31,22 @@ const closeDialog = async () => {
 }
 
 function saveClo() {
+  console.log(clos.value.id)
+  console.log(select2.value)
   let clo = { ...clos.value }
-  if (route.params.id !== 'addClo') {
+  clos.value.plo = select2.value
+  if (clos.value.id != '') {
+    console.log('update')
     cloStore.updateClo(clo)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; subject: object[]; plos: object[] } = {
+    const payload: { name: string; description: string; subject: object; plo: object } = {
       name: clo.name,
       description: clo.description,
       subject: clo.subject,
-      plos: select2.value
+      plo: clo.plo
     }
     console.log(payload)
-
     cloStore.addClo(payload)
     closeDialog()
   }
@@ -103,6 +107,7 @@ onMounted(() => {
           <v-col cols="12">
             <v-select
               v-model="clos.subject"
+              :return-object="true"
               item-text="name"
               item-value="id"
               label="Subject"
@@ -111,12 +116,14 @@ onMounted(() => {
             ></v-select>
           </v-col>
           <v-col cols="12">
-            <p style="font-size: 1.5vh">สาขาวิชา</p>
+            <p style="font-size: 1.5vh">PLO</p>
             <v-select
               v-model="select2"
-              :items="plosOptions"
+              :return-object="true"
+              :items="plos"
+              item-title="description"
+              item-value="id"
               variant="outlined"
-              rounded="lg"
             ></v-select>
           </v-col>
         </v-row>
