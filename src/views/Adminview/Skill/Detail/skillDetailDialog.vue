@@ -2,13 +2,17 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
+import { useSubjectStore } from '@/stores/subject'
 
 const route = useRoute()
 const router = useRouter()
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
+const subjectStore = useSubjectStore()
 const skills = computed(() => skillStore.editedSkill)
+const subjects = computed(() => subjectStore.subjects)
+const selectSubjects = ref<any | null>(null)
 const localVisible = ref(props.visible)
 
 watch(
@@ -34,25 +38,25 @@ const closeDialog = async () => {
 
 function saveSkill() {
   let skill = { ...skills.value }
-  if (route.params.id !== 'addSkill') {
+  if (skills.value.id != '') {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; colorsTag: string } = {
+    skill.subjects = selectSubjects.value
+    const payload: { name: string; description: string; subjects: Object[] } = {
       name: skill.name,
       description: skill.description,
-      colorsTag: skill.colorsTag
+      subjects: skill.subjects
     }
+    console.log(payload)
+
     skillStore.addSkill(payload)
     closeDialog()
   }
 }
 
 onMounted(() => {
-  if (!route.params.id) return
-  // if (route.params.id !== 'addSkill') {
-  //   fetchSkillDetail(route.params.id as string)
-  // }
+  subjectStore.fetchAllSubjects()
 })
 </script>
 
@@ -105,13 +109,22 @@ onMounted(() => {
             ></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field
-              v-model="skills.colorsTag"
+            <!-- <v-text-field
+              v-model="skills.subjects"
               :counter="10"
               label="Colors Tag"
               hide-details
               required
-            ></v-text-field>
+            ></v-text-field> -->
+            <v-select
+              v-model="selectSubjects"
+              :return-object="true"
+              :items="subjects"
+              multiple
+              item-title="description"
+              item-value="id"
+              variant="outlined"
+            ></v-select>
           </v-col>
         </v-row>
         <v-row>
