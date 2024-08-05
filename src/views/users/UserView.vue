@@ -8,6 +8,7 @@ import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
 import AddButton from '@/components/AddButton.vue'
+import SearchByFaculty from '@/components/SearchByFaculty.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
@@ -34,19 +35,24 @@ const pageParams = ref<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 
-const fetchUsers = async (search?: string) => {
-  // search is variable to search null able
+const fetchUsers = async (search?: string, facultyId?: string, branchId?: string) => {
   loading.value = true
-  if (search) {
+  if (search !== '' && search) {
     pageParams.value.search = search
-    console.log(pageParams.value.search)
   } else {
     pageParams.value.search = ''
   }
-  console.log(pageParams.value.search)
+  if (facultyId && branchId) {
+    pageParams.value.column1 = facultyId
+    pageParams.value.column2 = branchId
+  }
+
+  console.log(pageParams)
   try {
     await userStore.fetchUsersPage(pageParams.value)
   } catch (error) {
@@ -132,23 +138,27 @@ const clickHandler = (page: number) => {
 
 onMounted(async () => {
   await roleStore.getRoles()
+  await fetchUsers()
   console.log(userStore.users)
-  fetchUsers()
   console.log(userStore.totalUsers)
 })
 </script>
 <template>
   <v-container fluid>
-    <h2 style="font-size: 24px" class="pa-5">รายชื่อผู้ใช้งาน</h2>
+    &nbsp;
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">รายชื่อผู้ใช้งาน</h2>
 
     <v-row class="d-flex justify-end ga-5" no-gutters>
       <v-col class="d-flex justify-end flex-grow-1">
         <SearchData
+          :search="pageParams.search"
           style="min-width: 250px"
           :label="'ค้นหาผู้ใช้'"
-          :search="pageParams.search"
           :fetch-data="fetchUsers"
         ></SearchData>
+      </v-col>
+      <v-col>
+        <SearchByFaculty :fetch-data="fetchUsers"></SearchByFaculty>
       </v-col>
       <v-col class="d-flex justify-end flex-grow-0">
         <AddButton
@@ -214,7 +224,7 @@ onMounted(async () => {
       </v-col>
     </v-row> -->
   </v-container>
-  <v-dialog max-width="1200px" v-model="dialog" persistent>
+  <v-dialog max-width="1000px" v-model="dialog" persistent>
     <FormDialog
       :item="editedUser"
       :method="saveUser"

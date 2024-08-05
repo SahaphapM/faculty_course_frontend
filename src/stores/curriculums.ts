@@ -63,8 +63,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     await curriculumService.updateCurriculum(curriculum)
   }
 
-  async function addCoordinatorToCurriculum(curriculumId: string, userId: string) {
-    await curriculumService.addCoordinator(curriculumId, userId)
+  async function addCoordinatorToCurriculum(curriculumId: string, user: { id: string }[]) {
+    await curriculumService.addCoordinator(curriculumId, user)
   }
 
   async function addPlosToCurriculum(curriculumId: string, ploId: string) {
