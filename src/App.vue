@@ -53,4 +53,7 @@ const route = useRoute()
 .v-card > .v-card-text {
   font-size: 18px;
 }
+.v-breadcrumbs {
+  font-size: 20px;
+}
 </style>

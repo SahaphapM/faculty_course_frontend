@@ -7,19 +7,20 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
+import MainTable from '@/components/MainTable.vue'
+import type { HeaderItem } from '@/types/HeaderItem'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
 
-const headers = [
-  { title: 'ID', value: 'id', key: 'id' },
-  { title: 'Email', value: 'email', key: 'email' },
-  { title: 'First Name', value: 'firstName', key: 'firstName' },
-  { title: 'Last Name', value: 'lastName', key: 'lastName' },
-  { title: 'Gender', value: 'gender' },
-  { title: 'Phone', value: 'phone' },
-  { title: 'Roles', value: 'roles' },
-  { title: 'Actions', value: 'actions', sortable: false }
+const headers: HeaderItem[] = [
+  { title: 'ID', value: 'id', key: 'id', sortable: true },
+  { title: 'Email', value: 'email', key: 'email', sortable: true },
+  { title: 'First Name', value: 'firstName', key: 'firstName', sortable: true },
+  { title: 'Last Name', value: 'lastName', key: 'lastName', sortable: true },
+  { title: 'Gender', value: 'gender', key: 'gender', sortable: true },
+  { title: 'Phone', value: 'phone', key: 'phone', sortable: true },
+  { title: 'Roles', value: 'roles', key: 'role', sortable: true }
 ]
 
 const dialog = ref(false)
@@ -218,6 +219,21 @@ onMounted(async () => {
         ></FormDialog>
       </v-dialog>
     </v-card>
+    <MainTable
+      :items="userStore.users"
+      :headers="headers"
+      :fetch-data="fetchUsers"
+      :btnAddAction="() => {}"
+      :combobox-items="['yes', 'no']"
+      :faculty-items="['yai', 'lek']"
+      :action="() => {}"
+      :items-per-page="10"
+      customColumnName="gender"
+    >
+      <template #gender="{ item }">
+        {{ item }}
+      </template>
+    </MainTable>
   </v-container>
 </template>
 <style>

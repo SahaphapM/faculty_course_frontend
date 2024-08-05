@@ -42,15 +42,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
-      meta: {
-        layout: 'CommonLayout',
-        requireAuth: false
-      }
-    },
-    {
       path: '/login',
       name: 'login',
       component: () => import('../views/login/pages/LoginView.vue'),
@@ -61,7 +52,7 @@ const router = createRouter({
     {
       path: '/forbidden',
       name: 'Forbidden',
-      component: () => import('../views/forbidden/ForbiddenView.vue'),
+      component: () => import('../views/Forbidden/ForbiddenView.vue'),
       meta: {
         layout: 'FullLayout'
       }
