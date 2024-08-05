@@ -23,10 +23,9 @@ function saveSkill() {
     skillStore.updateSkill(skill)
     router.push({ name: 'SkillView' })
   } else {
-    const payload: { name: string; description: string; colorsTag: string } = {
+    const payload: { name: string; description: string } = {
       name: skill.name,
-      description: skill.description,
-      colorsTag: skill.colorsTag
+      description: skill.description
     }
     skillStore.addSkill(payload)
     router.push({ name: 'SkillView' })
@@ -72,7 +71,7 @@ onMounted(() => {
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model="skills.colorsTag"
+          v-model="skills.description"
           :counter="10"
           label="Colors Tag"
           hide-details

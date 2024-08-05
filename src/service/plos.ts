@@ -14,11 +14,11 @@ function delPlo(id: string) {
 }
 
 function getPlos() {
-  return http.get<Plos[]>('/skills')
+  return http.get<Plos[]>('/plos')
 }
 
 function getPlo(id: string) {
-  return http.get<Plos>(`/skills/${id}`)
+  return http.get<Plos>(`/plos/${id}`)
 }
 
 // function addCoordinator(skillId: string, userId: string) {
