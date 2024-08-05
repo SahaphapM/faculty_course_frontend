@@ -40,8 +40,11 @@ const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จ�
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
 const hover = ref<boolean>(false)
+const tab = ref<string>('option-1')
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
-const filteredPlos = computed(() => PloStore.filteredPlos)
+
+type userIds = { id: string }
+
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
   await PloStore.fetchPlos()
@@ -87,9 +90,11 @@ watch(
 const isMobile = computed(() => window.innerWidth <= 600)
 
 const closeDialog = () => {
+  tab.value = 'option-1'
+
+  // Emit the close-dialog event
   emit('close-dialog')
 }
-
 watch(overlay, (val) => {
   if (val) {
     setTimeout(() => {
@@ -125,7 +130,7 @@ async function deleteItem() {
 //     coordinators.value = newCurriculum?.coordinators
 //   }
 // )
-const tab = ref<string>('option-1')
+
 watch(
   () => curriculumStore.currentCurriculum,
   (newCurriculum) => {
@@ -137,28 +142,26 @@ watch(
       engDegreeName.value = newCurriculum.engDegreeName
       select2.value = `${(newCurriculum.branch as any).id} ${(newCurriculum.branch as any).name}`
 
-      console.log(newCurriculum)
+      coordinator.value = (newCurriculum.coordinators ?? [])
+        .filter((coord) => coord.id !== null)
+        .map((coord) => ({
+          id: coord.id!.toString(), // Use non-null assertion operator
+          firstName: coord.firstName,
+          lastName: coord.lastName
+        }))
+
+      console.log(newCurriculum.coordinators)
     } else {
       id.value = ''
       thaiName.value = ''
       engName.value = ''
-      thaiDegreeName.value = ''
+      select1.value = ''
       engDegreeName.value = ''
       select2.value = ''
     }
   },
   { immediate: true }
 )
-
-const userOptions = computed(() => {
-  return users.value.map((user) => {
-    const rolesString = Array.isArray(user.roles)
-      ? user.roles.map((role) => role.name).join(', ')
-      : 'No Roles'
-    return `${user.id} ${user.firstName} ${user.lastName}`
-  })
-})
-
 const branchOptions = computed(() => {
   return branches.value.map((branch) => {
     return `${branch.id} ${branch.name}`
@@ -222,26 +225,82 @@ async function save2() {
   await curriculumStore.saveCurriculum()
 }
 
+const getCoordinatorName = (id: string | null) => {
+  const currentCurriculum = curriculumStore.currentCurriculum
+  if (!currentCurriculum) return ''
+  const coordinator = currentCurriculum.coordinators.find((coord) => coord.id === id)
+  return coordinator ? coordinator.firstName : 'Unknown'
+}
+const coordinator = ref<userIds[]>([])
 async function saveC() {
+  console.log(coordinator.value, 'from vue') // Log the data to be sent
+
+  if (curriculumStore.editedCurriculum?.id) {
+    try {
+      // Log request URL and payload
+      console.log(
+        `Sending request to: /curriculums/${curriculumStore.editedCurriculum.id}/coordinators`
+      )
+      console.log('Payload:', coordinator.value)
+
+      await curriculumStore.addCoordinatorToCurriculum(
+        curriculumStore.editedCurriculum.id,
+        coordinator.value
+      )
+      overlay.value = !overlay.value
+      console.log('Coordinators updated successfully')
+    } catch (error) {
+      console.error('Error updating coordinators:')
+    }
+  } else {
+    console.error('Edited curriculum ID is missing')
+  }
+}
+
+function removeCoordinator(id: string) {
+  coordinator.value = coordinator.value.filter((coord) => coord.id !== id)
+}
+
+async function addc() {
   const { valid } = await form.value!.validate()
   if (!valid) return
-  const userId = select3.value.substring(0, select3.value.indexOf(' '))
-  console.log(userId)
-  console.log(curriculumStore.editedCurriculum.id)
 
-  curriculumStore.editedCurriculum.id = id.value
-  overlay.value = !overlay.value
-  await curriculumStore.currentCurriculum
-  await curriculumStore.addCoordinatorToCurriculum(curriculumStore.editedCurriculum.id, userId)
+  const userId = select3.value.substring(0, select3.value.indexOf(' '))
+
+  console.log(userStore.fetchUser(userId.toString))
+  if (userId) {
+    if (!coordinator.value) {
+      coordinator.value = []
+    }
+
+    // Avoid duplicates
+    const exists = coordinator.value.some((coord) => coord.id === userId)
+    if (!exists) {
+      coordinator.value.push({ id: userId })
+      console.log(coordinator)
+    }
+  }
+}
+
+const userOptions = computed(() => {
+  return users.value.map((user) => {
+    const rolesString = Array.isArray(user.roles)
+      ? user.roles.map((role) => role.name).join(', ')
+      : 'No Roles'
+    return `${user.id} ${user.firstName} ${user.lastName}`
+  })
+})
+
+const getUserInfoById = (id: any) => {
+  // Find the string in userOptions that starts with the specified id
+  const userString = userOptions.value.find((userString) => userString.startsWith(`${id} `))
+
+  // If a matching string is found, return it; otherwise, return 'User Not Found'
+  return userString ? userString : 'User Not Found'
 }
 </script>
 <template>
-  <v-dialog
-    max-width="1000px"
-    v-model="localVisible"
-    persistent
-    style="height: 100vh; overflow-y: auto"
-  >
+  <v-dialog max-width="1000px" v-model="localVisible" persistent style="overflow-y: auto">
     <v-card
       class="elevation-5"
       rounded="lg"
@@ -323,13 +382,7 @@ async function saveC() {
                   </div>
                   <div>
                     <v-form ref="form" class="form-container">
-                      <v-sheet
-                        width="100%"
-                        min-height="100px"
-                        max-height="1000px"
-                        height="500px"
-                        class="pa-6"
-                      >
+                      <v-sheet width="100%" min-height="100px" max-height="1000px" class="pa-6">
                         <p style="font-size: 1.5vh">ชื่อหลักสูตร</p>
                         <v-text-field
                           v-model="thaiName"
@@ -380,7 +433,7 @@ async function saveC() {
                             indeterminate
                           ></v-progress-circular>
                         </v-overlay>
-                        <v-row class="justify-end">
+                        <v-row class="justify-end mt-4 mb-1">
                           <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
                           <v-btn @click="save" variant="plain">บันทึก</v-btn>
                         </v-row>
@@ -409,42 +462,40 @@ async function saveC() {
                       >
                         <p style="font-size: 1.5vh">เลือก</p>
                         <v-combobox
-                          clearable
                           v-model="select3"
                           :items="userOptions"
                           variant="outlined"
                           rounded="lg"
                         ></v-combobox>
-                        <p style="font-size: 1.5vh">รายชื่อ</p>
+                        <!-- curriculumStore.currentCurriculum?.coordinators -->
+
                         <v-card
                           style="border-color: #bdbdbd"
                           variant="outlined"
                           rounded="lg"
-                          v-for="(curriculum, index) in curriculumStore.currentCurriculum
-                            ?.coordinators"
+                          v-for="(curriculum, index) in coordinator"
                           :key="curriculum.id || index"
-                          class="pa-3 mt-3"
+                          class="pa-3 mt-3 bg-blue-grey-lighten-5"
                         >
                           <v-row>
                             <v-col>
-                              <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon
-                              >&nbsp; {{ curriculum.id }}&nbsp; {{ curriculum.firstName }}&nbsp;
-                              {{ curriculum.lastName }}
+                              <v-icon color="primary">mdi-numeric-{{ index + 1 }}-circle</v-icon
+                              >&nbsp;
+                              {{ getUserInfoById(curriculum.id) }}
                             </v-col>
                             <v-col class="d-flex justify-end" cols="auto">
                               <v-btn
                                 color="red"
                                 variant="text"
-                                @click="closeDialog"
                                 style="height: auto"
                                 class="circular-btn"
                                 icon="mdi-minus"
+                                @click="removeCoordinator(curriculum.id)"
                               >
                               </v-btn>
                             </v-col>
                           </v-row>
                         </v-card>
-
                         <v-overlay :model-value="overlay" class="align-center justify-center">
                           <v-progress-circular
                             color="primary"
@@ -455,14 +506,13 @@ async function saveC() {
                         <v-row class="justify-center">
                           <v-btn
                             icon="mdi-plus"
-                            class="ma-4 rounded-circle mt-9"
+                            class="ma-8 rounded-circle"
                             size="40px"
                             variant="outlined"
-                            @click="saveC"
+                            @click="addc"
                           ></v-btn>
                         </v-row>
-                        &nbsp;
-                        <v-row class="justify-end mt-8">
+                        <v-row class="justify-end mt-4 mb-1">
                           <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
                           ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
                         >
@@ -470,7 +520,6 @@ async function saveC() {
                     </v-form>
                   </div>
                 </v-tabs-window-item>
-
                 <v-tabs-window-item value="option-3">
                   <div style="display: flex; align-items: center; margin-bottom: 5vh">
                     <div style="flex-grow: 1; display: flex; align-items: center">
@@ -480,57 +529,63 @@ async function saveC() {
                       </p>
                     </div>
                   </div>
-                  <div height="80vh">
-                    <v-form ref="form" class="ma-2">
-                      <p style="font-size: 1.5vh">รายชื่อ</p>
-                      <v-card
-                        v-for="(plo, index) in filteredPlos"
-                        :key="plo.id"
-                        style="border-color: #bdbdbd"
-                        variant="outlined"
-                        rounded="lg"
-                        class="pa-3 mt-3"
-                      >
-                        <v-row>
-                          <v-col>
-                            <v-icon color="primary"> mdi-numeric-{{ index + 1 }}-circle</v-icon>
-                            &nbsp; {{ plo.num_plo }} - {{ plo.description }}
-                          </v-col>
-                          <v-col class="d-flex justify-end" cols="auto">
-                            <v-btn
-                              color="red"
-                              variant="text"
-                              @click="PloStore.deletePlo(plo.id)"
-                              style="height: auto"
-                              class="circular-btn"
-                              icon="mdi-minus"
-                            >
-                            </v-btn>
-                          </v-col>
-                        </v-row>
-                      </v-card>
+                  <div>
+                    <v-form ref="form" class="form-container">
 
-                      <v-overlay :model-value="overlay" class="align-center justify-center">
-                        <v-progress-circular
-                          color="primary"
-                          size="64"
-                          indeterminate
-                        ></v-progress-circular>
-                      </v-overlay>
-                      <v-row class="justify-center">
-                        <v-btn
-                          icon="mdi-plus"
-                          class="ma-4 rounded-circle mt-9"
-                          size="40px"
+                      <v-sheet width="90%" min-height="20vh" max-height="70vh" height="100%">
+
+                        <p style="font-size: 3vh">PLO</p>
+                        <v-card
+                          style="border-color: #bdbdbd"
                           variant="outlined"
-                          @click="saveC"
-                        ></v-btn>
-                      </v-row>
-                      &nbsp;
-                      <v-row class="justify-end mt-8">
-                        <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
-                        <v-btn @click="saveC" variant="plain">บันทึก</v-btn>
-                      </v-row>
+                          rounded="lg"
+                          v-for="(curriculum, index) in curriculumStore.currentCurriculum?.plos"
+                          :key="curriculum.id"
+                          class="pa-3 mt-3 bg-blue-grey-lighten-5"
+                        >
+
+                          <v-icon color="primary" class="mb-1"
+                            >mdi-numeric-{{ index + 1 }}-circle</v-icon
+                          >&nbsp;
+
+                          {{ curriculum.num_plo }}
+
+                          <v-text-field
+                            v-model="curriculum.num_plo"
+                            :rules="nameRules"
+                            variant="outlined"
+                            rounded="lg"
+                            class="small-input"
+                          ></v-text-field>
+                          <p style="font-size: 1.5vh">รายละเอียด</p>
+                          <v-textarea
+                            v-model="curriculum.description"
+                            :rules="nameRules"
+                            variant="outlined"
+                            rounded="lg"
+                            style="min-height: 200px; white-space: pre-line"
+                          ></v-textarea>
+                          <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
+                          <v-select
+                            v-model="curriculum.resultTypes"
+                            :items="items4"
+                            variant="outlined"
+                            rounded="lg"
+                          ></v-select>
+                          <v-overlay :model-value="overlay" class="align-center justify-center">
+                            <v-progress-circular
+                              color="red"
+                              size="64"
+                              indeterminate
+                            ></v-progress-circular>
+                          </v-overlay>
+
+                          <v-row class="justify-end">
+                            <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn>
+                            <v-btn @click="save2" variant="plain">บันทึก</v-btn>
+                          </v-row>
+                        </v-card>
+                      </v-sheet>
                     </v-form>
                   </div>
                 </v-tabs-window-item>
@@ -591,5 +646,9 @@ async function saveC() {
 
 .icon-hover {
   transform: scale(1.2); /* Optional: adds a scaling effect on hover */
+}
+
+.custom-text-field .v-input__control {
+  min-height: 4000px; /* ปรับขนาดความสูงตามต้องการ */
 }
 </style>

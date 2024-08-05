@@ -1,9 +1,11 @@
 import type { Profile } from '@/types/Profile'
 import http from './http'
 import type { AxiosResponse } from 'axios'
+import router from '@/router'
 
 async function login(email: string, password: string): Promise<AxiosResponse> {
   const res = await http.post('/auth/login', { email, password })
+  router.push('/')
   return res.data
 }
 

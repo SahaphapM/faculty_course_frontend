@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import type { User } from '@/types/User'
 import userService from '@/service/user'
 import type { PageParams } from '@/types/PageParams'
+import instance from '@/service/http'
 
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
@@ -19,7 +20,10 @@ export const useUserStore = defineStore('user', () => {
     gender: 'Male',
     phone: '',
     googleId: '',
-    roles: []
+    roles: [],
+    image: 'unknown.jpg',
+    facultyId: '',
+    branchId: ''
   }
 
   const editedUser = ref<User>({ ...initialUser })
@@ -50,7 +54,6 @@ export const useUserStore = defineStore('user', () => {
 
   async function saveUser() {
     const user = editedUser.value
-    user.id = null
     await userService.addUser(user)
   }
 
@@ -58,6 +61,10 @@ export const useUserStore = defineStore('user', () => {
     const user = editedUser.value
     console.log(user)
     await userService.updateUser(user)
+  }
+
+  async function updateImage(userId: string, file: File) {
+    await userService.updateImageUser(userId, file)
   }
 
   async function deleteUser(id: string) {
@@ -83,6 +90,7 @@ export const useUserStore = defineStore('user', () => {
     updateUser,
     initialUser,
     fetchUsersPage,
-    totalUsers
+    totalUsers,
+    updateImage
   }
 })

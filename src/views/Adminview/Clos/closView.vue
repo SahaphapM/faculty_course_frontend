@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import skillDetailDialog from './Detail/skillDetailDialog.vue'
+import cloDetailDialog from './Detail/closDetailDialog.vue'
 import { computed, onMounted, ref } from 'vue'
-import { useSkillStore } from '@/stores/skills'
+import { useCloStore } from '@/stores/clos'
 import type { PageParams } from '@/types/PageParams'
 
-const skillStore = useSkillStore()
+const cloStore = useCloStore()
 const loading = ref(false)
 const dialogVisible = ref(false)
 const selectedItem = ref<any | null>(null)
@@ -22,34 +22,34 @@ const headers = computed(() => [
   { title: 'Description', key: 'description' }
 ])
 
-const skills = computed(() => skillStore.skills || [])
+const clos = computed(() => cloStore.clos || [])
 
 const showDialog = async (item: any) => {
   selectedItem.value = item
   dialogVisible.value = true
-  const setCurrentSkill = (skill: any) => {
-    skillStore.setCurrentSkill(skill.id)
-    console.log(skillStore.editedSkill)
+  const setCurrentClo = (clo: any) => {
+    cloStore.setCurrentClo(clo.id)
+    console.log(cloStore.editedClo)
   }
-  setCurrentSkill(item)
-  await fetchSkill()
+  setCurrentClo(item)
+  await fetchClo()
 }
 
 const closeDialog = async () => {
-  await fetchSkill()
+  await fetchClo()
   dialogVisible.value = false
 }
 
 const updateOptions = (options: any) => {
   pageParams.value.page = options.page
   pageParams.value.limit = options.itemsPerPage
-  fetchSkill()
+  fetchClo()
 }
 
-const fetchSkill = async () => {
+const fetchClo = async () => {
   loading.value = true
   try {
-    await skillStore.fetchSkillsPage(pageParams.value)
+    await cloStore.fetchClosPage(pageParams.value)
   } catch (error) {
     console.error('Error fetching curriculum:', error)
   } finally {
@@ -59,15 +59,15 @@ const fetchSkill = async () => {
 }
 
 onMounted(async () => {
-  await fetchSkill()
-  skillStore.clearForm()
+  await fetchClo()
+  cloStore.clearForm()
 })
 </script>
 
 <template>
   <v-container>
     &nbsp;
-    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">ทักษะ</h2>
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">CLO</h2>
 
     <v-spacer></v-spacer>
 
@@ -80,7 +80,7 @@ onMounted(async () => {
           prepend-inner-icon="mdi-magnify"
           v-model="pageParams.search"
           rounded="lg"
-          @keydown.enter="fetchSkill"
+          @keydown.enter="fetchClo"
           style="height: 55px; width: 100%; min-width: 300px"
         ></v-text-field>
       </v-col>
@@ -98,8 +98,8 @@ onMounted(async () => {
         <v-data-table-server
           v-model:items-per-page="pageParams.limit"
           :headers="headers"
-          :items="skills"
-          :items-length="skillStore.totalSkills"
+          :items="clos"
+          :items-length="cloStore.totalClos"
           :loading="loading"
           item-value="name"
           @update:options="updateOptions"
@@ -129,7 +129,7 @@ onMounted(async () => {
       </div>
     </v-card>
   </v-container>
-  <skillDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
+  <cloDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
 </template>
 
 <style>

@@ -21,4 +21,8 @@ function getfaculties() {
   return http.get('/faculties')
 }
 
-export default { addFaculty, updateFaculty, delFaculty, getFaculty, getfaculties }
+function getBranchIds() {
+  return http.get('/faculties/getBranchIds')
+}
+
+export default { addFaculty, updateFaculty, delFaculty, getFaculty, getfaculties, getBranchIds }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   label: string
@@ -10,13 +10,21 @@ const props = defineProps<{
 const loading = ref(false)
 
 const search = ref(props.search)
+
+// Watch for changes in props.search and update local search
+watch(
+  () => props.search,
+  (newSearch) => {
+    console.log(newSearch)
+    search.value = newSearch
+  }
+)
 </script>
 
 <template>
   <v-text-field
     :label="props.label"
     variant="outlined"
-    density="compact"
     :loading="loading"
     append-inner-icon="mdi-magnify"
     v-model="search"

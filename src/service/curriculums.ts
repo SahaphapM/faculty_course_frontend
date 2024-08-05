@@ -21,8 +21,9 @@ function getCurriculum(id: string) {
   return http.get<Curriculum>(`/curriculums/${id}`);
 }
 
-function addCoordinator(curriculumId: string, userId: string)  {
-  return http.patch(`/curriculums/${curriculumId}/coordinators`, { id: userId });
+function addCoordinator(curriculumId: string, user: { id: string }[]) {
+  console.log(user, 'from service'); // For debugging
+  return http.patch(`/curriculums/${curriculumId}/coordinators`, user);
 }
 
 function getCurriculumsByPage(params: PageParams) {

@@ -102,6 +102,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/ClosView',
+      name: 'ClosView',
+      component: () => import('../views/Adminview/Clos/closView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
       path: '/SkillView',
       name: 'SkillView',
       component: () => import('../views/Adminview/Skill/skillView.vue'),
@@ -175,9 +184,8 @@ async function isAuthenticated() {
     return false
   }
 }
-
 router.beforeEach(async (to, from, next) => {
-  if (to.meta.requireAuth) {
+  if (to.path !== '/forbidden' && to.meta.requireAuth) {
     const authenticated = await isAuthenticated()
     if (!authenticated) {
       return next('/forbidden')

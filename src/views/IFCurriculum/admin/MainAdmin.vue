@@ -36,6 +36,7 @@ const select = ref<PageParams>({
 
 const dialogVisible = ref(false)
 const selectedItem = ref<any | null>(null)
+
 const showDialog = (item: any) => {
   selectedItem.value = item
   dialogVisible.value = true
@@ -43,6 +44,7 @@ const showDialog = (item: any) => {
   // Function to set the current curriculum in the store
   const setCurrentCurriculum = (curriculum: any) => {
     curriculumStore.setCurrentCurriculum(curriculum.id)
+    console.log(curriculumStore.currentCurriculum)
   }
 
   // Call the function with the selected item
@@ -95,7 +97,7 @@ const headers = [
 ]
 </script>
 <template>
-  <v-container>
+  <v-container fluid>
     &nbsp;
     <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">เล่มหลักสูตร</h2>
 
@@ -146,6 +148,7 @@ const headers = [
           @update:options="updateOptions"
           class="custom-header"
           style="height: auto; max-width: 2000px; width: 100%; min-width: 30vh"
+          :footer-props="{ itemsPerPageText: 'Rows count' }"
         >
           <!-- <template v-slot:top>
               <v-text-field
