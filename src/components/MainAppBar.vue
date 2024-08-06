@@ -36,21 +36,23 @@ onMounted(async () => {
         <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
       </div>
     </template>
-    <v-app-bar-title class="d-flex justify-center">
+    <v-app-bar-title class="d-flex justify-end align-center mr-4">
       <v-text-field
         @click="() => searchS.switchToggle()"
         v-if="!isSmallScreen"
-        min-width="300"
-        class="mt-5"
         append-inner-icon="mdi-magnify"
         variant="solo"
         density="compact"
         :placeholder="`${t('search')}...`"
         readonly
-      ></v-text-field>
+        width="150"
+        hide-details
+        height="20px"
+      >
+      </v-text-field>
     </v-app-bar-title>
     <template #append>
-      <div class="d-flex" v-if="isSmallScreen">
+      <div class="d-flex align-center" v-if="isSmallScreen">
         <LanguageBtns />
         <v-menu>
           <template #activator="{ props }">
@@ -84,13 +86,13 @@ onMounted(async () => {
       </div>
       <!-- large screen -->
       <div v-else>
-        <div v-if="!auth.isAuthenticated">
+        <div v-if="!auth.isAuthenticated" class="d-flex ga-4">
           <LanguageBtns />
           <v-btn class="bg-buu-gold" to="/login">
             <p class="font-weight-bold">{{ t('login') }}</p>
           </v-btn>
         </div>
-        <div v-else>
+        <div v-else class="d-flex ga-3 align-center">
           <v-btn
             prepend-icon="mdi-cog"
             variant="outlined"
@@ -99,10 +101,8 @@ onMounted(async () => {
             >{{ t('manage') }}</v-btn
           >
           <LanguageBtns />
-          <v-btn size="large">
-            <v-avatar color="white">
-              <v-img :src="profile?.picture" draggable="false"></v-img>
-            </v-avatar>
+          <v-avatar color="white" :style="{ cursor: 'pointer' }">
+            <v-img :src="profile?.picture" draggable="false"></v-img>
             <v-menu activator="parent">
               <v-list>
                 <v-list-item append-icon="mdi-account" to="/profile">
@@ -118,7 +118,7 @@ onMounted(async () => {
                 >
               </v-list>
             </v-menu>
-          </v-btn>
+          </v-avatar>
         </div>
       </div>
     </template>

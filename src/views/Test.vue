@@ -97,6 +97,8 @@ const breads: BreadItem[] = [
   <v-container fluid>
     <v-breadcrumbs :items="breads"></v-breadcrumbs>
     <MainTable
+      page-icon="mdi-cog"
+      page-title="test"
       :items="items"
       :headers="headers"
       :fetchSearch="async () => {}"
