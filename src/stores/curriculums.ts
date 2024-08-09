@@ -18,7 +18,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     period: '',
     minimumGrade: 0,
     branch: [],
-    plos: []
+    plos: [],
+    subjects: []
   }
 
   const editedCurriculum = ref<Curriculum>({ ...initialCurriculum })
@@ -67,6 +68,10 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     await curriculumService.addCoordinator(curriculumId, user)
   }
 
+  async function addSubjectToCurriculum(curriculumId: string, subjects: { id: string }[]) {
+    await curriculumService.addSubject(curriculumId, subjects)
+  }
+
   async function deleteCurriculum(id: string) {
     await curriculumService.delCurriculum(id)
     await fetchCurriculums()
@@ -90,6 +95,7 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     totalCurriculums,
     clearForm,
     addCoordinatorToCurriculum,
-    setCurrentCurriculum
+    setCurrentCurriculum,
+    addSubjectToCurriculum
   }
 })

@@ -12,7 +12,12 @@ import { usePloStore } from '@/stores/plos'
 import type { User } from '@/types/User'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
-
+import { useSubjectStore } from '@/stores/subject'
+import { useFacultyStore } from '@/stores/faculty'
+import type { PageParams } from '@/types/PageParams'
+import type { Subject } from '@/types/Subjects'
+const subjects = computed(() => subjectStore.subjects)
+const subjectStore = useSubjectStore()
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
@@ -36,6 +41,7 @@ const select2 = ref<any | null>(null)
 const branches = computed(() => branchStore.branches)
 const select3 = ref<any | null>(null)
 const select4 = ref<any | null>(null)
+const selectsubjects = ref<any | null>(null)
 const select5 = ref<string | null>(null)
 const items1 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
 const items2 = ref<string[]>(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
@@ -44,13 +50,26 @@ const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางส�
 const form = ref<VForm | null>(null)
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 type userIds = { id: string }
+type subjectsIds = { id: string }
 const tab = ref<string>('option-1')
 const value = ref('one')
 const router = useRouter()
+const pageParamsSubjects = ref<PageParams>({
+  page: 1,
+  limit: 10,
+  sort: '',
+  order: 'ASC',
+  search: '',
+  column1: '',
+  column2: ''
+})
+
 onMounted(async () => {
-  await branchStore.getBranches()
+  branchStore.getBranches()
   curriculumStore.fetchCurriculums()
-  await userStore.fetchUsers()
+  userStore.fetchUsers()
+  subjectStore.fetchSubjects
+  subjectStore.fetchSubjects(pageParamsSubjects.value)
   const coordinators = curriculumStore.currentCurriculum?.coordinators
 })
 
@@ -79,6 +98,12 @@ function addForm() {
 const removeForm = () => {
   if (forms.value.length > 1) {
     forms.value.pop()
+  }
+}
+
+const removeFormJ = () => {
+  if (refFormSubjects.value.length > 1) {
+    refFormSubjects.value.pop()
   }
 }
 
@@ -145,10 +170,6 @@ async function saveC() {
   console.log(coordinator.value, 'from vue') // Log the data to be sent
   if (curriculumStore.editedCurriculum?.id) {
     try {
-      // Log request URL and payload
-      console.log(
-        `Sending request to: /curriculums/${curriculumStore.editedCurriculum.id}/coordinators`
-      )
       console.log('Payload:', coordinator.value)
       await curriculumStore.addCoordinatorToCurriculum(
         curriculumStore.editedCurriculum.id,
@@ -273,6 +294,121 @@ const over = async () => {
 const { mdAndDown } = useDisplay()
 
 const isMobile = computed(() => mdAndDown.value)
+
+//*************************************** subject *************************************************** */
+
+const subjectsOptions = computed(() => {
+  return subjects.value.map((subject) => `${subject.id}`)
+})
+const formSubjects = ref<Subject>({
+  id: '',
+  thaiName: '',
+  engName: '',
+  credit: 0,
+  studyTime: '',
+  type: '3',
+  description: ''
+})
+const initialSubjects: subjectsIds[] = []
+const subject = ref<subjectsIds[]>(
+  initialSubjects
+    .filter((subjectid) => subjectid.id !== null) // Filter out items where id is null
+    .map((subjectid) => ({
+      id: subjectid.id!.toString() // Use non-null assertion operator to convert id to string
+    }))
+)
+
+const getSubjectsName = (id: string | null) => {
+  const currentCurriculum = curriculumStore.currentCurriculum
+  if (!currentCurriculum) return ''
+  const subject = currentCurriculum.subjects.find((subjectid) => subjectid.id === id)
+  return subject ? subject.thaiName : 'Unknown'
+}
+
+async function saveS() {
+  console.log(subject.value, 'from vue') // Log the data to be sent
+  if (curriculumStore.editedCurriculum?.id) {
+    try {
+      console.log('Payload:', subject.value)
+      await curriculumStore.addSubjectToCurriculum(
+        curriculumStore.editedCurriculum.id,
+        subject.value
+      )
+      overlay.value = !overlay.value
+      console.log('Subject updated successfully')
+    } catch (error) {
+      console.error('Error updating Subject:')
+    }
+  } else {
+    console.error('Edited subject ID is missing')
+  }
+}
+
+function removeSubject(id: string) {
+  subject.value = subject.value.filter((subjectid) => subjectid.id !== id)
+}
+
+const refFormSubjects = ref([
+  {
+    label: 'รายวิชา 1',
+    id: '',
+    thaiName: '',
+    engName: '',
+    credit: 0,
+    studyTime: '',
+    description: ''
+  }
+])
+async function addS() {
+  const newIndex = refFormSubjects.value.length + 1
+
+  refFormSubjects.value.push({
+    label: `รายวิชา ${newIndex}`,
+    id: '',
+    thaiName: '',
+    engName: '',
+    credit: 0,
+    studyTime: '',
+    description: ''
+  })
+
+  const newSubject = refFormSubjects.value[refFormSubjects.value.length - 2]
+  console.log(newSubject)
+
+  subjectStore.fetchSubjects(pageParamsSubjects.value)
+  // if (subjects) {
+  //   console.log(newSubject.id)
+  // } else {
+  //   subjectStore.editedSubject.id = newSubject.id
+  //   subjectStore.editedSubject.thaiName = newSubject.thaiName
+  //   subjectStore.editedSubject.engName = newSubject.engName
+  //   subjectStore.editedSubject.description = newSubject.description
+  //   subjectStore.editedSubject.credit = newSubject.credit
+  //   subjectStore.editedSubject.type = '3'
+  //   subjectStore.editedSubject.studyTime = newSubject.studyTime
+  //   const subjectId = newSubject.id
+  // }
+
+  const subjectId = newSubject.id
+  // await subjectStore.saveSubject
+
+  await subjectStore.saveSubject(pageParamsSubjects.value)
+
+  if (subjectId) {
+    if (!subject.value) {
+      subject.value = []
+    }
+
+    // Avoid duplicates
+    const exists = subject.value.some((subjectid) => subjectid.id === subjectId)
+    if (!exists) {
+      subject.value.push({ id: subjectId })
+      console.log(subject)
+    }
+  }
+}
+
+//*************************************** end subject *************************************************** */
 </script>
 <template>
   <v-container fluid>
@@ -480,24 +616,81 @@ const isMobile = computed(() => mdAndDown.value)
                 โครงสร้างหลักสูตร รายวิชาและหน่วยกิต
               </p>
             </div>
-            <v-form ref="form" class="ma-2" v-for="(form, index) in forms" :key="index">
+            <!-- <v-combobox
+              v-model="select3"
+              :items="subjectOptions"
+              variant="outlined"
+              rounded="lg"
+              :rules="[(v) => !!v || 'You must agree to continue!']"
+            ></v-combobox> -->
+            <v-form
+              ref="formSubjects"
+              class="ma-2"
+              v-for="(formSubjects, index) in refFormSubjects"
+              :key="index"
+            >
               <br />
 
               <p class="details-text" style="font-size: 2.5vh; margin: auto; margin-bottom: 1%">
-                วิชาที่ 1
+                {{ formSubjects.label }}
               </p>
               <p style="font-size: 1.5vh">รหัสรายวิชา</p>
-              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+
+              <v-combobox
+                v-model="formSubjects.id"
+                :rules="[(v) => !!v || 'Field is required']"
+                :items="subjectsOptions"
+                item-value="id"
+                item-text="name"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-combobox>
               <p style="font-size: 1.5vh">ชื่อรายวิชา</p>
-              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <v-text-field
+                v-model="formSubjects.thaiName"
+                :rules="[(v) => !!v || 'Field is required']"
+                text
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
               <p style="font-size: 1.5vh">ชื่อรายวิชา(ภาษาอังกฤษ)</p>
-              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <v-text-field
+                text
+                v-model="formSubjects.engName"
+                :rules="[(v) => !!v || 'Field is required']"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
               <p style="font-size: 1.5vh">หน่วยกิต</p>
-              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <v-text-field
+                text
+                v-model.number="formSubjects.credit"
+                :rules="[(v) => !!v || 'Field is required']"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
               <p style="font-size: 1.5vh">จำนวนชั่วโมงเรียน</p>
-              <v-text-field text variant="outlined" rounded="lg" class="small-input"></v-text-field>
+              <v-text-field
+                text
+                v-model="formSubjects.studyTime"
+                :rules="[(v) => !!v || 'Field is required']"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-text-field>
               <p style="font-size: 1.5vh">คำอธิบายรายวิชา</p>
-              <v-textarea text variant="outlined" rounded="lg" class="small-input"></v-textarea>
+              <v-textarea
+                text
+                v-model="formSubjects.description"
+                :rules="[(v) => !!v || 'Field is required']"
+                variant="outlined"
+                rounded="lg"
+                class="small-input"
+              ></v-textarea>
             </v-form>
             <v-row class="justify-center">
               <v-btn
@@ -505,7 +698,7 @@ const isMobile = computed(() => mdAndDown.value)
                 class="ma-4 rounded-circle"
                 size="40px"
                 variant="outlined"
-                @click="addForm"
+                @click="addS"
               ></v-btn>
               <v-btn
                 color="error"
@@ -513,12 +706,12 @@ const isMobile = computed(() => mdAndDown.value)
                 class="ma-4 rounded-circle"
                 size="40px"
                 variant="outlined"
-                @click="removeForm"
+                @click="removeFormJ"
               ></v-btn>
             </v-row>
             <v-row class="justify-end mt-8 mb-1">
               <v-btn @click="reset" variant="plain" color="error">ล้าง</v-btn
-              ><v-btn @click="saveC" variant="plain">บันทึก</v-btn></v-row
+              ><v-btn @click="saveS" variant="plain">บันทึก</v-btn></v-row
             >
           </v-container>
         </v-tabs-window-item>
@@ -627,15 +820,44 @@ const isMobile = computed(() => mdAndDown.value)
               </div>
 
               <div v-else>
+                &nbsp;
                 <p class="ml-8" style="color: red">ไม่มี</p>
               </div>
             </div>
             &nbsp;
-            <p style="font-size: 18px">
-              โครงสร้างหลักสูตร รายวิชาและหน่วยกิต :<span style="color: red" v-if="engName == ''"
-                >ไม่มี</span
-              >
+
+            <p
+              style="
+                font-size: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span>โครงสร้างหลักสูตร รายวิชาและหน่วยกิต :</span>
+              <v-icon size="20px" @click="tab = 'option-4'">mdi-pencil</v-icon>
             </p>
+
+            <div v-if="refFormSubjects.length && refFormSubjects[0].description">
+              <div
+                v-for="(item, index) in refFormSubjects"
+                :key="index"
+                class="ml-8"
+                style="font-size: 18px"
+              >
+                &nbsp;
+                <p>{{ item.label }}</p>
+                &nbsp;
+                <p>รหัสวิชา : &nbsp;{{ item.id }}</p>
+                <p>ชื่อวิชา : &nbsp;{{ item.thaiName }}</p>
+
+                <v-divider class="mt-8"></v-divider>
+              </div>
+            </div>
+            <div v-else>
+              &nbsp;
+              <p class="ml-8" style="color: red">ไม่มี</p>
+            </div>
             <v-row class="justify-end mt-8 mb-1">
               <v-btn @click="over" variant="plain">ยืนยัน</v-btn></v-row
             >

@@ -24,14 +24,18 @@ const pageParams = ref<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 const select = ref<PageParams>({
   page: 1,
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: ''
+  search: '',
+  column1: '',
+  column2: ''
 })
 
 const dialogVisible = ref(false)
