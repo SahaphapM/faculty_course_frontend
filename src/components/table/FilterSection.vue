@@ -70,7 +70,7 @@ onMounted(() => {
         :items="faculties"
         item-title="name"
         item-value="id"
-        label="Faculty"
+        :label="t('faculty')"
         clearable
         variant="outlined"
         rounded="lg"
@@ -84,7 +84,7 @@ onMounted(() => {
         :items="branches"
         item-title="name"
         item-value="id"
-        label="Branch"
+        :label="t('branch')"
         variant="outlined"
         rounded="lg"
         :return-object="true"

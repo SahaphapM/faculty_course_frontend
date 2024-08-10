@@ -21,7 +21,7 @@
         class="bg-primary"
         :items-per-page="itemsPerPage ?? 10"
         :headers="
-          props.headers.concat(
+          headers.concat(
             props.action ? [{ title: t('actions'), key: 'actions' }] : []
           ) as ReadonlyArray<any>
         "
@@ -33,8 +33,8 @@
           <tr>
             <template v-for="column in columns" :key="column.key">
               <td>
-                <span class="mr-2 cursor-pointer" @click="() => toggleSort(column)">{{
-                  column.title
+                <span class="cursor-pointer" @click="() => toggleSort(column)">{{
+                  t(column.title!)
                 }}</span>
                 <template v-if="isSorted(column)">
                   <v-icon :icon="getSortIcon(column)"></v-icon>
@@ -51,6 +51,7 @@
                 icon="mdi-file-document-edit"
                 size="small"
                 variant="tonal"
+                color="table-text"
                 @click="action(item)"
               ></v-btn>
               <div v-if="column.key === customCol">
@@ -128,13 +129,11 @@ onMounted(async () => {
 
 <style scoped>
 .even-row {
-  background-color: #ffffff;
-  color: black;
-  text-align: left;
+  background-color: rgb(var(--v-theme-trow-even));
+  color: rgb(var(--v-theme-table-text));
 }
 .odd-row {
-  background-color: #efefef;
-  color: black;
-  text-align: left;
+  background-color: rgb(var(--v-theme-trow-odd));
+  color: rgb(var(--v-theme-table-text));
 }
 </style>

@@ -30,7 +30,7 @@
     <template #append>
       <v-row class="d-flex justify-space-between align-center px-2" no-gutters>
         <v-btn-group>
-          <v-btn icon="mdi-weather-night"></v-btn>
+          <v-btn icon="mdi-weather-night" @click="toggleTheme"></v-btn>
         </v-btn-group>
         <p>{{ appVersion }}</p>
       </v-row>
@@ -43,7 +43,7 @@ import router from '@/router'
 import { useDrawerStore } from '@/stores/drawer'
 import { appVersion, isLargeScreen } from '@/utils/screenSize'
 import { ref } from 'vue'
-import { useLocale } from 'vuetify'
+import { useLocale, useTheme } from 'vuetify'
 
 const drawer = useDrawerStore()
 const { t } = useLocale()
@@ -55,4 +55,8 @@ const navMenu = [
   { title: 'skill', to: '/skillView' },
   { title: 'user', to: '/users' }
 ]
+const theme = useTheme()
+const toggleTheme = () => {
+  theme.global.name.value = theme.global.current.value.dark ? 'lightBUU' : 'darkBUU'
+}
 </script>

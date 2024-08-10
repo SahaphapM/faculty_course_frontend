@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
@@ -10,16 +10,17 @@ import { useLocale } from 'vuetify'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
+const { t } = useLocale()
 
-const headers = [
-  { title: 'รหัสผู้ใช้', value: 'id', key: 'id', sortable: false },
-  { title: 'อีเมลล์', value: 'email', key: 'email', sortable: false },
-  { title: 'ชื่อ', value: 'firstName', key: 'firstName', sortable: false },
-  { title: 'นามสกุล', value: 'lastName', key: 'lastName', sortable: false },
+const headers = computed(() => [
+  { title: t('uid'), value: 'id', key: 'id', sortable: false },
+  { title: t('email'), value: 'email', key: 'email', sortable: false },
+  { title: t('first name'), value: 'firstName', key: 'firstName', sortable: false },
+  { title: t('last name'), value: 'lastName', key: 'lastName', sortable: false },
   // { title: 'เพศ', value: 'gender' },
   // { title: 'เบอร์โทรศัพท์', value: 'phone' },
-  { title: 'ตำแหน่ง', value: 'roles', key: 'roles', sortable: false }
-]
+  { title: t('position'), value: 'roles', key: 'roles', sortable: false }
+])
 
 const dialog = ref(false)
 const editedUser = ref(Object.assign({}, userStore.initialUser))
@@ -140,8 +141,6 @@ onMounted(async () => {
   console.log(userStore.users)
   console.log(userStore.totalUsers)
 })
-
-const { t } = useLocale()
 </script>
 
 <template>
