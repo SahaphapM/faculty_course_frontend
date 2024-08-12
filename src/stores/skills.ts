@@ -12,7 +12,10 @@ export const useSkillStore = defineStore('skill', () => {
     id: '',
     name: '',
     description: '',
-    subjects: []
+    level: 0,
+    relatedSkills: [],
+    subjects: [],
+    techSkills: []
   }
 
   const editedSkill = ref<Skill>({ ...initialSkill })

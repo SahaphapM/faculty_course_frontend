@@ -21,7 +21,8 @@ const pageParams = ref<PageParams>({
 const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
-  { title: 'Description', key: 'description' }
+  { title: 'Description', key: 'description' },
+  { title: 'Level', key: 'level' }
 ])
 
 const skills = computed(() => skillStore.skills || [])
@@ -61,7 +62,6 @@ const fetchSkill = async () => {
   } finally {
     loading.value = false
   }
-  console.log(pageParams.value)
 }
 
 onMounted(async () => {
@@ -122,7 +122,7 @@ onMounted(async () => {
               <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
               <td style="height: 55px; min-width: 200px">{{ item.name }}</td>
               <td style="height: 55px; min-width: 90px">{{ item.description }}</td>
-
+              <td style="height: 55px; min-width: 90px">{{ item.level }}</td>
               <td>
                 <v-btn
                   variant="text"

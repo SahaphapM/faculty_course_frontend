@@ -3,18 +3,19 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSkillStore } from '@/stores/skills'
 import { useSubjectStore } from '@/stores/subject'
-
-const route = useRoute()
-const router = useRouter()
+import type { VForm } from 'vuetify/components'
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
 const subjectStore = useSubjectStore()
 const skills = computed(() => skillStore.editedSkill)
-const subjects = computed(() => subjectStore.subjects)
-const selectSubjects = ref<any | null>(null)
+const subSkills = computed(() => skillStore.skills)
+const selectSkill = ref<any | null>(null)
+const form = ref<VForm | null>(null)
+type skillIds = { id: string }
+const coordinator = ref<skillIds[]>([])
 const localVisible = ref(props.visible)
-
+const overlay = ref(false)
 watch(
   () => props.visible,
   (newVal) => {
@@ -38,11 +39,11 @@ const closeDialog = async () => {
 
 function saveSkill() {
   let skill = { ...skills.value }
+  skill.techSkills = selectSkill.value
   if (skills.value.id != '') {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    skill.subjects = selectSubjects.value
     const payload: { name: string; description: string; subjects: Object[] } = {
       name: skill.name,
       description: skill.description,
@@ -53,6 +54,41 @@ function saveSkill() {
     skillStore.addSkill(payload)
     closeDialog()
   }
+}
+function removeCoordinator(id: string) {
+  coordinator.value = coordinator.value.filter((coord) => coord.id !== id)
+}
+async function addc() {
+  const { valid } = await form.value!.validate()
+  if (!valid) return
+
+  // Assuming selectSkill.value is an array of selected subjects
+  if (Array.isArray(selectSkill.value)) {
+    for (const subject of selectSkill.value) {
+      const skillId = subject.id
+
+      if (skillId) {
+        if (!coordinator.value) {
+          coordinator.value = []
+        }
+
+        // Avoid duplicates
+        const exists = coordinator.value.some((coord) => coord.id === skillId)
+        if (!exists) {
+          coordinator.value.push({ id: skillId })
+          console.log(coordinator)
+        }
+      }
+    }
+  }
+  console.log(selectSkill.value)
+}
+
+const getUserInfoById = (id: any) => {
+  const skillString = selectSkill.value.find((skillString: string) =>
+    skillString.startsWith(`${id} `)
+  )
+  return skillString ? skillString : 'User Not Found'
 }
 
 onMounted(() => {
@@ -108,23 +144,81 @@ onMounted(() => {
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12">
-            <!-- <v-text-field
-              v-model="skills.subjects"
-              :counter="10"
-              label="Colors Tag"
+          <v-col cols="12"
+            ><v-combobox
+              v-model="skills.level"
               hide-details
-              required
-            ></v-text-field> -->
-            <v-select
-              v-model="selectSubjects"
-              :return-object="true"
-              :items="subjects"
-              multiple
-              item-title="description"
-              item-value="id"
-              variant="outlined"
-            ></v-select>
+              label="Level"
+              :items="[1, 2, 3, 4, 5]"
+            ></v-combobox
+          ></v-col>
+          <v-col cols="12">
+            <v-row class="my-1">
+              <p style="font-size: 20px; margin-left: 10px; font-weight: bold">Sub Skill</p>
+            </v-row>
+            <div>
+              <v-form ref="form" class="form-container">
+                <v-sheet
+                  width="100%"
+                  min-height="20vh"
+                  max-height="50vh"
+                  height="60vh"
+                  class="pa-6"
+                >
+                  <p style="font-size: 1.5vh">Choose</p>
+                  <v-combobox
+                    v-model="selectSkill"
+                    :items="subSkills"
+                    item-title="name"
+                    variant="outlined"
+                    rounded="lg"
+                  ></v-combobox>
+
+                  <v-card
+                    style="border-color: #bdbdbd"
+                    variant="outlined"
+                    rounded="lg"
+                    v-for="(subSkill, index) in coordinator"
+                    :key="subSkill.id || index"
+                    class="pa-3 mt-3 bg-blue-grey-lighten-5"
+                  >
+                    <v-row>
+                      <v-col>
+                        <v-icon color="primary">mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
+                        {{ getUserInfoById(subSkill.id) }}
+                      </v-col>
+                      <v-col class="d-flex justify-end" cols="auto">
+                        <v-btn
+                          color="red"
+                          variant="text"
+                          style="height: auto"
+                          class="circular-btn"
+                          icon="mdi-minus"
+                          @click="removeCoordinator(subSkill.id)"
+                        >
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                  <v-overlay :model-value="overlay" class="align-center justify-center">
+                    <v-progress-circular
+                      color="primary"
+                      size="64"
+                      indeterminate
+                    ></v-progress-circular>
+                  </v-overlay>
+                  <v-row class="justify-center">
+                    <v-btn
+                      icon="mdi-plus"
+                      class="ma-8 rounded-circle"
+                      size="40px"
+                      variant="outlined"
+                      @click="addc"
+                    ></v-btn>
+                  </v-row>
+                </v-sheet>
+              </v-form>
+            </div>
           </v-col>
         </v-row>
         <v-row>
