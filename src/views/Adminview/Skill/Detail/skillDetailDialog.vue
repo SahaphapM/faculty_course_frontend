@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useSkillStore } from '@/stores/skills'
 import { useSubjectStore } from '@/stores/subject'
 import type { VForm } from 'vuetify/components'
+
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
 const subjectStore = useSubjectStore()
+
 const skills = computed(() => skillStore.editedSkill)
 const subSkills = computed(() => skillStore.skills)
 const selectSkill = ref<any | null>(null)
 const form = ref<VForm | null>(null)
-type skillIds = { id: string }
-const coordinator = ref<skillIds[]>([])
+
+const techSkillInput = ref<any>(null) // Input for new tech skill
+
 const localVisible = ref(props.visible)
-const overlay = ref(false)
 watch(
   () => props.visible,
   (newVal) => {
@@ -23,18 +24,8 @@ watch(
   }
 )
 
-async function fetchSkillDetail(id: string) {
-  try {
-    await skillStore.fetchSkill(id)
-  } catch (error) {
-    console.error('Failed to fetch skill details:', error)
-  }
-}
-
 const closeDialog = async () => {
   emit('close-dialog')
-  // await skillStore.fetchSkills()
-  // skillStore.clearForm()
 }
 
 function saveSkill() {
@@ -55,47 +46,25 @@ function saveSkill() {
     closeDialog()
   }
 }
-function removeCoordinator(id: string) {
-  coordinator.value = coordinator.value.filter((coord) => coord.id !== id)
-}
-async function addc() {
-  const { valid } = await form.value!.validate()
-  if (!valid) return
 
-  // Assuming selectSkill.value is an array of selected subjects
-  if (Array.isArray(selectSkill.value)) {
-    for (const subject of selectSkill.value) {
-      const skillId = subject.id
-
-      if (skillId) {
-        if (!coordinator.value) {
-          coordinator.value = []
-        }
-
-        // Avoid duplicates
-        const exists = coordinator.value.some((coord) => coord.id === skillId)
-        if (!exists) {
-          coordinator.value.push({ id: skillId })
-          console.log(coordinator)
-        }
-      }
-    }
+// Add new tech skill to the list
+function addTechSkill() {
+  if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
+    skills.value.techSkills.push(techSkillInput.value)
+    techSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.techSkills)
   }
-  console.log(selectSkill.value)
 }
 
-const getUserInfoById = (id: any) => {
-  const skillString = selectSkill.value.find((skillString: string) =>
-    skillString.startsWith(`${id} `)
-  )
-  return skillString ? skillString : 'User Not Found'
+// Remove a tech skill from the list
+function removeTechSkill(index: number) {
+  skills.value.techSkills.splice(index, 1)
 }
 
 onMounted(() => {
   subjectStore.fetchAllSubjects()
 })
 </script>
-
 <template>
   <v-dialog
     v-model="localVisible"
@@ -144,83 +113,40 @@ onMounted(() => {
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12"
-            ><v-combobox
+          <v-col cols="12">
+            <v-combobox
               v-model="skills.level"
               hide-details
               label="Level"
               :items="[1, 2, 3, 4, 5]"
-            ></v-combobox
-          ></v-col>
-          <v-col cols="12">
-            <v-row class="my-1">
-              <p style="font-size: 20px; margin-left: 10px; font-weight: bold">Sub Skill</p>
-            </v-row>
-            <div>
-              <v-form ref="form" class="form-container">
-                <v-sheet
-                  width="100%"
-                  min-height="20vh"
-                  max-height="50vh"
-                  height="60vh"
-                  class="pa-6"
-                >
-                  <p style="font-size: 1.5vh">Choose</p>
-                  <v-combobox
-                    v-model="selectSkill"
-                    :items="subSkills"
-                    item-title="name"
-                    variant="outlined"
-                    rounded="lg"
-                  ></v-combobox>
+            ></v-combobox>
+          </v-col>
 
-                  <v-card
-                    style="border-color: #bdbdbd"
-                    variant="outlined"
-                    rounded="lg"
-                    v-for="(subSkill, index) in coordinator"
-                    :key="subSkill.id || index"
-                    class="pa-3 mt-3 bg-blue-grey-lighten-5"
-                  >
-                    <v-row>
-                      <v-col>
-                        <v-icon color="primary">mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
-                        {{ getUserInfoById(subSkill.id) }}
-                      </v-col>
-                      <v-col class="d-flex justify-end" cols="auto">
-                        <v-btn
-                          color="red"
-                          variant="text"
-                          style="height: auto"
-                          class="circular-btn"
-                          icon="mdi-minus"
-                          @click="removeCoordinator(subSkill.id)"
-                        >
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                  <v-overlay :model-value="overlay" class="align-center justify-center">
-                    <v-progress-circular
-                      color="primary"
-                      size="64"
-                      indeterminate
-                    ></v-progress-circular>
-                  </v-overlay>
-                  <v-row class="justify-center">
-                    <v-btn
-                      icon="mdi-plus"
-                      class="ma-8 rounded-circle"
-                      size="40px"
-                      variant="outlined"
-                      @click="addc"
-                    ></v-btn>
-                  </v-row>
-                </v-sheet>
-              </v-form>
-            </div>
+          <v-col cols="12"><p>TechSkills</p></v-col>
+
+          <v-col v-for="(techSkill, index) in skills.techSkills" :key="index" cols="4">
+            <v-row align="center">
+              <v-col>{{ techSkill.name }}</v-col>
+              <v-col cols="auto">
+                <v-btn icon @click="removeTechSkill(index)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="12">
+            <v-combobox
+              v-model="techSkillInput"
+              hide-details
+              label="Level"
+              item-title="name"
+              :items="subSkills"
+            ></v-combobox>
+            <v-btn @click="addTechSkill" class="mt-4">Add Tech Skill</v-btn>
           </v-col>
         </v-row>
+
         <v-row>
           <v-col>
             <v-btn @click="saveSkill">Save</v-btn>
@@ -230,10 +156,3 @@ onMounted(() => {
     </v-card>
   </v-dialog>
 </template>
-
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-}
-</style>

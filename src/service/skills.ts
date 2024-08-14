@@ -6,6 +6,13 @@ function addSkill(skill: Skill) {
   return http.post('/skills', skill)
 }
 
+function addSubSkill(skill: Skill) {
+  return http.post('/skills/${id}/createSubSkills', skill)
+}
+
+function addTechSkills(skill: Skill) {
+  return http.post('/skills/${id}/createTechSkills', skill)
+}
 function updateSkill(skill: Skill) {
   return http.patch(`/skills/${skill.id}`, skill)
 }
@@ -27,6 +34,8 @@ function getSkill(id: string) {
 
 export default {
   addSkill,
+  addSubSkill,
+  addTechSkills,
   updateSkill,
   delSkill,
   getSkills,
