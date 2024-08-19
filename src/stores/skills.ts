@@ -52,6 +52,16 @@ export const useSkillStore = defineStore('skill', () => {
     await skillService.addSkill(addSkill)
   }
 
+  // async function addSubSkill(addSubSkill: any) {
+  //   console.log(addSubSkill)
+  //   await skillService.addSubSkill(addSubSkill)
+  // }
+
+  // async function addTechSkill(addTechSkill: any) {
+  //   console.log(addTechSkill)
+  //   await skillService.addTechSkill(addTechSkill)
+  // }
+
   async function updateSkill(updatedSkill: Skill) {
     console.log(updatedSkill)
     await skillService.updateSkill(updatedSkill)
@@ -59,7 +69,15 @@ export const useSkillStore = defineStore('skill', () => {
 
   async function deleteSkill(id: string) {
     await skillService.delSkill(id)
-    // await fetchSkills()
+    await fetchSkills()
+  }
+
+  async function deleteSubSkill(id: string, subSkillId: string) {
+    await skillService.removeSubSkill(id, subSkillId)
+  }
+
+  async function deleteTechSkill(id: string, techSkillId: string) {
+    await skillService.removeTechSkill(id, techSkillId)
   }
 
   function clearForm() {
@@ -72,12 +90,16 @@ export const useSkillStore = defineStore('skill', () => {
     editedSkill,
     totalSkills,
     addSkill,
+    // addSubSkill,
+    // addTechSkill,
     updateSkill,
     fetchSkill,
     fetchSkillsPage,
     setCurrentSkill,
     fetchSkills,
     deleteSkill,
+    deleteSubSkill,
+    deleteTechSkill,
     clearForm
   }
 })

@@ -6,17 +6,22 @@ function addSkill(skill: Skill) {
   return http.post('/skills', skill)
 }
 
-function addSubSkill(skill: Skill) {
-  return http.post('/skills/${id}/createSubSkills', skill)
+function addSubSkill(id: string, subSkill: Array<Skill>) {
+  return http.post(`/skills/${id}/createSubSkills`, subSkill)
 }
 
-function addTechSkills(skill: Skill) {
-  return http.post('/skills/${id}/createTechSkills', skill)
+function addTechSkill(id: string, techSkill: Array<Skill>) {
+  return http.post(`/skills/${id}/createTechSkills`, techSkill)
 }
 function updateSkill(skill: Skill) {
   return http.patch(`/skills/${skill.id}`, skill)
 }
-
+function removeSubSkill(id: string, subSkillId: string) {
+  return http.patch(`/skills/${id}`, subSkillId)
+}
+function removeTechSkill(id: string, techSkillId: string) {
+  return http.patch(`/skills/${id}`, techSkillId)
+}
 function delSkill(id: string) {
   return http.delete(`/skills/${id}`)
 }
@@ -35,8 +40,10 @@ function getSkill(id: string) {
 export default {
   addSkill,
   addSubSkill,
-  addTechSkills,
+  addTechSkill,
   updateSkill,
+  removeSubSkill,
+  removeTechSkill,
   delSkill,
   getSkills,
   getSkillsByPage,

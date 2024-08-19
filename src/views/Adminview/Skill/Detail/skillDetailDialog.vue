@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch } from 'vue'
+import skillService from '@/service/skills'
 import { useSkillStore } from '@/stores/skills'
 import { useSubjectStore } from '@/stores/subject'
 import type { VForm } from 'vuetify/components'
@@ -11,12 +12,8 @@ const subjectStore = useSubjectStore()
 
 const skills = computed(() => skillStore.editedSkill)
 const subSkills = computed(() => skillStore.skills)
-const selectSkill = ref<any | null>(null)
-const form = ref<VForm | null>(null)
-
 const techSkillInput = ref<any>(null)
 const subSkillInput = ref<any>(null)
-
 const localVisible = ref(props.visible)
 watch(
   () => props.visible,
@@ -30,35 +27,27 @@ const closeDialog = async () => {
 }
 
 function saveSkill() {
+  console.log(skills.value.subSkills)
+  console.log(skills.value.techSkills)
   let skill = { ...skills.value }
-  skill.techSkills = selectSkill.value
   if (skills.value.id != '') {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; subjects: Object[] } = {
+    const payload: { name: string; description: string; level: number; subjects: Object[] } = {
       name: skill.name,
       description: skill.description,
-      subjects: skill.subjects
-    }
-    const subSkill: { name: string; description: string; subjects: Object[] } = {
-      name: skill.name,
-      description: skill.description,
-      subjects: skill.subjects
-    }
-    const techSkill: { name: string; description: string; subjects: Object[] } = {
-      name: skill.name,
-      description: skill.description,
+      level: skill.level,
       subjects: skill.subjects
     }
     console.log(payload)
 
+    skillService.addTechSkill(skills.value.id, skills.value.techSkills)
+    skillService.addSubSkill(skills.value.id, skills.value.subSkills)
     skillStore.addSkill(payload)
     closeDialog()
   }
 }
-
-// Add new tech skill to the list
 function addTechSkill() {
   if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
     skills.value.techSkills.push(techSkillInput.value)
@@ -67,6 +56,10 @@ function addTechSkill() {
   }
 }
 function addSubSkill() {
+  if (!skills.value.subSkills) {
+    skills.value.subSkills = []
+  }
+
   if (subSkillInput.value && !skills.value.subSkills.includes(subSkillInput.value)) {
     skills.value.subSkills.push(subSkillInput.value)
     subSkillInput.value = '' // Clear input after adding
@@ -74,13 +67,14 @@ function addSubSkill() {
   }
 }
 
-// Remove a tech skill from the list
 function removeTechSkill(index: number) {
   skills.value.techSkills.splice(index, 1)
+  skillService.removeTechSkill(skills.value.id, index.toString())
 }
 
 function removeSubSkill(index: number) {
   skills.value.techSkills.splice(index, 1)
+  skillService.removeSubSkill(skills.value.id, index.toString())
 }
 
 onMounted(() => {
@@ -161,7 +155,7 @@ onMounted(() => {
             <v-combobox
               v-model="techSkillInput"
               hide-details
-              label="Level"
+              label="Tech Skill"
               item-title="name"
               :items="subSkills"
             ></v-combobox>
@@ -185,7 +179,7 @@ onMounted(() => {
             <v-combobox
               v-model="subSkillInput"
               hide-details
-              label="Level"
+              label="Sub Skill"
               item-title="name"
               :items="subSkills"
             ></v-combobox>
