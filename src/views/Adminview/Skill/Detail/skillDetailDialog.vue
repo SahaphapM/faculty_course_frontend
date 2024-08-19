@@ -14,7 +14,8 @@ const subSkills = computed(() => skillStore.skills)
 const selectSkill = ref<any | null>(null)
 const form = ref<VForm | null>(null)
 
-const techSkillInput = ref<any>(null) // Input for new tech skill
+const techSkillInput = ref<any>(null)
+const subSkillInput = ref<any>(null)
 
 const localVisible = ref(props.visible)
 watch(
@@ -40,6 +41,16 @@ function saveSkill() {
       description: skill.description,
       subjects: skill.subjects
     }
+    const subSkill: { name: string; description: string; subjects: Object[] } = {
+      name: skill.name,
+      description: skill.description,
+      subjects: skill.subjects
+    }
+    const techSkill: { name: string; description: string; subjects: Object[] } = {
+      name: skill.name,
+      description: skill.description,
+      subjects: skill.subjects
+    }
     console.log(payload)
 
     skillStore.addSkill(payload)
@@ -55,9 +66,20 @@ function addTechSkill() {
     console.log(skills.value.techSkills)
   }
 }
+function addSubSkill() {
+  if (subSkillInput.value && !skills.value.subSkills.includes(subSkillInput.value)) {
+    skills.value.subSkills.push(subSkillInput.value)
+    subSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.subSkills)
+  }
+}
 
 // Remove a tech skill from the list
 function removeTechSkill(index: number) {
+  skills.value.techSkills.splice(index, 1)
+}
+
+function removeSubSkill(index: number) {
   skills.value.techSkills.splice(index, 1)
 }
 
@@ -144,6 +166,30 @@ onMounted(() => {
               :items="subSkills"
             ></v-combobox>
             <v-btn @click="addTechSkill" class="mt-4">Add Tech Skill</v-btn>
+          </v-col>
+
+          <v-col cols="12"><p>SubSkills</p></v-col>
+
+          <v-col v-for="(subSkill, index) in skills.subSkills" :key="index" cols="4">
+            <v-row align="center">
+              <v-col>{{ subSkill.name }}</v-col>
+              <v-col cols="auto">
+                <v-btn icon @click="removeSubSkill(index)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="12">
+            <v-combobox
+              v-model="subSkillInput"
+              hide-details
+              label="Level"
+              item-title="name"
+              :items="subSkills"
+            ></v-combobox>
+            <v-btn @click="addSubSkill" class="mt-4">Add Tech Skill</v-btn>
           </v-col>
         </v-row>
 

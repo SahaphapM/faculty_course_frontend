@@ -6,6 +6,7 @@ type Skill = {
   description: string
   level: number
   subjects: Subject[]
+  subSkills: Skill[]
   techSkills: Skill[]
   relatedSkills: Skill[]
 }
