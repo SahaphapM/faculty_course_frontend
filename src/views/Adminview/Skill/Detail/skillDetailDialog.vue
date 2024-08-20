@@ -26,7 +26,7 @@ const closeDialog = async () => {
   emit('close-dialog')
 }
 
-function saveSkill() {
+async function saveSkill() {
   console.log(skills.value.subSkills)
   console.log(skills.value.techSkills)
   let skill = { ...skills.value }
@@ -34,17 +34,18 @@ function saveSkill() {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; level: number; subjects: Object[] } = {
+    const payload: { name: string; description: string; level: number } = {
       name: skill.name,
       description: skill.description,
-      level: skill.level,
-      subjects: skill.subjects
+      level: skill.level
     }
     console.log(payload)
 
-    skillService.addTechSkill(skills.value.id, skills.value.techSkills)
+    // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
+    console.log(skills.value.id, skills.value.subSkills)
+    await skillStore.addSkill(payload)
     skillService.addSubSkill(skills.value.id, skills.value.subSkills)
-    skillStore.addSkill(payload)
+
     closeDialog()
   }
 }
@@ -138,7 +139,7 @@ onMounted(() => {
             ></v-combobox>
           </v-col>
 
-          <v-col cols="12"><p>TechSkills</p></v-col>
+          <!-- <v-col cols="12"><p>TechSkills</p></v-col>
 
           <v-col v-for="(techSkill, index) in skills.techSkills" :key="index" cols="4">
             <v-row align="center">
@@ -160,7 +161,7 @@ onMounted(() => {
               :items="subSkills"
             ></v-combobox>
             <v-btn @click="addTechSkill" class="mt-4">Add Tech Skill</v-btn>
-          </v-col>
+          </v-col> -->
 
           <v-col cols="12"><p>SubSkills</p></v-col>
 

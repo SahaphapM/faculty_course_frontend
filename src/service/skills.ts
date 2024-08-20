@@ -7,11 +7,11 @@ function addSkill(skill: Skill) {
 }
 
 function addSubSkill(id: string, subSkill: Array<Skill>) {
-  return http.post(`/skills/${id}/createSubSkills`, subSkill)
+  return http.post(`/skills/${id}createSubSkills`, subSkill) // Corrected URL
 }
 
 function addTechSkill(id: string, techSkill: Array<Skill>) {
-  return http.post(`/skills/${id}/createTechSkills`, techSkill)
+  return http.post(`/skills/${id}createTechSkills`, techSkill)
 }
 function updateSkill(skill: Skill) {
   return http.patch(`/skills/${skill.id}`, skill)

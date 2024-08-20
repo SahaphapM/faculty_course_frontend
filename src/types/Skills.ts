@@ -5,10 +5,9 @@ type Skill = {
   name: string
   description: string
   level: number
-  subjects: Subject[]
+  // subjects: Subject[]
   subSkills: Skill[]
   techSkills: Skill[]
-  relatedSkills: Skill[]
 }
 
 export type { Skill }
