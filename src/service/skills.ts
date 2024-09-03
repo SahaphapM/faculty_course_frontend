@@ -6,18 +6,19 @@ function addSkill(skill: Skill) {
   return http.post('/skills', skill)
 }
 
-function addSubSkill(id: string, subSkill: Array<Skill>) {
+function addSubSkill(id: string, subSkill: Skill[]) {
   return http.post(`/skills/${id}createSubSkills`, subSkill) // Corrected URL
 }
 
-function addTechSkill(id: string, techSkill: Array<Skill>) {
+function addTechSkill(id: string, techSkill: Skill[]) {
   return http.post(`/skills/${id}createTechSkills`, techSkill)
 }
 function updateSkill(skill: Skill) {
   return http.patch(`/skills/${skill.id}`, skill)
 }
 function removeSubSkill(id: string, subSkillId: string) {
-  return http.patch(`/skills/${id}`, subSkillId)
+  console.log('Test Removing subSkill', subSkillId)
+  return http.patch(`/skills/${id}/removeSubSkill/${subSkillId}`)
 }
 function removeTechSkill(id: string, techSkillId: string) {
   return http.patch(`/skills/${id}`, techSkillId)
