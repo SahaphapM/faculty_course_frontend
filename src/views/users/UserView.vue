@@ -5,12 +5,9 @@ import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
-import Pagination from '../../components/Pagination.vue'
 import SearchData from '@/components/SearchData.vue'
-import MainTable from '@/components/MainTable.vue'
-import type { HeaderItem } from '@/types/HeaderItem'
 import AddButton from '@/components/AddButton.vue'
-import SearchByFaculty from '@/components/SearchByFaculty.vue'
+import SelectBy from '@/components/SelectByFeature.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
@@ -38,20 +35,23 @@ const pageParams = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
-const fetchUsers = async (search?: string, facultyId?: string, branchId?: string) => {
+const fetchUsers = async (search?: string, columnId?: string, columnName?: string) => {
   loading.value = true
   if (search !== '' && search) {
     pageParams.value.search = search
   } else {
     pageParams.value.search = ''
   }
-  if (facultyId && branchId) {
-    pageParams.value.column1 = facultyId
-    pageParams.value.column2 = branchId
+  if (columnId && columnName) {
+    pageParams.value.columnId = columnId
+    pageParams.value.columnName = columnName
+  } else {
+    pageParams.value.columnId = ''
+    pageParams.value.columnName = ''
   }
 
   console.log(pageParams)
@@ -133,11 +133,6 @@ const updateOptions = (options: any) => {
   fetchUsers()
 }
 
-const clickHandler = (page: number) => {
-  fetchUsers()
-  console.log(page)
-}
-
 onMounted(async () => {
   await roleStore.getRoles()
   await fetchUsers()
@@ -154,13 +149,12 @@ onMounted(async () => {
       <v-col class="d-flex justify-end flex-grow-1">
         <SearchData
           :search="pageParams.search"
-          style="min-width: 250px"
           :label="'ค้นหาผู้ใช้'"
           :fetch-data="fetchUsers"
         ></SearchData>
       </v-col>
       <v-col>
-        <SearchByFaculty :fetch-data="fetchUsers"></SearchByFaculty>
+        <SelectBy :fetch-data="fetchUsers" :by-branch="true" :by-curriculum="true"></SelectBy>
       </v-col>
       <v-col class="d-flex justify-end flex-grow-0">
         <AddButton
