@@ -48,6 +48,7 @@
         "input": {
             "clear": "Clear"
         },
-        "open": "Open"
+        "open": "Open",
+        "close": "Close"
     }
 }

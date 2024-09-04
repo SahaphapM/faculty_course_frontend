@@ -3,20 +3,25 @@
     <div>
       Editable
       <span>
-        <TreeSkillPlain :items="skillTree" />
+        <TreeSkillPlain v-model="exampleSkillTree" />
       </span>
     </div>
     <div>
       Read
       <span>
-        <TreeSkillPlain :items="skillTree" readonly />
+        <TreeSkillPlain :items="exampleSkillTree" readonly />
       </span>
     </div>
   </v-container>
+  <div>
+    Reactive Raw Logs <br />
+    {{ exampleSkillTree.map((i) => i.children?.map((c) => c.name)) }}
+  </div>
 </template>
 
 <script lang="ts" setup>
 import TreeSkillPlain from '@/components/TreeSkillPlain.vue'
+import { ref } from 'vue'
 
 interface Skill {
   id: string
@@ -26,7 +31,8 @@ interface Skill {
   level?: string
   children?: Skill[]
 }
-const skillTree: Skill[] = [
+
+const exampleSkillTree = ref<Skill[]>([
   {
     id: 'softdev',
     name: 'Software Development Skills',
@@ -172,7 +178,14 @@ const skillTree: Skill[] = [
             name: 'TypeScript',
             icon: 'mdi-language-typescript',
             description:
-              'A strongly typed superset of JavaScript that compiles to plain JavaScript.'
+              'A strongly typed superset of JavaScript that compiles to plain JavaScript.',
+            children: [
+              {
+                id: 'typing',
+                name: 'type object',
+                description: 'structure object'
+              }
+            ]
           },
           {
             id: 'python',
@@ -222,5 +235,5 @@ const skillTree: Skill[] = [
       }
     ]
   }
-]
+])
 </script>
