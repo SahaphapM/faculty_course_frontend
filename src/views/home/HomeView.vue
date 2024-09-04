@@ -4,7 +4,7 @@ import { listFaculties } from '@/models/faculties'
 </script>
 
 <template>
-  <v-container fluid>
+  <div>
     <v-carousel show-arrows="hover" cycle continuous height="240">
       <v-carousel-item
         v-for="n in 3"
@@ -13,7 +13,7 @@ import { listFaculties } from '@/models/faculties'
         cover
       ></v-carousel-item>
     </v-carousel>
-    <v-row>
+    <v-row class="mt-5">
       <v-col cols="6" md="3" v-for="(data, index) in listFaculties" :key="data.eng">
         <BasicCard
           :title="data.thai"
@@ -23,5 +23,5 @@ import { listFaculties } from '@/models/faculties'
         />
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>

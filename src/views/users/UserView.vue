@@ -1,26 +1,29 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
+import MainTable from '@/components/table/MainTable.vue'
+import { useLocale } from 'vuetify'
 import SearchData from '@/components/SearchData.vue'
 import AddButton from '@/components/AddButton.vue'
 import SelectBy from '@/components/SelectByFeature.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
+const { t } = useLocale()
 
-const headers = [
-  { title: 'รหัสผู้ใช้', value: 'id', key: 'id' },
-  { title: 'อีเมลล์', value: 'email', key: 'email' },
-  { title: 'ชื่อ', value: 'firstName', key: 'firstName' },
-  { title: 'นามสกุล', value: 'lastName', key: 'lastName' },
+const headers = computed(() => [
+  { title: t('uid'), value: 'id', key: 'id', sortable: false },
+  { title: t('email'), value: 'email', key: 'email', sortable: false },
+  { title: t('first name'), value: 'firstName', key: 'firstName', sortable: false },
+  { title: t('last name'), value: 'lastName', key: 'lastName', sortable: false },
   // { title: 'เพศ', value: 'gender' },
   // { title: 'เบอร์โทรศัพท์', value: 'phone' },
-  { title: 'ตำแหน่ง', value: 'roles' }
-]
+  { title: t('position'), value: 'roles', key: 'roles', sortable: false }
+])
 
 const dialog = ref(false)
 const editedUser = ref(Object.assign({}, userStore.initialUser))
@@ -140,6 +143,7 @@ onMounted(async () => {
   console.log(userStore.totalUsers)
 })
 </script>
+
 <template>
   <v-container fluid>
     &nbsp;
@@ -231,23 +235,25 @@ onMounted(async () => {
         ></FormDialog>
       </v-dialog>
     </v-card>
-    <MainTable
-      :items="userStore.users"
-      :headers="headers"
-      :fetch-data="fetchUsers"
-      :btnAddAction="() => {}"
-      :combobox-items="['yes', 'no']"
-      :faculty-items="['yai', 'lek']"
-      :action="() => {}"
-      :items-per-page="10"
-      customColumnName="gender"
-    >
-      <template #gender="{ item }">
-        {{ item }}
-      </template>
-    </MainTable>
       </v-col>
     </v-row> -->
+    <MainTable
+      page-icon="mdi-account-group"
+      :page-title="t('list user')"
+      :items="userStore.users"
+      :headers="headers"
+      :fetchSearch="fetchUsers"
+      :fetchFab="fetchUsers"
+      :btnAddAction="addUser"
+      :action="editUser"
+      customCol="roles"
+    >
+      <template #roles="{ item }">
+        <v-chip>
+          {{ item.roles.map((n: any) => n.name)[0] }}
+        </v-chip>
+      </template>
+    </MainTable>
   </v-container>
   <v-dialog max-width="1000px" v-model="dialog" persistent>
     <FormDialog

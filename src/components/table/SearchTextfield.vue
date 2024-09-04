@@ -3,20 +3,18 @@ import { ref, watch } from 'vue'
 
 const props = defineProps<{
   label: string
-  search: string
   fetchData: (search: string) => Promise<void>
 }>()
 
 const loading = ref(false)
 
-const search = ref(props.search)
+const search = ref('')
 
 // Watch for changes in props.search and update local search
 watch(
-  () => props.search,
+  () => search,
   (newSearch) => {
-    console.log(newSearch)
-    search.value = newSearch
+    search.value = newSearch.value
   }
 )
 </script>
@@ -31,6 +29,5 @@ watch(
     rounded="lg"
     @click:append-inner="fetchData(search)"
     @keydown.enter="fetchData(search)"
-    style="height: 55px; width: 100%; min-width: 250px"
   ></v-text-field>
 </template>

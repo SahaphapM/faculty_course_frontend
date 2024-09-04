@@ -16,8 +16,8 @@ const { t } = useLocale()
     </v-container>
   </v-app-bar>
   <v-main app>
-    <v-container style="min-height: 100vh; max-width: 1440px">
-      <RouterView class="mx-auto overflow-y-auto" />
+    <v-container style="min-height: 100vh; max-width: 1440px" class="mx-auto overflow-y-auto" fluid>
+      <RouterView />
     </v-container>
   </v-main>
   <MainFooter></MainFooter>
