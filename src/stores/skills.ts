@@ -12,7 +12,7 @@ export const useSkillStore = defineStore('skill', () => {
     id: '',
     name: '',
     description: '',
-    colorsTag: ''
+    subjects: []
   }
 
   const editedSkill = ref<Skill>({ ...initialSkill })
@@ -25,10 +25,11 @@ export const useSkillStore = defineStore('skill', () => {
     dataInit.value = true
   }
 
-  // async function fetchSkills() {
-  //   const res = await skillService.getSkills()
-  //   skills.value = res.data
-  // }
+  async function fetchSkills() {
+    const res = await skillService.getSkills()
+    skills.value = res.data
+  }
+
   async function fetchSkillsPage(params: PageParams) {
     const res = await skillService.getSkillsByPage(params)
     skills.value = res.data.data
@@ -71,7 +72,7 @@ export const useSkillStore = defineStore('skill', () => {
     fetchSkill,
     fetchSkillsPage,
     setCurrentSkill,
-    // fetchSkills,
+    fetchSkills,
     deleteSkill,
     clearForm
   }

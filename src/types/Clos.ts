@@ -5,8 +5,8 @@ type Clos = {
   id: string
   name: string
   description: string
-  subject: Subject[]
-  plos: Plos[]
+  subject: Subject
+  plo: Plos
 }
 
 export type { Clos }

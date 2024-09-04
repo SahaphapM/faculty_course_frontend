@@ -5,53 +5,111 @@ import type { Subject } from '@/types/Subjects';
 import type { User } from '@/types/User';
 import { computed, nextTick, onMounted, ref } from 'vue';
 import type { VForm } from 'vuetify/components';
-import type { PageParams } from '@/types/PageParams'
+import type { PageParams, SortItem } from '@/types/PageParams'
+import FormDialog from '@/views/subjects/SubjectFormDialog.vue'
+import SearchData from '@/components/SearchData.vue'
+import AddButton from '@/components/AddButton.vue'
 const subjects = computed(() => subjectStore.subjects)
 const subjectStore = useSubjectStore()
+const editedSubject = ref(Object.assign({}, subjectStore.initialSubject))
 const dialog = ref(false)
 const dialogDelete = ref(false)
 const refForm = ref<VForm | null>(null)
 const loading = ref(false)
+const isUpdate = ref(false)
+const isCreate = ref(false)
 onMounted(async () => {
-    await subjectStore.fetchSubjects(pageParams.value)
+    fetchSubjects()
     console.log(subjectStore.totalSubjects)
 })
 const headers = [
     { title: 'รหัสรายวิชา', key: 'id', value: 'id' },
     { title: 'ชื่อรายวิชา', key: 'thaiName', value: 'thaiName' },
+    { title: 'ชื่อรายวิชาภาษาอังกฤษ', key: 'engName', value: 'engName' },
     { title: 'จำนวนหน่วยกิต', key: 'credit', value: 'credit' },
-    { title: 'จำนวนเวลาเรียน', key: 'studyTime', value: 'studyTime' },
-    { title: '', key: 'actions', sortable: false },
-    { title: '', key: 'data-table-expand' },
+    { title: 'จำนวนเวลาเรียน', key: 'studyTime', value: 'studyTime' }
 ]
-const fetchSubjects = async () => {
+const fetchSubjects = async (search?: string) => {
     loading.value = true
+    if (search) {
+        pageParams.value.search = search
+        console.log(pageParams.value.search)
+    } else {
+        pageParams.value.search = ''
+    }
+    console.log(pageParams.value.search)
     try {
-        await subjectStore.fetchSubjects(pageParams.value)
+        await subjectStore.fetchSubjectsPage(pageParams.value)
     } catch (error) {
-        console.error('Error fetching users:', error)
+        console.error('Error fetching subjects:', error)
     } finally {
         loading.value = false
     }
+    // loading.value = true
+    // try {
+    //     await subjectStore.fetchSubjects(pageParams.value)
+    // } catch (error) {
+    //     console.error('Error fetching users:', error)
+    // } finally {
+    //     loading.value = false
+    // }
+
 }
-async function save() {
-    console.log(subjectStore.editedSubject)
-    console.log(refForm.value)
-    const { valid } = await refForm.value!.validate()
-    if (!valid) return
-    closeDialog()
-    await subjectStore.saveSubject(pageParams.value)
-}
-function closeDialog() {
-    dialog.value = false
-    nextTick(() => {
-        subjectStore.clearForm()
-    })
-}
-const editItem = async (subject: Subject) => {
-    console.log(subject)
+const addSubject = () => {
+    isCreate.value = true
     dialog.value = true
-    await subjectStore.fetchSubject(subject.id)
+}
+
+// async function save() {
+//     console.log(subjectStore.editedSubject)
+//     console.log(refForm.value)
+//     const { valid } = await refForm.value!.validate()
+//     if (!valid) return
+//     closeDialog()
+//     await subjectStore.saveSubject(pageParams.value)
+// }
+const save = async (subject: Subject) => {
+    subjectStore.editedSubject = subject
+    if (isUpdate.value) {
+        await subjectStore.updateSubject()
+    } else {
+        await subjectStore.saveSubject()
+    }
+    isUpdate.value = false
+    subjectStore.clearForm()
+    fetchSubjects()
+    closeDialog()
+    dialog.value = false
+}
+// function closeDialog() {
+//     dialog.value = false
+//     nextTick(() => {
+//         subjectStore.clearForm()
+//     })
+// }
+const closeDialog = () => {
+    subjectStore.clearForm()
+    editedSubject.value = Object.assign({}, subjectStore.initialSubject)
+    dialog.value = false
+    isCreate.value = false
+    isUpdate.value = false
+}
+// const editItem = async (subject: Subject) => {
+//     console.log(subject)
+//     dialog.value = true
+//     await subjectStore.fetchSubject(subject.id)
+//     if (editedSubject.value.id) {
+//         isUpdate.value = true
+//         dialog.value = true
+//     }
+// }
+const editItem = (subject: Subject) => {
+    editedSubject.value = { ...subject } // work with a temporary copy of editedUser.value *******************
+
+    if (editedSubject.value.id) {
+        isUpdate.value = true
+        dialog.value = true
+    }
 }
 async function deleteItem(subject: Subject) {
     console.log(subject)
@@ -77,15 +135,83 @@ const pageParams = ref<PageParams>({
     order: 'ASC',
     search: ''
 })
+const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
+
 
 const updateOptions = (options: any) => {
+    //sorting
+    if (options.sortBy.length === 0) {
+        // Set default sort when sortBy is empty
+        sortBy.value = [{ key: 'id', order: 'asc' }]
+    } else {
+        // Update sortBy and sortDesc based on user selection
+        sortBy.value = options.sortBy
+    }
+    // toUpperCase
+    pageParams.value.sort = sortBy.value[0].key
+    if (sortBy.value[0].order === 'desc') {
+        pageParams.value.order = 'DESC'
+    } else {
+        pageParams.value.order = 'ASC'
+    }
+
+    // current page
     pageParams.value.page = options.page
+    // item per page
     pageParams.value.limit = options.itemsPerPage
-    subjectStore.fetchSubjects(pageParams.value)
+    // fetchSubject
+    fetchSubjects()
 }
 </script>
-
 <template>
+    <v-container fluid>
+        <h2 style="font-size: 24px" class="pa-5">รายวิชา</h2>
+
+        <v-row class="d-flex justify-end ga-5" no-gutters>
+            <v-col class="d-flex justify-end flex-grow-1">
+                <SearchData style="min-width: 250px" :label="'ค้นหารายวิชา'" :search="pageParams.search"
+                    :fetch-data="fetchSubjects"></SearchData>
+            </v-col>
+            <v-col class="d-flex justify-end flex-grow-0">
+                <!-- <AddButton style="width: 300px" :to-link="null" :label="'เพิ่มรายวิชา'" to="/AddSubject">
+                </AddButton> -->
+                <AddButton style="width: 300px" :to-link="null" :label="'เพิ่มรายวิชา'" :clickFucntion="addSubject">
+                </AddButton>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col>
+                <v-card class="mt-4">
+                    <div>
+                        <v-data-table-server v-model:items-per-page="pageParams.limit" :headers="headers"
+                            :items="subjectStore.subjects" :items-length="subjectStore.totalSubjects" :loading="loading"
+                            item-value="id" class="bg-primary" @update:options="updateOptions">
+
+                            <template v-slot:item="{ item, index }">
+                                <tr :class="[{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }]">
+                                    <td style="min-width: 130px">{{ item.id }}</td>
+                                    <td style="min-width: 220px">{{ item.thaiName }}</td>
+                                    <td style="min-width: 220px">{{ item.engName }}</td>
+                                    <td style="min-width: 180px">{{ item.credit }}</td>
+                                    <td style="min-width: 180px">{{ item.studyTime }}</td>
+                                    <td style="text-align: left; min-width: 90px; padding-left: 40px">
+                                        <v-icon primary small
+                                            @click="editItem(item)">mdi-file-document-edit-outline</v-icon>
+                                        <!-- <v-icon primary small @click="deleteItem(item)">mdi-delete</v-icon> -->
+                                    </td>
+                                </tr>
+                            </template>
+                        </v-data-table-server>
+                    </div>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
+    <v-dialog max-width="1200px" v-model="dialog" persistent>
+        <FormDialog :item="editedSubject" :method="save" :isUpdate="isUpdate" @close-dialog="closeDialog"></FormDialog>
+    </v-dialog>
+</template>
+<!-- <template>
     <div>{{ console.log(headers) }}</div>
     <v-container>
         <v-card>
@@ -101,11 +227,9 @@ const updateOptions = (options: any) => {
                     <template v-slot:top>
                         <v-toolbar color="white">
                             <v-toolbar-title>รายวิชา</v-toolbar-title>
-                            <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
                             <v-spacer></v-spacer>
                             <v-dialog v-model="dialog" max-width="600px">
                                 <template v-slot:activator="{ props }">
-                                    <!--search-->
                                     <v-text-field v-model="pageParams.search" label="Search" @input="fetchSubjects"
                                         class="mx-4" prepend-inner-icon="mdi-magnify" clearable density="compact"
                                         single-line flat hide-details variant="solo-filled"></v-text-field>
@@ -156,7 +280,7 @@ const updateOptions = (options: any) => {
                                             </v-container>
                                         </v-form>
                                     </v-card-text>
-                                    <!--action of card-->
+
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn color="blue-darken-1" variant="text" @click="closeDialog()">
@@ -170,7 +294,7 @@ const updateOptions = (options: any) => {
                             </v-dialog>
                         </v-toolbar>
                     </template>
-                    <!--description-->
+
                     <template v-slot:expanded-row="{ columns, item }">
                         <tr>
                             Course Description
@@ -196,7 +320,7 @@ const updateOptions = (options: any) => {
             </v-card-actions>
         </v-card>
     </v-dialog>
-</template>
+</template> -->
 <!-- <template>
     <div>{{ console.log(headers) }}</div>
 
@@ -291,40 +415,29 @@ const updateOptions = (options: any) => {
     </v-dialog>
 </template> -->
 <style scoped>
-.rounded-circle {
-    border-radius: 50%;
-    width: 50px;
-    /* คุณสามารถปรับขนาดได้ตามต้องการ */
-    height: 50px;
-}
-
-.v-btn {
-    color: yellow;
-}
-
-.elevation-1 {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.v-toolbar-title {
+.details-text {
+    margin-left: 10px;
+    /* Adjust the spacing between the div and p as needed */
     font-weight: bold;
+    font-size: large;
 }
 
-.v-data-table-header th {
-    font-weight: bold;
+.even-row {
+    background-color: #f9f9f9;
+    color: black;
+    text-align: left;
 }
 
-.styled-table {
-    border-collapse: collapse;
-    font-size: 14px;
-    font-family: 'Arial', sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+.odd-row {
+    background-color: #ffffff;
+    color: black;
+    text-align: left;
 }
 
-.rounded-table {
-    border-radius: 16px;
-    overflow: hidden;
-    /* To ensure the content follows the rounded corners */
+/* Custom table styles */
+.custom-table td {
+    border: none;
+    /* Remove border between columns */
+    height: 55px;
 }
 </style>
