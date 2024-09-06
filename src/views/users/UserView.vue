@@ -7,7 +7,7 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
 import MainTable from '@/components/table/MainTable.vue'
 import { useLocale } from 'vuetify'
-import SearchData from '@/components/SearchData.vue'
+// import SearchData from '@/components/SearchData.vue'
 import AddButton from '@/components/AddButton.vue'
 import SelectBy from '@/components/SelectByFeature.vue'
 

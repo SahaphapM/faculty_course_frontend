@@ -36,21 +36,6 @@ onMounted(async () => {
         <v-img src="./img/logo-buu-2_1.png" max-width="70px"></v-img>
       </div>
     </template>
-    <v-app-bar-title class="d-flex justify-end align-center mr-4">
-      <v-text-field
-        @click="() => searchS.switchToggle()"
-        v-if="!isSmallScreen"
-        append-inner-icon="mdi-magnify"
-        variant="solo"
-        density="compact"
-        :placeholder="`${t('search')}...`"
-        readonly
-        width="150"
-        hide-details
-        height="20px"
-      >
-      </v-text-field>
-    </v-app-bar-title>
     <template #append>
       <div class="d-flex align-center" v-if="isSmallScreen">
         <LanguageBtns />
@@ -92,33 +77,58 @@ onMounted(async () => {
             <p class="font-weight-bold">{{ t('login') }}</p>
           </v-btn>
         </div>
-        <div v-else class="d-flex ga-3 align-center">
-          <v-btn
-            prepend-icon="mdi-cog"
-            variant="outlined"
-            color="buu-gold"
-            @click="() => router.push('/MainIFAdmin')"
-            >{{ t('manage') }}</v-btn
-          >
-          <LanguageBtns />
-          <v-avatar color="white" :style="{ cursor: 'pointer' }">
-            <v-img :src="profile?.picture" draggable="false"></v-img>
-            <v-menu activator="parent">
-              <v-list>
-                <v-list-item append-icon="mdi-account" to="/profile">
-                  {{ t('profile') }}
-                </v-list-item>
-                <v-list-item append-icon="mdi-logout" @click="auth.logout()">
-                  {{ t('logout') }}
-                </v-list-item>
-                <v-list-item>
-                  <p class="text-center text-medium-emphasis">
-                    {{ appVersion }}
-                  </p></v-list-item
-                >
-              </v-list>
-            </v-menu>
-          </v-avatar>
+        <div v-else>
+          <v-row no-gutters class="d-flex ga-3 align-center">
+            <v-col cols="auto">
+              <v-text-field
+                v-if="!isSmallScreen"
+                @click="() => searchS.switchToggle()"
+                append-inner-icon="mdi-magnify"
+                variant="solo"
+                class="shrink"
+                density="compact"
+                width="150"
+                :placeholder="`${t('search')}...`"
+                readonly
+                hide-details
+              >
+              </v-text-field>
+            </v-col>
+            <v-col>
+              <v-btn
+                prepend-icon="mdi-cog"
+                variant="outlined"
+                color="buu-gold"
+                @click="() => router.push('/MainIFAdmin')"
+                min-width="125"
+                height="40"
+                >{{ t('manage') }}</v-btn
+              >
+            </v-col>
+            <v-col>
+              <LanguageBtns />
+            </v-col>
+            <v-col>
+              <v-avatar color="white" :style="{ cursor: 'pointer' }">
+                <v-img :src="profile?.picture" draggable="false"></v-img>
+                <v-menu activator="parent">
+                  <v-list>
+                    <v-list-item append-icon="mdi-account" to="/profile">
+                      {{ t('profile') }}
+                    </v-list-item>
+                    <v-list-item append-icon="mdi-logout" @click="auth.logout()">
+                      {{ t('logout') }}
+                    </v-list-item>
+                    <v-list-item>
+                      <p class="text-center text-medium-emphasis">
+                        {{ appVersion }}
+                      </p></v-list-item
+                    >
+                  </v-list>
+                </v-menu>
+              </v-avatar>
+            </v-col>
+          </v-row>
         </div>
       </div>
     </template>
