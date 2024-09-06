@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, onMounted, watch } from 'vue'
+import skillService from '@/service/skills'
 import { useSkillStore } from '@/stores/skills'
 import { useSubjectStore } from '@/stores/subject'
+import type { VForm } from 'vuetify/components'
 
-const route = useRoute()
-const router = useRouter()
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
 const subjectStore = useSubjectStore()
-const skills = computed(() => skillStore.editedSkill)
-const subjects = computed(() => subjectStore.subjects)
-const selectSubjects = ref<any | null>(null)
-const localVisible = ref(props.visible)
 
+const skills = computed(() => skillStore.editedSkill)
+const subSkills = computed(() => skillStore.skills)
+const techSkillInput = ref<any>(null)
+const subSkillInput = ref<any>(null)
+const localVisible = ref(props.visible)
 watch(
   () => props.visible,
   (newVal) => {
@@ -22,44 +22,66 @@ watch(
   }
 )
 
-async function fetchSkillDetail(id: string) {
-  try {
-    await skillStore.fetchSkill(id)
-  } catch (error) {
-    console.error('Failed to fetch skill details:', error)
-  }
-}
-
 const closeDialog = async () => {
   emit('close-dialog')
-  // await skillStore.fetchSkills()
-  // skillStore.clearForm()
 }
 
-function saveSkill() {
+async function saveSkill() {
+  console.log(skills.value.subSkills)
+  console.log(skills.value.techSkills)
   let skill = { ...skills.value }
   if (skills.value.id != '') {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    skill.subjects = selectSubjects.value
-    const payload: { name: string; description: string; subjects: Object[] } = {
+    const payload: { name: string; description: string; level: number } = {
       name: skill.name,
       description: skill.description,
-      subjects: skill.subjects
+      level: skill.level
     }
     console.log(payload)
 
-    skillStore.addSkill(payload)
+    // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
+    console.log(skills.value.id, skills.value.subSkills)
+    await skillStore.addSkill(payload)
+    skillService.addSubSkill(skills.value.id, skills.value.subSkills)
+
     closeDialog()
   }
+}
+function addTechSkill() {
+  if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
+    skills.value.techSkills.push(techSkillInput.value)
+    techSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.techSkills)
+  }
+}
+function addSubSkill() {
+  if (!skills.value.subSkills) {
+    skills.value.subSkills = []
+  }
+
+  if (subSkillInput.value && !skills.value.subSkills.includes(subSkillInput.value)) {
+    skills.value.subSkills.push(subSkillInput.value)
+    subSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.subSkills)
+  }
+}
+
+function removeTechSkill(index: number) {
+  skills.value.techSkills.splice(index, 1)
+  skillService.removeTechSkill(skills.value.id, index.toString())
+}
+
+function removeSubSkill(index: number) {
+  skills.value.techSkills.splice(index, 1)
+  skillService.removeSubSkill(skills.value.id, index.toString())
 }
 
 onMounted(() => {
   subjectStore.fetchAllSubjects()
 })
 </script>
-
 <template>
   <v-dialog
     v-model="localVisible"
@@ -109,24 +131,63 @@ onMounted(() => {
             ></v-text-field>
           </v-col>
           <v-col cols="12">
-            <!-- <v-text-field
-              v-model="skills.subjects"
-              :counter="10"
-              label="Colors Tag"
+            <v-combobox
+              v-model="skills.level"
               hide-details
-              required
-            ></v-text-field> -->
-            <v-select
-              v-model="selectSubjects"
-              :return-object="true"
-              :items="subjects"
-              multiple
-              item-title="description"
-              item-value="id"
-              variant="outlined"
-            ></v-select>
+              label="Level"
+              :items="[1, 2, 3, 4, 5]"
+            ></v-combobox>
+          </v-col>
+
+          <!-- <v-col cols="12"><p>TechSkills</p></v-col>
+
+          <v-col v-for="(techSkill, index) in skills.techSkills" :key="index" cols="4">
+            <v-row align="center">
+              <v-col>{{ techSkill.name }}</v-col>
+              <v-col cols="auto">
+                <v-btn icon @click="removeTechSkill(index)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="12">
+            <v-combobox
+              v-model="techSkillInput"
+              hide-details
+              label="Tech Skill"
+              item-title="name"
+              :items="subSkills"
+            ></v-combobox>
+            <v-btn @click="addTechSkill" class="mt-4">Add Tech Skill</v-btn>
+          </v-col> -->
+
+          <v-col cols="12"><p>SubSkills</p></v-col>
+
+          <v-col v-for="(subSkill, index) in skills.subSkills" :key="index" cols="4">
+            <v-row align="center">
+              <v-col>{{ subSkill.name }}</v-col>
+              <v-col cols="auto">
+                <v-btn icon @click="removeSubSkill(index)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="12">
+            <v-combobox
+              v-model="subSkillInput"
+              hide-details
+              label="Sub Skill"
+              item-title="name"
+              :items="subSkills"
+            ></v-combobox>
+            <v-btn @click="addSubSkill" class="mt-4">Add Tech Skill</v-btn>
           </v-col>
         </v-row>
+
         <v-row>
           <v-col>
             <v-btn @click="saveSkill">Save</v-btn>
@@ -136,10 +197,3 @@ onMounted(() => {
     </v-card>
   </v-dialog>
 </template>
-
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-}
-</style>

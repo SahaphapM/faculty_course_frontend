@@ -4,7 +4,10 @@ type Skill = {
   id: string
   name: string
   description: string
-  subjects: Subject[]
+  level: number
+  // subjects: Subject[]
+  subSkills: Skill[]
+  techSkills: Skill[]
 }
 
 export type { Skill }
