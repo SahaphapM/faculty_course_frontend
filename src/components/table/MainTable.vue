@@ -96,8 +96,8 @@ const params = reactive<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
