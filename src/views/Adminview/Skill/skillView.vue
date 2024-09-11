@@ -3,6 +3,7 @@ import skillDetailDialog from './Detail/skillDetailDialog.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useSkillStore } from '@/stores/skills'
 import type { PageParams } from '@/types/PageParams'
+import router from '@/router'
 
 const skillStore = useSkillStore()
 const loading = ref(false)
@@ -14,8 +15,8 @@ const pageParams = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  x: '',
+  columnName: ''
 })
 
 const headers = computed(() => [
@@ -27,19 +28,8 @@ const headers = computed(() => [
 
 const skills = computed(() => skillStore.skills || [])
 
-const showDialog = async (item: any) => {
-  selectedItem.value = item
-  if (item != null) {
-    dialogVisible.value = true
-    const setCurrentSkill = (skill: any) => {
-      skillStore.setCurrentSkill(skill.id)
-      console.log(skillStore.editedSkill)
-    }
-    setCurrentSkill(item)
-  } else {
-    dialogVisible.value = true
-  }
-  await fetchSkill()
+const gotoDetail = async (id: any) => {
+  router.push({ name: 'SkillView/SkillDetail', params: { id } })
 }
 
 const closeDialog = async () => {
@@ -96,7 +86,7 @@ onMounted(async () => {
         <v-btn
           rounded="lg"
           style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => showDialog(null)"
+          @click="() => gotoDetail(null)"
         >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
@@ -126,7 +116,7 @@ onMounted(async () => {
               <td>
                 <v-btn
                   variant="text"
-                  @click="() => showDialog(item)"
+                  @click="() => gotoDetail(item.id)"
                   rounded="lg"
                   style="width: px"
                 >
