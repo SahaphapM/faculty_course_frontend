@@ -21,7 +21,9 @@
     "pinia": "^2.1.7",
     "vue": "^3.4.31",
     "vue-i18n": "^9.13.1",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-table-lite": "^1.4.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
