@@ -1,6 +1,6 @@
 <template>
   <v-list>
-    <v-list-item>
+    <v-list-item prepend-icon="mdi-cog-box" slim>
       <p class="text-subtitle">{{ t('management') }}</p>
     </v-list-item>
     <v-list-item v-for="nav in navMenu" :key="nav.title" :to="nav.to">
