@@ -21,18 +21,10 @@
 
 <script lang="ts" setup>
 import TreeSkillPlain from '@/components/TreeSkillPlain.vue'
+import type { SkillNode } from '@/types/SkillNode'
 import { ref } from 'vue'
 
-interface Skill {
-  id: string
-  name: string
-  description?: string
-  icon?: string
-  level?: string
-  children?: Skill[]
-}
-
-const exampleSkillTree = ref<Skill[]>([
+const exampleSkillTree = ref<SkillNode[]>([
   {
     id: 'softdev',
     name: 'Software Development Skills',

@@ -176,15 +176,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/student/scores',
-      name: 'StudentScores',
-      component: () => import('../views/student/Student_Scores.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
-    },
-    {
       path: '/student/help',
       name: 'StudentHelp',
       component: () => import('../views/student/Student_help.vue'),
