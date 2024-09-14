@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import cloDetailDialog from './Detail/closDetailDialog.vue'
+import skillDetailDialog from './Detail/skillDetailDialog.vue'
 import { computed, onMounted, ref } from 'vue'
-import { useCloStore } from '@/stores/clos'
+import { useSkillStore } from '@/stores/skills'
 import type { PageParams } from '@/types/PageParams'
+import router from '@/router'
 
-const cloStore = useCloStore()
+const skillStore = useSkillStore()
 const loading = ref(false)
 const dialogVisible = ref(false)
 const selectedItem = ref<any | null>(null)
@@ -22,62 +23,47 @@ const headers = computed(() => [
   { title: 'ID', key: 'id' },
   { title: 'Name', key: 'name' },
   { title: 'Description', key: 'description' },
-  { title: 'Subject', key: 'subject' },
-  { title: 'Plos', key: 'plos' }
+  { title: 'Level', key: 'level' }
 ])
 
-const clos = computed(() => cloStore.clos || [])
+const skills = computed(() => skillStore.skills || [])
 
-const showDialog = async (item: any) => {
-  // selectedItem.value = item
-  if (item != null) {
-    dialogVisible.value = true
-    const setCurrentClo = (clo: any) => {
-      cloStore.setCurrentClo(clo.id)
-      console.log(cloStore.editedClo)
-    }
-    setCurrentClo(item)
-  } else {
-    //addClos
-    dialogVisible.value = true
-  }
-
-  await fetchClo()
+const gotoDetail = async (id: any) => {
+  router.push({ name: 'SkillView/SkillDetail', params: { id } })
 }
 
 const closeDialog = async () => {
-  await fetchClo()
+  await fetchSkill()
   dialogVisible.value = false
 }
 
 const updateOptions = (options: any) => {
   pageParams.value.page = options.page
   pageParams.value.limit = options.itemsPerPage
-  fetchClo()
+  fetchSkill()
 }
 
-const fetchClo = async () => {
+const fetchSkill = async () => {
   loading.value = true
   try {
-    await cloStore.fetchClosPage(pageParams.value)
+    await skillStore.fetchSkillsPage(pageParams.value)
   } catch (error) {
     console.error('Error fetching curriculum:', error)
   } finally {
     loading.value = false
   }
-  // console.log(pageParams.value)
 }
 
 onMounted(async () => {
-  await fetchClo()
-  cloStore.clearForm()
+  await fetchSkill()
+  skillStore.clearForm()
 })
 </script>
 
 <template>
   <v-container fluid>
     &nbsp;
-    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">CLO</h2>
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">ทักษะ</h2>
 
     <v-spacer></v-spacer>
 
@@ -90,7 +76,7 @@ onMounted(async () => {
           prepend-inner-icon="mdi-magnify"
           v-model="pageParams.search"
           rounded="lg"
-          @keydown.enter="fetchClo"
+          @keydown.enter="fetchSkill"
           style="height: 55px; width: 100%; min-width: 300px"
         ></v-text-field>
       </v-col>
@@ -100,7 +86,7 @@ onMounted(async () => {
         <v-btn
           rounded="lg"
           style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => showDialog(null)"
+          @click="() => gotoDetail(null)"
         >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
@@ -112,8 +98,8 @@ onMounted(async () => {
         <v-data-table-server
           v-model:items-per-page="pageParams.limit"
           :headers="headers"
-          :items="clos"
-          :items-length="cloStore.totalClos"
+          :items="skills"
+          :items-length="skillStore.totalSkills"
           :loading="loading"
           item-value="name"
           @update:options="updateOptions"
@@ -126,12 +112,11 @@ onMounted(async () => {
               <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
               <td style="height: 55px; min-width: 200px">{{ item.name }}</td>
               <td style="height: 55px; min-width: 90px">{{ item.description }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.subject.engName }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.plo.num_plo }}</td>
+              <td style="height: 55px; min-width: 90px">{{ item.level }}</td>
               <td>
                 <v-btn
                   variant="text"
-                  @click="() => showDialog(item)"
+                  @click="() => gotoDetail(item.id)"
                   rounded="lg"
                   style="width: px"
                 >
@@ -144,7 +129,7 @@ onMounted(async () => {
       </div>
     </v-card>
   </v-container>
-  <cloDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
+  <skillDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
 </template>
 
 <style>

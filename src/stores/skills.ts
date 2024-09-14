@@ -6,6 +6,7 @@ import type { PageParams } from '@/types/PageParams'
 
 export const useSkillStore = defineStore('skill', () => {
   const skills = ref<Skill[]>([])
+  const skillss = ref<Skill[]>([])
   const dataInit = ref(true)
   const totalSkills = ref(0)
   const initialSkill: Skill = {
@@ -14,7 +15,7 @@ export const useSkillStore = defineStore('skill', () => {
     description: '',
     level: 0,
     // subjects: [],
-    subSkills: [],
+    children: [],
     techSkills: []
   }
 
@@ -30,7 +31,7 @@ export const useSkillStore = defineStore('skill', () => {
 
   async function fetchSkills() {
     const res = await skillService.getSkills()
-    skills.value = res.data
+    skillss.value = res.data
   }
 
   async function fetchSkillsPage(params: PageParams) {
@@ -85,6 +86,7 @@ export const useSkillStore = defineStore('skill', () => {
 
   return {
     skills,
+    skillss,
     dataInit,
     editedSkill,
     totalSkills,
