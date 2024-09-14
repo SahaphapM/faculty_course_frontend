@@ -7,8 +7,9 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import type { VForm } from 'vuetify/components'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/subjects/SubjectFormDialog.vue'
-// import SearchData from '@/components/SearchData.vue'
+import SearchTextfield from '@/components/table/SearchTextfield.vue'
 import AddButton from '@/components/AddButton.vue'
+
 const subjects = computed(() => subjectStore.subjects)
 const subjectStore = useSubjectStore()
 const editedSubject = ref(Object.assign({}, subjectStore.initialSubject))
@@ -132,9 +133,7 @@ const pageParams = ref<PageParams>({
   limit: 10,
   sort: '',
   order: 'ASC',
-  search: '',
-  columnId: '',
-  columnName: ''
+  search: ''
 })
 const sortBy = ref<SortItem[]>([{ key: 'id', order: 'asc' }])
 

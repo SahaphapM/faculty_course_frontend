@@ -2,16 +2,13 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import skillService from '@/service/skills'
 import { useSkillStore } from '@/stores/skills'
-import { useSubjectStore } from '@/stores/subject'
-import type { VForm } from 'vuetify/components'
 
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
-const subjectStore = useSubjectStore()
 
 const skills = computed(() => skillStore.editedSkill)
-const subSkills = computed(() => skillStore.skills)
+const children = computed(() => skillStore.skillss)
 const techSkillInput = ref<any>(null)
 const subSkillInput = ref<any>(null)
 const localVisible = ref(props.visible)
@@ -27,7 +24,7 @@ const closeDialog = async () => {
 }
 
 async function saveSkill() {
-  console.log(skills.value.subSkills)
+  console.log(skills.value.children)
   console.log(skills.value.techSkills)
   let skill = { ...skills.value }
   if (skills.value.id != '') {
@@ -42,9 +39,9 @@ async function saveSkill() {
     console.log(payload)
 
     // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
-    console.log(skills.value.id, skills.value.subSkills)
+    console.log(skills.value.id, skills.value.children)
     await skillStore.addSkill(payload)
-    skillService.addSubSkill(skills.value.id, skills.value.subSkills)
+    skillService.addSubSkill(skills.value.id, skills.value.children)
 
     closeDialog()
   }
@@ -57,14 +54,14 @@ function addTechSkill() {
   }
 }
 function addSubSkill() {
-  if (!skills.value.subSkills) {
-    skills.value.subSkills = []
+  if (!skills.value.children) {
+    skills.value.children = []
   }
 
-  if (subSkillInput.value && !skills.value.subSkills.includes(subSkillInput.value)) {
-    skills.value.subSkills.push(subSkillInput.value)
+  if (subSkillInput.value && !skills.value.children.includes(subSkillInput.value)) {
+    skills.value.children.push(subSkillInput.value)
     subSkillInput.value = '' // Clear input after adding
-    console.log(skills.value.subSkills)
+    console.log(skills.value.children)
   }
 }
 
@@ -73,13 +70,17 @@ function removeTechSkill(index: number) {
   skillService.removeTechSkill(skills.value.id, index.toString())
 }
 
-function removeSubSkill(index: number) {
-  skills.value.techSkills.splice(index, 1)
-  skillService.removeSubSkill(skills.value.id, index.toString())
+// function removeSubSkill(index: number) {
+//   skills.value.techSkills.splice(index, 1)
+//   skillService.removeSubSkill(skills.value.id, index.toString())
+// }
+function removeSubSkill(subSkillId: string) {
+  skills.value.children = skills.value.children.filter((subSkill) => subSkill.id !== subSkillId)
+  skillService.removeSubSkill(skills.value.id, subSkillId)
 }
 
-onMounted(() => {
-  subjectStore.fetchAllSubjects()
+onMounted(async () => {
+  await skillStore.fetchSkills()
 })
 </script>
 <template>
@@ -109,71 +110,22 @@ onMounted(() => {
             rounded="lg"
           />
         </div>
-        <p style="font-size: 30px">รายละเอียดสกิล</p>
 
         <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="skills.name"
-              :counter="10"
-              label="Name"
-              hide-details
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-text-field
-              v-model="skills.description"
-              :counter="10"
-              label="Description"
-              hide-details
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-combobox
-              v-model="skills.level"
-              hide-details
-              label="Level"
-              :items="[1, 2, 3, 4, 5]"
-            ></v-combobox>
-          </v-col>
-
-          <!-- <v-col cols="12"><p>TechSkills</p></v-col>
-
-          <v-col v-for="(techSkill, index) in skills.techSkills" :key="index" cols="4">
-            <v-row align="center">
-              <v-col>{{ techSkill.name }}</v-col>
-              <v-col cols="auto">
-                <v-btn icon @click="removeTechSkill(index)">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-col>
-
-          <v-col cols="12">
-            <v-combobox
-              v-model="techSkillInput"
-              hide-details
-              label="Tech Skill"
-              item-title="name"
-              :items="subSkills"
-            ></v-combobox>
-            <v-btn @click="addTechSkill" class="mt-4">Add Tech Skill</v-btn>
-          </v-col> -->
-
-          <v-col cols="12"><p>SubSkills</p></v-col>
-
-          <v-col v-for="(subSkill, index) in skills.subSkills" :key="index" cols="4">
-            <v-row align="center">
-              <v-col>{{ subSkill.name }}</v-col>
-              <v-col cols="auto">
-                <v-btn icon @click="removeSubSkill(index)">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
+          <v-col cols="12"><p style="font-size: 24px">children</p></v-col>
+          <v-col>
+            <v-treeview :items="skills.children" item-value="id">
+              <template v-slot:prepend="{ item }">
+                <v-row>
+                  <v-col style="margin-top: 12px">{{ item.name }}</v-col>
+                  <v-col cols="auto">
+                    <v-btn icon @click.stop="removeSubSkill(item.id)">
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </template>
+            </v-treeview>
           </v-col>
 
           <v-col cols="12">
@@ -182,9 +134,9 @@ onMounted(() => {
               hide-details
               label="Sub Skill"
               item-title="name"
-              :items="subSkills"
+              :items="children"
             ></v-combobox>
-            <v-btn @click="addSubSkill" class="mt-4">Add Tech Skill</v-btn>
+            <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
           </v-col>
         </v-row>
 

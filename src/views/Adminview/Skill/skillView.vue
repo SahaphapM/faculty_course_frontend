@@ -3,6 +3,7 @@ import skillDetailDialog from './Detail/skillDetailDialog.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useSkillStore } from '@/stores/skills'
 import type { PageParams } from '@/types/PageParams'
+import router from '@/router'
 
 const skillStore = useSkillStore()
 const loading = ref(false)
@@ -14,8 +15,8 @@ const pageParams = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 const headers = computed(() => [
@@ -27,21 +28,16 @@ const headers = computed(() => [
 
 const skills = computed(() => skillStore.skills || [])
 
+const gotoDetail = async (id: any) => {
+  router.push({ name: 'SkillView/SkillDetail', params: { id } })
+}
 const showDialog = async (item: any) => {
-  selectedItem.value = item
   if (item != null) {
     dialogVisible.value = true
-    const setCurrentSkill = (skill: any) => {
-      skillStore.setCurrentSkill(skill.id)
-      console.log(skillStore.editedSkill)
-    }
-    setCurrentSkill(item)
   } else {
     dialogVisible.value = true
   }
-  await fetchSkill()
 }
-
 const closeDialog = async () => {
   await fetchSkill()
   dialogVisible.value = false
@@ -53,6 +49,7 @@ const updateOptions = (options: any) => {
   fetchSkill()
 }
 
+function removeSubSkill(subSkillId: string) {}
 const fetchSkill = async () => {
   loading.value = true
   try {
@@ -96,7 +93,7 @@ onMounted(async () => {
         <v-btn
           rounded="lg"
           style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => showDialog(null)"
+          @click="() => gotoDetail(null)"
         >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
@@ -104,39 +101,23 @@ onMounted(async () => {
     </v-row>
 
     <v-card rounded="lg" style="margin-top: 1%">
-      <div>
-        <v-data-table-server
-          v-model:items-per-page="pageParams.limit"
-          :headers="headers"
-          :items="skills"
-          :items-length="skillStore.totalSkills"
-          :loading="loading"
-          item-value="name"
-          @update:options="updateOptions"
-          class="custom-header"
-          style="height: auto; max-width: 2000px; width: 100%; min-width: 30vh"
-          :footer-props="{ itemsPerPageText: 'Rows count' }"
-        >
-          <template v-slot:item="{ item, index }">
-            <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
-              <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
-              <td style="height: 55px; min-width: 200px">{{ item.name }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.description }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.level }}</td>
-              <td>
-                <v-btn
-                  variant="text"
-                  @click="() => showDialog(item)"
-                  rounded="lg"
-                  style="width: px"
-                >
-                  <v-icon>mdi-file-document-edit-outline</v-icon>
+      <v-col cols="12">
+        <v-treeview :items="skills" item-value="id">
+          <template v-slot:prepend="{ item }">
+            <v-row>
+              <v-col style="margin-top: 12px">{{ item.name }}</v-col>
+              <v-col cols="auto">
+                <v-btn icon @click.stop="removeSubSkill(item.id)">
+                  <v-icon>mdi-close</v-icon>
                 </v-btn>
-              </td>
-            </tr>
+                <v-btn icon @click.stop="showDialog(item.id)">
+                  <v-icon></v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
           </template>
-        </v-data-table-server>
-      </div>
+        </v-treeview>
+      </v-col>
     </v-card>
   </v-container>
   <skillDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
