@@ -17,11 +17,7 @@
             <div class="mt-6 text-center">
               <p>{{ profile?.name ?? 'placeholder name' }}</p>
               <p>{{ profile?.email ?? 'placeholder@mail.buu' }}</p>
-            <div class="mt-7 text-center">
-              <p>{{ profile?.name }}</p>
-              <p>{{ profile?.email }}</p>
-
-              <p class="mt-7" style="color: green">สถานะ : กำลังศึกษา</p>
+              <p class="mt-3" style="color: green">สถานะ : กำลังศึกษา</p>
             </div>
             <v-card class="mt-5" title="Social Media">
               <template #text>
@@ -102,7 +98,6 @@
 </template>
 
 <script lang="ts" setup>
-import TreeSkillPlain from '@/components/TreeSkillPlain.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { Profile } from '@/types/Profile'
 import type { SkillNode } from '@/types/SkillNode'
@@ -110,8 +105,6 @@ import { onMounted, ref } from 'vue'
 
 const auth = useAuthStore()
 const profile = ref<Profile | null>()
-
-const tab = ref(null)
 
 onMounted(async () => {
   profile.value = await auth.fetchProfile()
