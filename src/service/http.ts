@@ -43,7 +43,7 @@ instance.interceptors.response.use(
   function (error: AxiosError) {
     // const loadingStore = useLoadingStore()
     if (401 === error.status) {
-      router.replace('/login')
+      // router.replace('/login')
       // loadingStore.finish()
     }
     return Promise.reject(error)
