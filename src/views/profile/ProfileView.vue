@@ -2,11 +2,11 @@
   <v-container class="mx-auto">
     <v-row>
       <v-col cols="12" md="4">
-        <v-card class="pa-5" height="60hv">
-          <template #text>
+        <v-card class="pa-5 h-100" flat>
+          <template #default>
             <v-row class="d-flex justify-center">
               <v-img
-                :src="profile?.picture"
+                :src="profile?.picture ?? 'https://placehold.co/200x200'"
                 min-width="200"
                 min-height="200"
                 max-width="200"
@@ -14,12 +14,36 @@
                 class="rounded-circle"
               ></v-img>
             </v-row>
+            <div class="mt-6 text-center">
+              <p>{{ profile?.name ?? 'placeholder name' }}</p>
+              <p>{{ profile?.email ?? 'placeholder@mail.buu' }}</p>
             <div class="mt-7 text-center">
               <p>{{ profile?.name }}</p>
               <p>{{ profile?.email }}</p>
 
               <p class="mt-7" style="color: green">สถานะ : กำลังศึกษา</p>
             </div>
+            <v-card class="mt-5" title="Social Media">
+              <template #text>
+                <v-list-item
+                  v-for="line in socials"
+                  :key="line.name"
+                  :href="line.link"
+                  target="_blank"
+                >
+                  <template #prepend>
+                    <img
+                      :src="line.icon"
+                      :alt="line.alt"
+                      width="48"
+                      class="mr-2"
+                      draggable="false"
+                    />
+                  </template>
+                  {{ line.name }}</v-list-item
+                >
+              </template>
+            </v-card>
           </template>
         </v-card>
       </v-col>
@@ -78,16 +102,57 @@
 </template>
 
 <script lang="ts" setup>
+import TreeSkillPlain from '@/components/TreeSkillPlain.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { Profile } from '@/types/Profile'
+import type { SkillNode } from '@/types/SkillNode'
 import { onMounted, ref } from 'vue'
 
 const auth = useAuthStore()
 const profile = ref<Profile | null>()
 
+const tab = ref(null)
+
 onMounted(async () => {
   profile.value = await auth.fetchProfile()
 })
+
+const mockSkills: SkillNode[] = [
+  {
+    id: 'softdev',
+    name: 'Software Development Skills',
+    pass: true,
+    children: [{ id: 'softdev_meth', name: 'Software Development Methodologies', pass: false }]
+  }
+]
+
+const socials = [
+  { name: '@placeholder', link: 'https://line.me/th', icon: '/socials/line.svg', alt: 'Line' },
+  {
+    name: 'Firstname Lastname',
+    link: 'https://facebook.com',
+    icon: 'socials/facebook.svg',
+    alt: 'Facebook'
+  },
+  {
+    name: 'place.holder',
+    link: 'https://instagram.com',
+    icon: 'socials/instagram.svg',
+    alt: 'Instagram'
+  },
+  {
+    name: 'Firstname Lastname',
+    link: 'https://linkedin.com',
+    icon: 'socials/linkedin.svg',
+    alt: 'Linkedin'
+  },
+  {
+    name: '@place.holder',
+    link: 'https://x.com',
+    icon: 'socials/twitter-x.svg',
+    alt: 'Twitter (X)'
+  }
+]
 </script>
 <style>
 .rounded-rectangle {
