@@ -4,7 +4,6 @@ interface Menu {
   title: string
   to: string
 }
-
 export const appBarMenu: Menu[] = [
   { title: 'home', to: '/' },
   { title: 'news', to: '/news' },

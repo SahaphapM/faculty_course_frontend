@@ -72,6 +72,10 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     await curriculumService.addSubject(curriculumId, subjects)
   }
 
+  async function addPlosToCurriculum(curriculumId: string, ploId: string) {
+    await curriculumService.addCoordinator(curriculumId, [{ id: ploId }])
+  }
+
   async function deleteCurriculum(id: string) {
     await curriculumService.delCurriculum(id)
     await fetchCurriculums()
@@ -96,6 +100,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     clearForm,
     addCoordinatorToCurriculum,
     setCurrentCurriculum,
-    addSubjectToCurriculum
+    addSubjectToCurriculum,
+    addPlosToCurriculum
+
   }
 })

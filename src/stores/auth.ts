@@ -8,8 +8,8 @@ export const useAuthStore = defineStore('auth', {
   state() {
     return {
       form: {
-        email: 'john.doe@example.com',
-        password: 'password123'
+        email: '',
+        password: ''
       },
       user: ref<Profile | null>(null)
     }
@@ -32,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         await authService.login(this.form.email, this.form.password)
         this.user = await authService.profile()
+        router.replace('/')
       } catch (e) {
         console.error(e)
       }

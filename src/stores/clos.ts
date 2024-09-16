@@ -12,8 +12,35 @@ export const useCloStore = defineStore('clo', () => {
     id: '',
     name: '',
     description: '',
-    subject: [],
-    plos: []
+    subject: {
+      id: '',
+      thaiName: '',
+      engName: '',
+      description: '',
+      credit: 0,
+      type: '',
+      studyTime: '',
+      descriptionEng: ''
+    },
+    plo: {
+      id: '',
+      num_plo: '',
+      description: '',
+      resultTypes: null,
+      curriculum: {
+        id: '',
+        thaiName: '',
+        engName: '',
+        thaiDegreeName: '',
+        engDegreeName: '',
+        branch: [],
+        description: '',
+        period: '',
+        minimumGrade: 0,
+        plos: [],
+        coordinators: []
+      }
+    }
   }
 
   const editedClo = ref<Clos>({ ...initialClo })
@@ -22,7 +49,7 @@ export const useCloStore = defineStore('clo', () => {
     dataInit.value = false
     const res = await cloService.getClo(id)
     editedClo.value = res.data
-    console.log(editedClo.value)
+    // console.log(editedClo.value)
     dataInit.value = true
   }
 
@@ -33,13 +60,14 @@ export const useCloStore = defineStore('clo', () => {
   async function fetchClosPage(params: PageParams) {
     const res = await cloService.getClosByPage(params)
     clos.value = res.data.data
+    // console.log(res.data.data)
+
     totalClos.value = res.data.total
   }
 
   async function setCurrentClo(id: string) {
     const res = await cloService.getClo(id)
     editedClo.value = res.data
-    // currentClo.value = editedClo.value
     console.log(editedClo.value)
   }
 

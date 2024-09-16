@@ -10,6 +10,6 @@ const auth = useAuthStore()
   <v-main app>
     <MainAppBar></MainAppBar>
     <MainDrawer v-if="auth.isAuthenticated" />
-    <RouterView class="mx-auto overflow-y-auto" style="min-height: 900px; max-width: 1440px" />
+    <RouterView class="mx-auto overflow-y-auto" style="min-height: 900px" />
   </v-main>
 </template>

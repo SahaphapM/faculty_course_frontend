@@ -17,20 +17,14 @@
         </v-btn>
       </template>
     </v-list-item>
-    <v-list>
-      <v-divider></v-divider>
-      <v-list-item prepend-icon="mdi-pencil">
-        <p class="text-subtitle">{{ t('management') }}</p>
-      </v-list-item>
-      <v-list-item v-for="nav in navMenu" :key="nav.title" :to="nav.to">
-        {{ t(nav.title) }}</v-list-item
-      >
-      <v-divider></v-divider>
-    </v-list>
+    <v-divider></v-divider>
+    <Drawer_AdminItems />
+    <v-divider></v-divider>
+    <Drawer_StudentItems />
     <template #append>
       <v-row class="d-flex justify-space-between align-center px-2" no-gutters>
         <v-btn-group>
-          <v-btn icon="mdi-weather-night"></v-btn>
+          <v-btn :icon="iconTheme" @click="toggleTheme"></v-btn>
         </v-btn-group>
         <p>{{ appVersion }}</p>
       </v-row>
@@ -42,17 +36,20 @@
 import router from '@/router'
 import { useDrawerStore } from '@/stores/drawer'
 import { appVersion, isLargeScreen } from '@/utils/screenSize'
-import { ref } from 'vue'
-import { useLocale } from 'vuetify'
-
-const drawer = useDrawerStore()
+import { computed, ref } from 'vue'
+import { useLocale, useTheme } from 'vuetify'
+import Drawer_AdminItems from './drawer/Drawer_AdminItems.vue'
+import Drawer_StudentItems from './drawer/Drawer_StudentItems.vue'
 const { t } = useLocale()
+const drawer = useDrawerStore()
 const rail = ref(false)
 
-const navMenu = [
-  { title: 'curriculums', to: 'MainIFAdmin' },
-  { title: 'subject', to: '/SkillView' },
-  { title: 'skill', to: '/manageSubject' },
-  { title: 'user', to: '/users' }
-]
+const iconTheme = computed(() =>
+  theme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'
+)
+
+const theme = useTheme()
+const toggleTheme = () => {
+  theme.global.name.value = theme.global.current.value.dark ? 'lightBUU' : 'darkBUU'
+}
 </script>

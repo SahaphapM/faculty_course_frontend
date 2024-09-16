@@ -6,16 +6,21 @@ import type { PageParams } from '@/types/PageParams'
 
 export const useSkillStore = defineStore('skill', () => {
   const skills = ref<Skill[]>([])
+  const skillss = ref<Skill[]>([])
   const dataInit = ref(true)
   const totalSkills = ref(0)
   const initialSkill: Skill = {
     id: '',
     name: '',
     description: '',
-    colorsTag: ''
+    level: 0,
+    // subjects: [],
+    children: [],
+    techSkills: []
   }
 
   const editedSkill = ref<Skill>({ ...initialSkill })
+
 
   async function fetchSkill(id: string): Promise<Skill> {
     dataInit.value = false;
@@ -30,6 +35,21 @@ export const useSkillStore = defineStore('skill', () => {
   //   const res = await skillService.getSkills()
   //   skills.value = res.data
   // }
+
+  async function fetchSkill(id: string) {
+    dataInit.value = false
+    const res = await skillService.getSkill(id)
+    editedSkill.value = res.data
+    console.log(editedSkill.value)
+    dataInit.value = true
+  }
+
+  async function fetchSkills() {
+    const res = await skillService.getSkills()
+    skillss.value = res.data
+  }
+
+
   async function fetchSkillsPage(params: PageParams) {
     const res = await skillService.getSkillsByPage(params)
     console.log("call skill")
@@ -51,6 +71,16 @@ export const useSkillStore = defineStore('skill', () => {
     await skillService.addSkill(addSkill)
   }
 
+  // async function addSubSkill(addSubSkill: any) {
+  //   console.log(addSubSkill)
+  //   await skillService.addSubSkill(addSubSkill)
+  // }
+
+  // async function addTechSkill(addTechSkill: any) {
+  //   console.log(addTechSkill)
+  //   await skillService.addTechSkill(addTechSkill)
+  // }
+
   async function updateSkill(updatedSkill: Skill) {
     console.log(updatedSkill)
     await skillService.updateSkill(updatedSkill)
@@ -58,7 +88,15 @@ export const useSkillStore = defineStore('skill', () => {
 
   async function deleteSkill(id: string) {
     await skillService.delSkill(id)
-    // await fetchSkills()
+    await fetchSkills()
+  }
+
+  async function deleteSubSkill(id: string, subSkillId: string) {
+    await skillService.removeSubSkill(id, subSkillId)
+  }
+
+  async function deleteTechSkill(id: string, techSkillId: string) {
+    await skillService.removeTechSkill(id, techSkillId)
   }
 
   function clearForm() {
@@ -67,16 +105,21 @@ export const useSkillStore = defineStore('skill', () => {
 
   return {
     skills,
+    skillss,
     dataInit,
     editedSkill,
     totalSkills,
     addSkill,
+    // addSubSkill,
+    // addTechSkill,
     updateSkill,
     fetchSkill,
     fetchSkillsPage,
     setCurrentSkill,
-    // fetchSkills,
+    fetchSkills,
     deleteSkill,
+    deleteSubSkill,
+    deleteTechSkill,
     clearForm
   }
 })

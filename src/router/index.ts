@@ -42,15 +42,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
-      meta: {
-        layout: 'CommonLayout',
-        requireAuth: false
-      }
-    },
-    {
       path: '/login',
       name: 'login',
       component: () => import('../views/login/pages/LoginView.vue'),
@@ -167,9 +158,36 @@ const router = createRouter({
       }
     },
     {
+      path: '/AddSubject',
+      name: 'AddSubject',
+      component: () => import('../views/subjects/AddSubjectView.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
+      path: '/student/skills',
+      name: 'StudentSkills',
+      component: () => import('../views/student/Student_Skills.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
+      path: '/student/help',
+      name: 'StudentHelp',
+      component: () => import('../views/student/Student_help.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
+    },
+    {
       path: '/test',
       name: 'test',
-      component: () => import('../views/Test.vue'),
+      component: () => import('../views/TestComponent.vue'),
       meta: {
         layout: 'MainLayout'
       }
@@ -185,21 +203,21 @@ const router = createRouter({
 //   return false
 // }
 
-async function isAuthenticated() {
-  try {
-    await http.get('auth/profile')
-    return true
-  } catch (err) {
-    return false
-  }
-}
-router.beforeEach(async (to, from, next) => {
-  if (to.path !== '/forbidden' && to.meta.requireAuth) {
-    const authenticated = await isAuthenticated()
-    if (!authenticated) {
-      return next('/forbidden')
-    }
-  }
-  next()
-})
+// async function isAuthenticated() {
+//   try {
+//     await http.get('auth/profile')
+//     return true
+//   } catch (err) {
+//     return false
+//   }
+// }
+// router.beforeEach(async (to, from, next) => {
+//   if (to.path !== '/forbidden' && to.meta.requireAuth) {
+//     const authenticated = await isAuthenticated()
+//     if (!authenticated) {
+//       return next('/forbidden')
+//     }
+//   }
+//   next()
+// })
 export default router

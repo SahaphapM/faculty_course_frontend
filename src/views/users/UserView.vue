@@ -1,27 +1,29 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoleStore } from '@/stores/role'
 import type { User } from '@/types/User'
 import type { PageParams, SortItem } from '@/types/PageParams'
 import FormDialog from '@/views/users/UserFormDialog.vue'
-import Pagination from '../../components/Pagination.vue'
-import SearchData from '@/components/SearchData.vue'
+import MainTable from '@/components/table/MainTable.vue'
+import { useLocale } from 'vuetify'
+// import SearchData from '@/components/SearchData.vue'
 import AddButton from '@/components/AddButton.vue'
-import SearchByFaculty from '@/components/SearchByFaculty.vue'
+import SelectBy from '@/components/SelectByFeature.vue'
 
 const userStore = useUserStore()
 const roleStore = useRoleStore()
+const { t } = useLocale()
 
-const headers = [
-  { title: 'รหัสผู้ใช้', value: 'id', key: 'id' },
-  { title: 'อีเมลล์', value: 'email', key: 'email' },
-  { title: 'ชื่อ', value: 'firstName', key: 'firstName' },
-  { title: 'นามสกุล', value: 'lastName', key: 'lastName' },
+const headers = computed(() => [
+  { title: t('uid'), value: 'id', key: 'id', sortable: false },
+  { title: t('email'), value: 'email', key: 'email', sortable: false },
+  { title: t('first name'), value: 'firstName', key: 'firstName', sortable: false },
+  { title: t('last name'), value: 'lastName', key: 'lastName', sortable: false },
   // { title: 'เพศ', value: 'gender' },
   // { title: 'เบอร์โทรศัพท์', value: 'phone' },
-  { title: 'ตำแหน่ง', value: 'roles' }
-]
+  { title: t('position'), value: 'roles', key: 'roles', sortable: false }
+])
 
 const dialog = ref(false)
 const editedUser = ref(Object.assign({}, userStore.initialUser))
@@ -36,20 +38,23 @@ const pageParams = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
-const fetchUsers = async (search?: string, facultyId?: string, branchId?: string) => {
+const fetchUsers = async (search?: string, columnId?: string, columnName?: string) => {
   loading.value = true
   if (search !== '' && search) {
     pageParams.value.search = search
   } else {
     pageParams.value.search = ''
   }
-  if (facultyId && branchId) {
-    pageParams.value.column1 = facultyId
-    pageParams.value.column2 = branchId
+  if (columnId && columnName) {
+    pageParams.value.columnId = columnId
+    pageParams.value.columnName = columnName
+  } else {
+    pageParams.value.columnId = ''
+    pageParams.value.columnName = ''
   }
 
   console.log(pageParams)
@@ -131,11 +136,6 @@ const updateOptions = (options: any) => {
   fetchUsers()
 }
 
-const clickHandler = (page: number) => {
-  fetchUsers()
-  console.log(page)
-}
-
 onMounted(async () => {
   await roleStore.getRoles()
   await fetchUsers()
@@ -143,6 +143,7 @@ onMounted(async () => {
   console.log(userStore.totalUsers)
 })
 </script>
+
 <template>
   <v-container fluid>
     &nbsp;
@@ -152,13 +153,12 @@ onMounted(async () => {
       <v-col class="d-flex justify-end flex-grow-1">
         <SearchData
           :search="pageParams.search"
-          style="min-width: 250px"
           :label="'ค้นหาผู้ใช้'"
           :fetch-data="fetchUsers"
         ></SearchData>
       </v-col>
       <v-col>
-        <SearchByFaculty :fetch-data="fetchUsers"></SearchByFaculty>
+        <SelectBy :fetch-data="fetchUsers" :by-branch="true" :by-curriculum="true"></SelectBy>
       </v-col>
       <v-col class="d-flex justify-end flex-grow-0">
         <AddButton
@@ -221,8 +221,39 @@ onMounted(async () => {
               :max-pages-shown="3"
               @click="clickHandler"
             ></Pagination>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-dialog max-width="1000px" persistent v-model="dialog">
+        <FormDialog
+          :item="editedUser"
+          :method="saveUser"
+          :isUpdate="isUpdate"
+          :roles="roleStore.roles"
+          @close-dialog="closeDialog"
+        ></FormDialog>
+      </v-dialog>
+    </v-card>
       </v-col>
     </v-row> -->
+    <MainTable
+      page-icon="mdi-account-group"
+      :page-title="t('list user')"
+      :items="userStore.users"
+      :headers="headers"
+      :fetchSearch="fetchUsers"
+      :fetchFab="fetchUsers"
+      :btnAddAction="addUser"
+      :action="editUser"
+      customCol="roles"
+    >
+      <template #roles="{ item }">
+        <v-chip>
+          {{ item.roles.map((n: any) => n.name)[0] }}
+        </v-chip>
+      </template>
+    </MainTable>
   </v-container>
   <v-dialog max-width="1000px" v-model="dialog" persistent>
     <FormDialog

@@ -18,7 +18,7 @@ function getClos() {
   return http.get<Clos[]>('/clos')
 }
 function getClosByPage(params: PageParams) {
-  console.log(params)
+  // console.log(params)
   return http.get<{ data: Clos[]; total: number }>(`/clos/pages`, { params })
 }
 

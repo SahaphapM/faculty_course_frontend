@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, onMounted, watch } from 'vue'
+import skillService from '@/service/skills'
 import { useSkillStore } from '@/stores/skills'
 
-const route = useRoute()
-const router = useRouter()
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
-const skills = computed(() => skillStore.editedSkill)
-const localVisible = ref(props.visible)
 
+const skills = computed(() => skillStore.editedSkill)
+const children = computed(() => skillStore.skillss)
+const techSkillInput = ref<any>(null)
+const subSkillInput = ref<any>(null)
+const localVisible = ref(props.visible)
 watch(
   () => props.visible,
   (newVal) => {
@@ -18,44 +19,70 @@ watch(
   }
 )
 
-async function fetchSkillDetail(id: string) {
-  try {
-    await skillStore.fetchSkill(id)
-  } catch (error) {
-    console.error('Failed to fetch skill details:', error)
-  }
-}
-
 const closeDialog = async () => {
   emit('close-dialog')
-  // await skillStore.fetchSkills()
-  // skillStore.clearForm()
 }
 
-function saveSkill() {
+async function saveSkill() {
+  console.log(skills.value.children)
+  console.log(skills.value.techSkills)
   let skill = { ...skills.value }
-  if (route.params.id !== 'addSkill') {
+  if (skills.value.id != '') {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; colorsTag: string } = {
+    const payload: { name: string; description: string; level: number } = {
       name: skill.name,
       description: skill.description,
-      colorsTag: skill.colorsTag
+      level: skill.level
     }
-    skillStore.addSkill(payload)
+    console.log(payload)
+
+    // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
+    console.log(skills.value.id, skills.value.children)
+    await skillStore.addSkill(payload)
+    skillService.addSubSkill(skills.value.id, skills.value.children)
+
     closeDialog()
   }
 }
+function addTechSkill() {
+  if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
+    skills.value.techSkills.push(techSkillInput.value)
+    techSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.techSkills)
+  }
+}
+function addSubSkill() {
+  if (!skills.value.children) {
+    skills.value.children = []
+  }
 
-onMounted(() => {
-  if (!route.params.id) return
-  // if (route.params.id !== 'addSkill') {
-  //   fetchSkillDetail(route.params.id as string)
-  // }
+  if (subSkillInput.value && !skills.value.children.includes(subSkillInput.value)) {
+    skills.value.children.push(subSkillInput.value)
+    subSkillInput.value = '' // Clear input after adding
+    console.log(skills.value.children)
+  }
+}
+
+function removeTechSkill(index: number) {
+  skills.value.techSkills.splice(index, 1)
+  skillService.removeTechSkill(skills.value.id, index.toString())
+}
+
+// function removeSubSkill(index: number) {
+//   skills.value.techSkills.splice(index, 1)
+//   skillService.removeSubSkill(skills.value.id, index.toString())
+// }
+function removeSubSkill(subSkillId: string) {
+  skills.value.children = skills.value.children.filter((subSkill) => subSkill.id !== subSkillId)
+  skillService.removeSubSkill(skills.value.id, subSkillId)
+}
+
+onMounted(async () => {
+  await skillStore.fetchSkills()
 })
 </script>
-
 <template>
   <v-dialog
     v-model="localVisible"
@@ -83,37 +110,36 @@ onMounted(() => {
             rounded="lg"
           />
         </div>
-        <p style="font-size: 30px">รายละเอียดสกิล</p>
 
         <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="skills.name"
-              :counter="10"
-              label="Name"
-              hide-details
-              required
-            ></v-text-field>
+          <v-col cols="12"><p style="font-size: 24px">children</p></v-col>
+          <v-col>
+            <v-treeview :items="skills.children" item-value="id">
+              <template v-slot:prepend="{ item }">
+                <v-row>
+                  <v-col style="margin-top: 12px">{{ item.name }}</v-col>
+                  <v-col cols="auto">
+                    <v-btn icon @click.stop="removeSubSkill(item.id)">
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </template>
+            </v-treeview>
           </v-col>
+
           <v-col cols="12">
-            <v-text-field
-              v-model="skills.description"
-              :counter="10"
-              label="Description"
+            <v-combobox
+              v-model="subSkillInput"
               hide-details
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-text-field
-              v-model="skills.colorsTag"
-              :counter="10"
-              label="Colors Tag"
-              hide-details
-              required
-            ></v-text-field>
+              label="Sub Skill"
+              item-title="name"
+              :items="children"
+            ></v-combobox>
+            <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
           </v-col>
         </v-row>
+
         <v-row>
           <v-col>
             <v-btn @click="saveSkill">Save</v-btn>
@@ -123,10 +149,3 @@ onMounted(() => {
     </v-card>
   </v-dialog>
 </template>
-
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-}
-</style>

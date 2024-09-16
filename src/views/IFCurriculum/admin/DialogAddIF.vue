@@ -563,8 +563,6 @@ const getUserInfoById = (id: any) => {
                             :rules="nameRules"
                             variant="outlined"
                             rounded="lg"
-                            rows="5"
-                            autosize
                             style="min-height: 200px; white-space: pre-line"
                           ></v-textarea>
                           <p style="font-size: 1.5vh">ผลลัพธ์การเรียนรู้ ตามมาตรฐาน คุณวุฒิฯ</p>
