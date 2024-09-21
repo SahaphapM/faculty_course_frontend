@@ -465,7 +465,7 @@ const formSkill = ref<Skill>({
   name: '',
   description: '',
   children: [],
-  level: 0,
+  type: '',
   techSkills: []
 })
 

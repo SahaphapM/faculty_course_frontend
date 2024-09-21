@@ -4,7 +4,7 @@ type Skill = {
   id: string
   name: string
   description: string
-  level: number
+  type: string
   // subjects: Subject[]
   children: Skill[]
   techSkills: Skill[]

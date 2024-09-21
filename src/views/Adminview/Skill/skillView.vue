@@ -93,7 +93,7 @@ onMounted(async () => {
         <v-btn
           rounded="lg"
           style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => gotoDetail(null)"
+          @click="() => gotoDetail('addNew')"
         >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
@@ -107,11 +107,16 @@ onMounted(async () => {
             <v-row>
               <v-col style="margin-top: 12px">{{ item.name }}</v-col>
               <v-col cols="auto">
+                <v-btn icon @click.stop="showDialog(item.id)">
+                  <v-icon>mdi-plus-thick</v-icon>
+                </v-btn>
+                <v-btn icon
+                  ><v-icon primary small @click="gotoDetail(item.id)"
+                    >mdi-file-document-edit-outline</v-icon
+                  >
+                </v-btn>
                 <v-btn icon @click.stop="removeSubSkill(item.id)">
                   <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <v-btn icon @click.stop="showDialog(item.id)">
-                  <v-icon></v-icon>
                 </v-btn>
               </v-col>
             </v-row>

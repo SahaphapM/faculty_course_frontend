@@ -31,10 +31,10 @@ async function saveSkill() {
     skillStore.updateSkill(skill)
     closeDialog()
   } else {
-    const payload: { name: string; description: string; level: number } = {
+    const payload: { name: string; description: string; type: string } = {
       name: skill.name,
       description: skill.description,
-      level: skill.level
+      type: skill.type
     }
     console.log(payload)
 

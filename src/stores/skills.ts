@@ -13,7 +13,7 @@ export const useSkillStore = defineStore('skill', () => {
     id: '',
     name: '',
     description: '',
-    level: 0,
+    type: '',
     // subjects: [],
     children: [],
     techSkills: []
