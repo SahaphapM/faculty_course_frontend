@@ -13,7 +13,6 @@ const { t } = useLocale()
 
 const navMenu = [
   { title: 'profile', to: '/profile' },
-  { title: 'skills', to: '/student/skills' },
   { title: 'help', to: '/student/help' }
 ]
 </script>
