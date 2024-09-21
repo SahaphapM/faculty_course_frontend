@@ -28,17 +28,15 @@ async function saveSkill() {
   if (skills.value.id != '') {
     skillStore.updateSkill(skill)
   } else {
-    const payload: { name: string; description: string; type: string } = {
+    const payload: { name: string; description: string; domain: string } = {
       name: skill.name,
       description: skill.description,
-      type: skill.type
+      domain: skill.domain
     }
     console.log(payload)
 
     // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
-    console.log(skills.value.id, skills.value.children)
     await skillStore.addSkill(payload)
-    skillService.addSubSkill(skills.value.id, skills.value.children)
   }
 }
 
@@ -98,7 +96,7 @@ onMounted(() => {
           </v-col>
           <v-col cols="12">
             <v-combobox
-              v-model="skills.type"
+              v-model="skills.domain"
               hide-details
               label="Skill Type"
               :items="['ความรู้', 'คุณลักษณะบุคคล', 'จริยธรรม', 'ทักษะ']"

@@ -31,12 +31,9 @@ const skills = computed(() => skillStore.skills || [])
 const gotoDetail = async (id: any) => {
   router.push({ name: 'SkillView/SkillDetail', params: { id } })
 }
-const showDialog = async (item: any) => {
-  if (item != null) {
-    dialogVisible.value = true
-  } else {
-    dialogVisible.value = true
-  }
+const showDialog = async (id: any) => {
+  skillStore.fetchSkill(id)
+  dialogVisible.value = true
 }
 const closeDialog = async () => {
   await fetchSkill()

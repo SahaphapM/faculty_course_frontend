@@ -13,7 +13,7 @@ export const useSkillStore = defineStore('skill', () => {
     id: '',
     name: '',
     description: '',
-    type: '',
+    domain: '',
     // subjects: [],
     children: [],
     techSkills: []
@@ -50,17 +50,8 @@ export const useSkillStore = defineStore('skill', () => {
 
   async function fetchSkillsPage(params: PageParams) {
     const res = await skillService.getSkillsByPage(params)
-    console.log('call skill')
     skills.value = res.data.data
-    console.log(skills.value)
     totalSkills.value = res.data.total
-  }
-
-  async function setCurrentSkill(id: string) {
-    const res = await skillService.getSkill(id)
-    editedSkill.value = res.data
-    // currentSkill.value = editedSkill.value
-    console.log(editedSkill.value)
   }
 
   async function addSkill(addSkill: any) {
@@ -112,7 +103,6 @@ export const useSkillStore = defineStore('skill', () => {
     updateSkill,
     fetchSkill,
     fetchSkillsPage,
-    setCurrentSkill,
     fetchSkills,
     deleteSkill,
     deleteSubSkill,

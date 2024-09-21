@@ -24,35 +24,21 @@ const closeDialog = async () => {
 }
 
 async function saveSkill() {
-  console.log(skills.value.children)
-  console.log(skills.value.techSkills)
-  let skill = { ...skills.value }
-  if (skills.value.id != '') {
-    skillStore.updateSkill(skill)
-    closeDialog()
-  } else {
-    const payload: { name: string; description: string; type: string } = {
-      name: skill.name,
-      description: skill.description,
-      type: skill.type
-    }
-    console.log(payload)
+  console.log(skills.value.id, skills.value.children)
+  const childrens = skills.value.children.map((child: any) => ({ id: child.id }))
+  console.log(childrens)
+  await skillService.addSubSkill(skills.value.id, childrens as [])
 
-    // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
-    console.log(skills.value.id, skills.value.children)
-    await skillStore.addSkill(payload)
-    skillService.addSubSkill(skills.value.id, skills.value.children)
+  closeDialog()
+}
 
-    closeDialog()
-  }
-}
-function addTechSkill() {
-  if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
-    skills.value.techSkills.push(techSkillInput.value)
-    techSkillInput.value = '' // Clear input after adding
-    console.log(skills.value.techSkills)
-  }
-}
+// function addTechSkill() {
+//   if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
+//     skills.value.techSkills.push(techSkillInput.value)
+//     techSkillInput.value = '' // Clear input after adding
+//     console.log(skills.value.techSkills)
+//   }
+// }
 function addSubSkill() {
   if (!skills.value.children) {
     skills.value.children = []
@@ -80,6 +66,8 @@ function removeSubSkill(subSkillId: string) {
 }
 
 onMounted(async () => {
+  console.log()
+
   await skillStore.fetchSkills()
 })
 </script>
@@ -113,6 +101,15 @@ onMounted(async () => {
 
         <v-row>
           <v-col cols="12"><p style="font-size: 24px">children</p></v-col>
+          <v-col>
+            <v-text-field
+              v-model="skills.name"
+              :counter="10"
+              label="Name"
+              hide-details
+              required
+            ></v-text-field
+          ></v-col>
           <v-col>
             <v-treeview :items="skills.children" item-value="id">
               <template v-slot:prepend="{ item }">
