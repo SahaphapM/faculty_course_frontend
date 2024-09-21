@@ -64,8 +64,8 @@ const pageParamsSubjects = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 const pageParamsSkill = ref<PageParams>({
@@ -74,8 +74,8 @@ const pageParamsSkill = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 onMounted(async () => {
@@ -324,7 +324,8 @@ const formSubjects = ref<Subject>({
   credit: 0,
   studyTime: '',
   type: '3',
-  description: ''
+  description: '',
+  descriptionEng: ''
 })
 
 const initialSubjects: subjectsIds[] = []
@@ -463,7 +464,9 @@ const formSkill = ref<Skill>({
   id: '',
   name: '',
   description: '',
-  colorsTag: ''
+  children: [],
+  level: 0,
+  techSkills: []
 })
 
 const menu = ref(false)
@@ -490,12 +493,12 @@ const skillselect = ref<string | null>(null)
 
 watch(skillselect, async (newValue) => {
   if (newValue) {
-    const skill = await skillStore.fetchSkill(newValue)
-
+    await skillStore.fetchSkill(newValue)
+    const skill = ref(skillStore.editedSkill)
     // Update the specific form in refFormSkill
     refFormSkill.value = refFormSkill.value.map((form, index) =>
       index === 0 // Change this condition if needed to target specific form
-        ? { ...form, description: skill.description }
+        ? { ...form, description: skill.value.description }
         : form
     )
   }
@@ -538,8 +541,7 @@ const fetchSkillById = (id: string, index: number) => {
   if (skill) {
     return {
       name: skill.name,
-      description: skill.description,
-      colorsTag: skill.colorsTag
+      description: skill.description
     }
   }
   return {
