@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import authService from '@/service/auth'
 import { ref } from 'vue'
-import type { Profile } from '@/types/Profile'
+import type { Payload } from '@/types/Payload'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
@@ -11,14 +11,14 @@ export const useAuthStore = defineStore('auth', {
         email: '',
         password: ''
       },
-      user: ref<Profile | null>(null)
+      user: ref<Payload | null>(null)
     }
   },
   getters: {
     isAuthenticated: (s) => !!s.user
   },
   actions: {
-    async fetchProfile(): Promise<Profile | null> {
+    async fetchProfile(): Promise<Payload | null> {
       try {
         const res = await authService.profile()
         this.user = res
