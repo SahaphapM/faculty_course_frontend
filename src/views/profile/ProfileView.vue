@@ -6,7 +6,7 @@
           <template #default>
             <v-row class="d-flex justify-center">
               <v-img
-                :src="profile?.picture ?? 'https://placehold.co/200x200'"
+                :src="profile?.avatarUrl ?? 'https://placehold.co/200x200'"
                 min-width="200"
                 min-height="200"
                 max-width="200"
@@ -15,8 +15,9 @@
               ></v-img>
             </v-row>
             <div class="mt-6 text-center">
-              <p>{{ profile?.name ?? 'placeholder name' }}</p>
+              <!-- <p>{{ profile?.name ?? 'placeholder name' }}</p> -->
               <p>{{ profile?.email ?? 'placeholder@mail.buu' }}</p>
+              <p>{{ (profile?.roles ?? []).length > 0 ? profile?.roles : 'unknown role' }}</p>
               <p class="mt-3" style="color: green">สถานะ : กำลังศึกษา</p>
             </div>
             <v-card class="mt-5" title="Social Media">
@@ -49,7 +50,6 @@
             <div class="rounded-rectangle"></div>
             <p class="text-header ml-3" style="font-size: 2.5vh">ระเบียนประวัติ</p>
           </div>
-
           <p class="text-content mt-1">รหัสประจำตัว : 65160066</p>
           <p class="text-content mt-1">ชื่อ : ชานนท์ ตันสวัสดิ์</p>
           <p class="text-content mt-1">ชื่ออังกฤษ : MR.CHANON THANSAWAD</p>
@@ -99,12 +99,12 @@
 
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
-import type { Profile } from '@/types/Profile'
+import type { Payload } from '@/types/Payload'
 import type { SkillNode } from '@/types/SkillNode'
 import { onMounted, ref } from 'vue'
 
 const auth = useAuthStore()
-const profile = ref<Profile | null>()
+const profile = ref<Payload | null>()
 
 onMounted(async () => {
   profile.value = await auth.fetchProfile()

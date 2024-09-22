@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/home/HomeView.vue'
 import http from '@/service/http'
+import AuthService from '@/service/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -182,30 +183,14 @@ const router = createRouter({
     }
   ]
 })
-// function isLogin() {
-//   const user = localStorage.getItem('user')
-//   // const member = localStorage.getItem('member')
-//   if (user) {
-//     return true
-//   }
-//   return false
-// }
 
-// async function isAuthenticated() {
-//   try {
-//     await http.get('auth/profile')
-//     return true
-//   } catch (err) {
-//     return false
-//   }
-// }
-// router.beforeEach(async (to, from, next) => {
-//   if (to.path !== '/forbidden' && to.meta.requireAuth) {
-//     const authenticated = await isAuthenticated()
-//     if (!authenticated) {
-//       return next('/forbidden')
-//     }
-//   }
-//   next()
-// })
+router.beforeEach(async (to, from, next) => {
+  if (to.path !== '/forbidden' && to.meta.requireAuth) {
+    const authenticated = AuthService.isAuthenticated()
+    if (!authenticated) {
+      return next('/forbidden')
+    }
+  }
+  next()
+})
 export default router
