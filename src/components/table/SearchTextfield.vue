@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 
 const props = defineProps<{
   label: string
-  fetchData: (search: string) => Promise<void>
+  fetchData: (search: string, columnId?: string, columnName?: string) => Promise<void>
 }>()
 
 const loading = ref(false)
@@ -27,6 +27,7 @@ watch(
     append-inner-icon="mdi-magnify"
     v-model="search"
     rounded="lg"
+    style="height: 83px; min-width: 250px"
     @click:append-inner="fetchData(search)"
     @keydown.enter="fetchData(search)"
   ></v-text-field>

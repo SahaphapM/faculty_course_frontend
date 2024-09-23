@@ -115,7 +115,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-row>
+  <v-row class="gx-5">
     <v-col>
       <v-select
         v-model="selectedFaculty"
@@ -127,7 +127,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
     <v-col>
@@ -141,7 +141,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
     <v-col v-if="props.byCurriculum && props.byCurriculum">
@@ -155,7 +155,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
     <v-col v-if="props.byCurriculum && props.byCurriculum && props.bySubject">
@@ -169,7 +169,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
     <v-col v-if="props.bySkill">
@@ -183,7 +183,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
     <v-col v-if="props.byCurriculum && props.byCurriculum && props.bySubject && props.byTechSkill">
@@ -197,7 +197,7 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-        style="height: 55px; width: 100%; min-width: 150px"
+        style="height: 55px; min-width: 150px"
       ></v-select>
     </v-col>
   </v-row>

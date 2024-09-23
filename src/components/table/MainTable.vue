@@ -1,35 +1,50 @@
 <template>
   <div>
-    <p class="text-header my-5 font-weight-bold ga-3 d-flex">
-      <v-icon :icon="pageIcon"></v-icon>
+    &nbsp;
+    <h2 style="margin-left: 2%; font-size: 24px; margin-bottom: 2%">
       {{ pageTitle }}
-    </p>
+    </h2>
 
-    <v-container fluid class="d-flex ma-0 pa-0 ga-4">
-      <FilterBox v-if="fetchSearch" :fetch-search="fetchSearch" :fetch-fab="fetchFab" />
-      <v-btn
-        v-if="btnAddAction"
-        prepend-icon="mdi-plus"
-        rounded="lg"
-        :style="{ minHeight: '48px', minWidth: '150px' }"
-        @click="btnAddAction"
-        >{{ t('add') }}
-      </v-btn>
-    </v-container>
-    <v-card rounded="lg">
-      <v-data-table-server
-        class="bg-primary"
-        :items-per-page="itemsPerPage ?? 10"
-        :headers="
-          headers.concat(
-            props.action ? [{ title: t('actions'), key: 'actions' }] : []
-          ) as ReadonlyArray<any>
-        "
-        :items="items"
-        :items-length="items?.length"
-        @update:options="updateOptions"
-      >
-        <!-- <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
+    <!-- <FilterBox v-if="fetchSearch" :fetch-search="fetchSearch" :fetch-fab="fetchFab"  /> -->
+    <v-row class="d-flex justify-end ga-5" no-gutters>
+      <v-col class="d-flex justify-end flex-grow-1"
+        ><SearchTextfield :label="searchLabel" :fetchData="fetchData"></SearchTextfield> </v-col
+      ><v-col>
+        <SelectByFeature
+          :by-branch="fetchByBranch"
+          :by-curriculum="fetchByCurriculum"
+          :by-subject="fetchBySubject"
+          :by-skill="fetchBySkill"
+          :by-tech-skill="fetchByTechSkill"
+          :fetch-data="fetchData"
+        ></SelectByFeature></v-col
+      ><v-col class="d-flex justify-end flex-grow-0">
+        <v-btn
+          v-if="btnAddAction"
+          prepend-icon="mdi-plus"
+          rounded="lg"
+          @click="btnAddAction"
+          style="min-width: 300px; height: 55px"
+          >{{ t('add') }}
+        </v-btn></v-col
+      ></v-row
+    >
+    <v-row gutters>
+      <v-col>
+        <v-card rounded="lg">
+          <v-data-table-server
+            class="bg-primary"
+            :items-per-page="itemsPerPage ?? 10"
+            :headers="
+              headers.concat(
+                props.action ? [{ title: t('actions'), key: 'actions' }] : []
+              ) as ReadonlyArray<any>
+            "
+            :items="items"
+            :items-length="items?.length"
+            @update:options="updateOptions"
+          >
+            <!-- <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
           <tr>
             <template v-for="column in columns" :key="column.key">
               <td>
@@ -43,28 +58,30 @@
             </template>
           </tr>
         </template> -->
-        <template #item="{ item, index, columns }">
-          <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
-            <td v-for="column in columns" :key="column.key!">
-              <v-btn
-                v-if="column.key === 'actions' && action"
-                icon="mdi-file-document-edit"
-                size="small"
-                variant="tonal"
-                color="table-text"
-                @click="action(item)"
-              ></v-btn>
-              <div v-if="column.key === customCol">
-                <slot :name="customCol" :item="item" :index="index"></slot>
-              </div>
-              <p v-else>
-                {{ item[column.key as keyof typeof item] }}
-              </p>
-            </td>
-          </tr>
-        </template>
-      </v-data-table-server>
-    </v-card>
+            <template #item="{ item, index, columns }">
+              <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+                <td v-for="column in columns" :key="column.key!">
+                  <v-btn
+                    v-if="column.key === 'actions' && action"
+                    icon="mdi-file-document-edit"
+                    size="small"
+                    variant="tonal"
+                    color="table-text"
+                    @click="action(item)"
+                  ></v-btn>
+                  <div v-if="column.key === customCol">
+                    <slot :name="customCol" :item="item" :index="index"></slot>
+                  </div>
+                  <p v-else>
+                    {{ item[column.key as keyof typeof item] }}
+                  </p>
+                </td>
+              </tr>
+            </template>
+          </v-data-table-server>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -74,6 +91,8 @@ import type { PageParams, SortItem } from '@/types/PageParams'
 import { onMounted, reactive, ref } from 'vue'
 import { useLocale } from 'vuetify'
 import FilterBox from './FilterSection.vue'
+import SelectByFeature from '../SelectByFeature.vue'
+import SearchTextfield from './SearchTextfield.vue'
 
 const { t } = useLocale()
 
@@ -83,8 +102,13 @@ const props = defineProps<{
   headers: HeaderItem[]
   itemsPerPage?: number
   items: Record<string, any>[]
-  fetchSearch?: (value: string) => Promise<void>
-  fetchFab?: (value: string) => Promise<void>
+  fetchData: (search: string, columnId?: string, columnName?: string) => Promise<void>
+  searchLabel: string
+  fetchByBranch?: boolean
+  fetchByCurriculum?: boolean
+  fetchBySubject?: boolean
+  fetchBySkill?: boolean
+  fetchByTechSkill?: boolean
   btnAddAction?: () => void
   action?: (item: any) => void
   customCol?: string
@@ -117,12 +141,12 @@ const updateOptions = (options: any) => {
   } else {
     params.order = 'ASC'
   }
-  props.fetchSearch
+  props.fetchData
 }
 
 onMounted(async () => {
-  if (props.fetchSearch) {
-    await props.fetchSearch
+  if (props.fetchData) {
+    props.fetchData
   }
 })
 </script>

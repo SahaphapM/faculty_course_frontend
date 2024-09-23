@@ -43,16 +43,18 @@ const fetchUsers = async (search?: string, columnId?: string, columnName?: strin
   loading.value = true
   if (search !== '' && search) {
     pageParams.value.search = search
-  } else {
-    pageParams.value.search = ''
   }
+  // else {
+  //   pageParams.value.search = ''
+  // }
   if (columnId && columnName) {
     pageParams.value.columnId = columnId
     pageParams.value.columnName = columnName
-  } else {
-    pageParams.value.columnId = ''
-    pageParams.value.columnName = ''
   }
+  // else {
+  //   pageParams.value.columnId = ''
+  //   pageParams.value.columnName = ''
+  // }
 
   console.log(pageParams)
   try {
@@ -142,14 +144,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container fluid>
+  <v-container>
     <MainTable
       page-icon="mdi-account-group"
       :page-title="t('list user')"
       :items="userStore.users"
       :headers="headers"
-      :fetchSearch="fetchUsers"
-      :fetchFab="fetchUsers"
+      :fetch-data="fetchUsers"
+      :fetch-by-branch="true"
+      :fetch-by-curriculum="true"
+      :search-label="'user'"
       :btnAddAction="addUser"
       :action="editUser"
       customCol="roles"
