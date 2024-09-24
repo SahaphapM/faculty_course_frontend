@@ -25,7 +25,7 @@ class AuthService {
       window.location.reload()
       return res.data
     } catch (error) {
-      console.error('Logout failed', error)
+      console.error(error)
       throw error
     }
   }

@@ -1,5 +1,3 @@
-import type { Branch } from './Branch'
-import type { Faculty } from './Faculty'
 import type { Role } from './Role'
 type User = {
   id: string | null
@@ -18,4 +16,3 @@ type User = {
 }
 
 export type { User }
-  

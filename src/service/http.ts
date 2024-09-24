@@ -1,3 +1,4 @@
+import router from '@/router'
 import axios, { AxiosError, type AxiosResponse } from 'axios'
 // import Cookies from 'js-cookie'
 
@@ -8,12 +9,6 @@ const instance = axios.create({
     'Content-Type': 'application/json'
   }
 })
-
-// function delay(sec: number) {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => resolve(sec), sec * 1)
-//   })
-// }
 
 instance.interceptors.request.use(
   (request: any) => {
@@ -33,12 +28,11 @@ instance.interceptors.response.use(
     return res
   },
   function (error: AxiosError) {
-    // const loadingStore = useLoadingStore()
-    if (401 === error.status) {
-      // router.replace('/login')
-      // loadingStore.finish()
+    if (error.status === 401) {
+      router.replace('/login')
+    } else {
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
   }
 )
 

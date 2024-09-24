@@ -153,7 +153,7 @@ onMounted(async () => {
       :fetch-data="fetchUsers"
       :fetch-by-branch="true"
       :fetch-by-curriculum="true"
-      :search-label="'user'"
+      :search-label="'User'"
       :btnAddAction="addUser"
       :action="editUser"
       customCol="roles"
@@ -175,4 +175,3 @@ onMounted(async () => {
     ></FormDialog>
   </v-dialog>
 </template>
-<style scoped></style>

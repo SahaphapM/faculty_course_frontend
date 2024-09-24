@@ -1,18 +1,13 @@
 <template>
-  <v-container class="mx-auto">
-    <v-row no-gutters class="text-center text-h5">
-      <v-col cols="12">
-        <v-icon size="160" class="mb-3" round icon="mdi-block-helper" color="error"></v-icon>
-      </v-col>
-      <v-col cols="12">
-        <h2 class="text-h1">403</h2>
-        <p class="text-h3">Forbidden</p>
-        <p>Access to this resource on the server is denied !</p>
-      </v-col>
-      <v-col cols="12">
-        <p class="text-medium-emphasis">Redirect to home page in {{ countdown }} seconds</p>
-      </v-col>
-    </v-row>
+  <v-container fluid class="text-center">
+    <v-icon size="160" class="mx-auto" round icon="mdi-block-helper" color="error"></v-icon>
+    <h2 class="text-h1">403</h2>
+    <p class="text-h3">Forbidden</p>
+    <p class="mt-2">Access to this resource on the server is denied !</p>
+    <p class="mt-2">Redirect to home page in {{ countdown }} seconds</p>
+    <v-btn variant="flat" color="primary" class="mt-5" @click="() => router.back()">
+      Go Back
+    </v-btn>
   </v-container>
 </template>
 
@@ -21,7 +16,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref, onUnmounted } from 'vue'
 
-const countdown = ref(5)
+const countdown = ref(10)
 let intervalId: number | undefined
 const user = ref()
 const auth = useAuthStore()
@@ -33,7 +28,7 @@ onMounted(async () => {
     countdown.value--
     if (countdown.value <= 0) {
       clearInterval(intervalId)
-      router.replace('/login')
+      router.back()
     }
   }, 1000)
 })

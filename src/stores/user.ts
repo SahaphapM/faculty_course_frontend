@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import type { User } from '@/types/User'
 import userService from '@/service/user'
 import type { PageParams } from '@/types/PageParams'
-import instance from '@/service/http'
 
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
@@ -59,7 +58,6 @@ export const useUserStore = defineStore('user', () => {
 
   async function updateUser() {
     const user = editedUser.value
-    console.log(user)
     await userService.updateUser(user)
   }
 

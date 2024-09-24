@@ -96,17 +96,6 @@ onMounted(async () => {
               </v-text-field>
             </v-col>
             <v-col>
-              <v-btn
-                prepend-icon="mdi-cog"
-                variant="outlined"
-                color="buu-gold"
-                @click="() => router.push('/MainIFAdmin')"
-                min-width="125"
-                height="40"
-                >{{ t('manage') }}</v-btn
-              >
-            </v-col>
-            <v-col>
               <LanguageBtns />
             </v-col>
             <v-col>
