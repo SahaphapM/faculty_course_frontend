@@ -112,7 +112,7 @@ onMounted(async () => {
               <td style="height: 55px; min-width: 150px">{{ item.id }}</td>
               <td style="height: 55px; min-width: 200px">{{ item.name }}</td>
               <td style="height: 55px; min-width: 90px">{{ item.description }}</td>
-              <td style="height: 55px; min-width: 90px">{{ item.level }}</td>
+              <td style="height: 55px; min-width: 90px">{{ item.domain }}</td>
               <td>
                 <v-btn
                   variant="text"
