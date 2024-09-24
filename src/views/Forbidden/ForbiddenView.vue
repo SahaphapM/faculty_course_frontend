@@ -33,7 +33,7 @@ onMounted(async () => {
     countdown.value--
     if (countdown.value <= 0) {
       clearInterval(intervalId)
-      router.back()
+      router.replace('/login')
     }
   }, 1000)
 })

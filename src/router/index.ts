@@ -1,7 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/home/HomeView.vue'
-import http from '@/service/http'
 import AuthService from '@/service/auth'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,45 +7,15 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
-      meta: {
-        layout: 'CommonLayout',
-        requireAuth: false
-      }
-    },
-    {
-      path: '/auth/google/success',
-      name: 'GoogleSuccess',
-      component: () => import('../views/login/pages/GoogleLoginSuccess.vue'),
-      meta: {
-        layout: 'FullLayout',
-        requireAuth: false
-      }
-    },
-    {
-      path: '/news',
-      name: 'news',
-      component: () => import('../views/news/NewsView.vue'),
-      meta: {
-        layout: 'CommonLayout',
-        requireAuth: false
-      }
-    },
-    {
-      path: '/contacts',
-      name: 'contacts',
-      component: () => import('../views/contacts/ContactsView.vue'),
-      meta: {
-        layout: 'CommonLayout',
-        requireAuth: false
-      }
+      component: () => import('../views/home/HomeView.vue')
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('../views/login/pages/LoginView.vue'),
       meta: {
-        layout: 'FullLayout'
+        layout: 'FullLayout',
+        public: true
       }
     },
     {
@@ -61,73 +29,37 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'Profile',
-      component: () => import('../views/profile/ProfileView.vue'),
-      meta: {
-        layout: 'MainLayout'
-      }
-    },
-    {
-      path: '/dataCenter',
-      name: 'Data Center',
-      component: () => import('../views/DataCenter/DataCenterView.vue'),
-      meta: {
-        layout: 'CommonLayout'
-      }
+      component: () => import('../views/profile/ProfileView.vue')
     },
     {
       path: '/mainIFCurriculumView',
       name: 'mainIFCurriculumView',
-      component: () => import('../views/IFCurriculum/MainIFCurriculumView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/IFCurriculum/MainIFCurriculumView.vue')
     },
     {
       path: '/AddIFAAIView',
       name: 'AddIFAAIView',
-      component: () => import('../views/IFCurriculum/admin/AddIFAAI.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/IFCurriculum/admin/AddIFAAI.vue')
     },
     {
       path: '/users',
       name: 'users',
-      component: () => import('../views/users/UserView.vue'),
-
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/users/UserView.vue')
     },
     {
       path: '/ClosView',
       name: 'ClosView',
-      component: () => import('../views/Adminview/Clos/closView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/Adminview/Clos/closView.vue')
     },
     {
       path: '/SkillView',
       name: 'SkillView',
-      component: () => import('../views/Adminview/Skill/skillView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/Adminview/Skill/skillView.vue')
     },
     {
       path: '/SkillView/Detail/:id',
       name: 'SkillView/SkillDetail',
-      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue')
     },
     // {
     //   path: '/SkillView/Details/:id',
@@ -140,57 +72,57 @@ const router = createRouter({
     {
       path: '/MainIFAdmin',
       name: 'MainIFAdmin',
-      component: () => import('../views/IFCurriculum/admin/MainAdmin.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/IFCurriculum/admin/MainAdmin.vue')
     },
     {
       path: '/manageSubject',
       name: 'manageSubject',
-      component: () => import('../views/subjects/SubjectView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/subjects/SubjectView.vue')
     },
     {
       path: '/AddSubject',
       name: 'AddSubject',
       component: () => import('../views/subjects/AddSubjectView.vue'),
       meta: {
-        layout: 'MainLayout',
-        requireAuth: true
+        layout: 'MainLayout'
       }
     },
     {
       path: '/student/help',
       name: 'StudentHelp',
-      component: () => import('../views/student/Student_help.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
+      component: () => import('../views/student/Student_help.vue')
     },
     {
       path: '/test',
       name: 'test',
       component: () => import('../views/TestComponent.vue'),
       meta: {
-        layout: 'MainLayout'
+        public: true
       }
     }
   ]
 })
-
 router.beforeEach(async (to, from, next) => {
-  if (to.path !== '/forbidden' && to.meta.requireAuth) {
-    const authenticated = AuthService.isAuthenticated()
-    if (!authenticated) {
-      return next('/forbidden')
-    }
+  const publicRoute = to.meta?.public || false
+  const isAuthenticated = await AuthService.isAuthenticated()
+
+  // Avoid redirect loops by checking the destination route
+  if (to.path === '/login' && isAuthenticated) {
+    // If already authenticated, no need to go to login page, redirect to the home page
+    return next('/')
   }
+
+  if (to.path === '/' && !isAuthenticated) {
+    return next('/login')
+  }
+
+  // If the route is not public and the user is not authenticated, redirect to forbidden page
+  if (!publicRoute && !isAuthenticated && to.path !== '/forbidden') {
+    return next('/forbidden')
+  }
+
+  // Proceed to the next route
   next()
 })
+
 export default router

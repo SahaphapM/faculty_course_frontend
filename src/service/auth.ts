@@ -10,7 +10,7 @@ class AuthService {
     return res.data
   }
 
-  static isAuthenticated(): boolean {
+  static async isAuthenticated(): Promise<boolean> {
     return !!localStorage.getItem('token')
   }
 
@@ -22,6 +22,7 @@ class AuthService {
     try {
       const res = await http.post(`/auth/logout`, { withCredentials: true })
       localStorage.removeItem('token')
+      window.location.reload()
       return res.data
     } catch (error) {
       console.error('Logout failed', error)

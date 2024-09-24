@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { appBarMenu } from '@/models/navigation'
 import MainAppBar from '../components/MainAppBar.vue'
 import MainFooter from '../components/MainFooter.vue'
 import { useLocale } from 'vuetify'
@@ -9,11 +8,7 @@ const { t } = useLocale()
 <template>
   <MainAppBar></MainAppBar>
   <v-app-bar class="bg-primary" flat scroll-behavior="fully-hide">
-    <v-container style="max-width: 1440px">
-      <v-btn v-for="nav in appBarMenu" :key="nav.title" color="white" :to="nav.to">
-        {{ t(nav.title) }}
-      </v-btn>
-    </v-container>
+    <v-container style="max-width: 1440px"> </v-container>
   </v-app-bar>
   <v-main app>
     <v-container style="min-height: 100vh; max-width: 1440px" class="mx-auto overflow-y-auto" fluid>

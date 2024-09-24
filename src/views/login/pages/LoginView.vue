@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import LanguageBtns from '@/components/LanguageBtns.vue'
 import { useAuthStore } from '@/stores/auth'
-import GoogleButton from '@/views/login/components/GoogleButton.vue'
 import { ref } from 'vue'
 import { useDisplay, useLocale } from 'vuetify'
+import GoogleButton from './GoogleButton.vue'
 
 const authStore = useAuthStore()
 const visible = ref(false)
-
+const appVer = __APP_VERSION__
 const { t } = useLocale()
 </script>
 
@@ -21,9 +21,9 @@ const { t } = useLocale()
   >
     <v-row>
       <v-col cols="12" md="6">
-        <a href="/">
-          <v-img class="mx-auto my-6" max-width="380" src="/img/logo-buu-2.png"></v-img>
-        </a>
+        <v-img class="mx-auto my-6" max-width="380" src="/img/logo-buu-2.png"></v-img>
+        <p class="text-center text-h5">Skill Mapping</p>
+        <p class="text-center">{{ 'v' + appVer }}</p>
       </v-col>
       <v-divider v-if="useDisplay().mdAndUp.value" vertical></v-divider>
       <v-col cols="12" md="6">
@@ -66,7 +66,7 @@ const { t } = useLocale()
             v-model="authStore.form.password"
           ></v-text-field>
 
-          <v-btn class="mb-8 customHover" color="buu-gold" size="large" width="100%" type="submit">
+          <v-btn class="mb-4 customHover" color="buu-gold" size="large" width="100%" type="submit">
             {{ t('login') }}
           </v-btn>
           <GoogleButton />
@@ -74,6 +74,7 @@ const { t } = useLocale()
       </v-col>
     </v-row>
   </v-card>
+  <p class="text-center mt-2">&copy; 2024 Burapha University. All Right Reserved</p>
 </template>
 
 <style scoped>

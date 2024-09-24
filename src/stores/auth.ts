@@ -40,6 +40,7 @@ export const useAuthStore = defineStore('auth', {
     loginGoogle() {
       authService.loginGoogle()
     },
+
     logout() {
       authService.logout()
       this.user = null
