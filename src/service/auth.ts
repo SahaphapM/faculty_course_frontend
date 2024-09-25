@@ -1,6 +1,6 @@
 import type { Payload } from '@/types/Payload'
 import http from './http'
-import type { AxiosResponse } from 'axios'
+import type { AxiosError, AxiosResponse } from 'axios'
 import router from '@/router'
 
 class AuthService {
@@ -33,8 +33,16 @@ class AuthService {
   static async profile(): Promise<Payload | null> {
     try {
       const res = await http.get(`auth/profile`)
+      console.error(res)
+      if (res.status === 401) {
+        router.replace('login')
+        return null
+      }
       return res.data
-    } catch (err) {
+    } catch (err: AxiosError | any) {
+      if (err.status === 401) {
+        router.replace('/login')
+      }
       console.error(err)
       return null
     }

@@ -7,7 +7,6 @@ import { useAuthStore } from '@/stores/auth'
 import { useDrawerStore } from '@/stores/drawer'
 import { appVersion, isSmallScreen } from '@/utils/screenSize'
 import type { Payload } from '@/types/Payload'
-import router from '@/router'
 import AuthService from '@/service/auth'
 
 const { t } = useLocale()

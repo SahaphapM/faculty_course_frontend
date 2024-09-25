@@ -10,19 +10,12 @@ export const useUserStore = defineStore('user', () => {
   const totalUsers = ref(0)
 
   const initialUser: User = {
-    id: '',
     email: '',
     password: '',
     firstName: '',
-    middleName: '',
     lastName: '',
     gender: 'Male',
-    phone: '',
-    googleId: '',
-    roles: [],
-    image: 'unknown.jpg',
-    facultyId: '',
-    branchId: ''
+    roles: []
   }
 
   const editedUser = ref<User>({ ...initialUser })

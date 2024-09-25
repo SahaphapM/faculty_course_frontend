@@ -1,18 +1,16 @@
 import type { Role } from './Role'
 type User = {
-  id: string | null
+  id?: number
   email: string
   password: string
   firstName: string
-  middleName: string | null
   lastName: string
   gender: string
-  phone: string
-  image: string
-  googleId: string
+  // phone: string
+  // image: string
   roles: Role[] | null
-  facultyId: string
-  branchId: string
+  // facultyId: string
+  // branchId: string
 }
 
 export type { User }

@@ -30,7 +30,6 @@
       ></v-row
     >
     <!-- style="min-width: 300px; height: 55px" -->
-
     <v-card rounded="lg">
       <v-data-table-server
         class="bg-primary"
@@ -45,7 +44,7 @@
         :search="params.search"
         @update:options="updateOptions"
       >
-        <!-- <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
+        <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
           <tr>
             <template v-for="column in columns" :key="column.key">
               <td>
@@ -58,10 +57,10 @@
               </td>
             </template>
           </tr>
-        </template> -->
-        <template #item="{ item, index, columns }">
+        </template>
+        <template v-slot:item="{ item, index, columns }">
           <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
-            <td v-for="column in columns" :key="column.key!">
+            <td v-for="column in columns" :key="column.key">
               <v-btn
                 v-if="column.key === 'actions' && action"
                 icon="mdi-file-document-edit"
@@ -91,6 +90,10 @@ import { onMounted, reactive, ref } from 'vue'
 import { useLocale } from 'vuetify'
 import SelectByFeature from '../SelectByFeature.vue'
 import SearchTextfield from './SearchTextfield.vue'
+
+const parsedColumns = (columns: any): Record<string, any> => {
+  return columns.map((column: Record<string, any>) => column)
+}
 
 const { t } = useLocale()
 
