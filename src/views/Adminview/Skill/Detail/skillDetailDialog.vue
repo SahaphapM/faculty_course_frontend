@@ -32,13 +32,26 @@ async function saveSkill() {
   closeDialog()
 }
 
-// function addTechSkill() {
-//   if (techSkillInput.value && !skills.value.techSkills.includes(techSkillInput.value)) {
-//     skills.value.techSkills.push(techSkillInput.value)
-//     techSkillInput.value = '' // Clear input after adding
-//     console.log(skills.value.techSkills)
-//   }
-// }
+function getAllChildrenIds(skill: any): string[] {
+  const ids = [];
+  if (skill.children) {
+    for (const child of skill.children) {
+      ids.push(child.id);
+      ids.push(...getAllChildrenIds(child)); // Recursively gather IDs of children and grandchildren
+    }
+  }
+  return ids;
+}
+
+function filterAvailableSkills() {
+  // Get the ids of all children and grandchildren of the current skill
+  const excludedIds = getAllChildrenIds(skills.value);
+  excludedIds.push(skills.value.id); // Include the current skill's id to avoid self-reference
+
+  // Filter the skills to exclude those ids
+  return children.value.filter((child: any) => !excludedIds.includes(child.id));
+}
+
 function addSubSkill() {
   if (!skills.value.children) {
     skills.value.children = []
@@ -51,26 +64,16 @@ function addSubSkill() {
   }
 }
 
-function removeTechSkill(index: number) {
-  skills.value.techSkills.splice(index, 1)
-  skillService.removeTechSkill(skills.value.id, index.toString())
-}
-
-// function removeSubSkill(index: number) {
-//   skills.value.techSkills.splice(index, 1)
-//   skillService.removeSubSkill(skills.value.id, index.toString())
-// }
 function removeSubSkill(subSkillId: string) {
   skills.value.children = skills.value.children.filter((subSkill) => subSkill.id !== subSkillId)
   skillService.removeSubSkill(skills.value.id, subSkillId)
 }
 
 onMounted(async () => {
-  console.log()
-
   await skillStore.fetchSkills()
 })
 </script>
+
 <template>
   <v-dialog
     v-model="localVisible"
@@ -131,7 +134,7 @@ onMounted(async () => {
               hide-details
               label="Sub Skill"
               item-title="name"
-              :items="children"
+              :items="filterAvailableSkills()" 
             ></v-combobox>
             <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
           </v-col>

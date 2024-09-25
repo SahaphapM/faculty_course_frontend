@@ -34,10 +34,10 @@ async function saveSkill() {
       domain: skill.domain
     }
     console.log(payload)
-
     // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
     await skillStore.addSkill(payload)
   }
+  router.push({ name: 'SkillView'})
 }
 
 const closeDialog = async () => {
@@ -47,7 +47,6 @@ const closeDialog = async () => {
 onMounted(() => {
   if (route.params.id !== 'addNew') {
     console.log('update')
-
     fetchSkillDetail(route.params.id as string)
   } else {
     console.log('add')
