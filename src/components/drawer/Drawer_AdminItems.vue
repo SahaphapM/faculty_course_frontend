@@ -17,6 +17,7 @@ const navMenu = [
   { title: 'curriculums', to: 'MainIFAdmin' },
   { title: 'subject', to: '/manageSubject' },
   { title: 'skill', to: '/skillView' },
-  { title: 'user', to: '/users' }
+  { title: 'user', to: '/users' },
+  { title: 'teacher', to: '/teachers' }
 ]
 </script>
