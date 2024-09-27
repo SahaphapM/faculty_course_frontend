@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useSubjectStore } from '@/stores/subject'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/teacher'
 import type { Subject } from '@/types/Subjects'
-import type { User } from '@/types/User'
+import type { User } from '@/types/Teachers'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import type { VForm } from 'vuetify/components'
 import type { PageParams, SortItem } from '@/types/PageParams'

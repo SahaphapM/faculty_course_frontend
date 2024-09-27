@@ -3,13 +3,13 @@ import { computed, nextTick, onMounted, ref, watch, type Ref } from 'vue'
 import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
-import { useUserStore } from '@/stores/user'
+import { useTeacherStore } from '@/stores/teacher'
 import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
 import type { VForm } from 'vuetify/components'
 import { usePloStore } from '@/stores/plos'
-import type { User } from '@/types/User'
+import type { Teacher } from '@/types/Teachers'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useSubjectStore } from '@/stores/subject'
@@ -24,13 +24,13 @@ const skillStore = useSkillStore()
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
-const userStore = useUserStore()
+const teacherStore = useTeacherStore()
 const curriculums = computed(() => curriculumStore.curriculums)
 const overlay = ref(false)
 const reveal = ref(false)
 const reveal2 = ref(true)
 const reveal3 = ref(false)
-const users = computed(() => userStore.users)
+const teachers = computed(() => teacherStore.teachers)
 const id = ref<string>('')
 const thaiName = ref<string>('')
 const engName = ref<string>('')
@@ -52,7 +52,7 @@ const items4 = ref<string[]>(['ความรู้', 'ทักษะ', 'จ�
 const items3 = ref<string[]>(['นาย', 'นางสาว', 'นางสาว'])
 const form = ref<VForm | null>(null)
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
-type userIds = { id: string }
+type teacherIds = { id: string }
 type subjectsIds = { id: string }
 type skillIds = { id: string }
 const tab = ref<string>('option-1')
@@ -81,7 +81,7 @@ const pageParamsSkill = ref<PageParams>({
 onMounted(async () => {
   branchStore.getBranches()
   curriculumStore.fetchCurriculums()
-  userStore.fetchUsers()
+  teacherStore.fetchTeachers()
   subjectStore.fetchSubjects
   subjectStore.fetchSubjects(pageParamsSubjects.value)
   const coordinators = curriculumStore.currentCurriculum?.coordinators
@@ -167,8 +167,8 @@ watch(
 )
 
 //***************************************coordinator*************************************************** */
-const initialCoordinators: userIds[] = []
-const coordinator = ref<userIds[]>(
+const initialCoordinators: teacherIds[] = []
+const coordinator = ref<teacherIds[]>(
   initialCoordinators
     .filter((coord) => coord.id !== null) // Filter out items where id is null
     .map((coord) => ({
@@ -210,38 +210,40 @@ async function addc() {
   const { valid } = await form.value!.validate()
   if (!valid) return
 
-  const userId = select3.value.substring(0, select3.value.indexOf(' '))
+  const teacherId = select3.value.substring(0, select3.value.indexOf(' '))
 
-  console.log(userStore.fetchUser(userId.toString))
-  if (userId) {
+  console.log(teacherStore.fetchTeacher(teacherId.toString))
+  if (teacherId) {
     if (!coordinator.value) {
       coordinator.value = []
     }
 
     // Avoid duplicates
-    const exists = coordinator.value.some((coord) => coord.id === userId)
+    const exists = coordinator.value.some((coord) => coord.id === teacherId)
     if (!exists) {
-      coordinator.value.push({ id: userId })
+      coordinator.value.push({ id: teacherId })
       console.log(coordinator)
     }
   }
 }
 
-const userOptions = computed(() => {
-  return users.value.map((user) => {
-    const rolesString = Array.isArray(user.roles)
-      ? user.roles.map((role) => role.name).join(', ')
+const teacherOptions = computed(() => {
+  return teachers.value.map((teacher) => {
+    const rolesString = Array.isArray(teacher.roles)
+      ? teacher.roles.map((role) => role.name).join(', ')
       : 'No Roles'
-    return `${user.id} ${user.firstName} ${user.lastName}`
+    return `${teacher.id} ${teacher.firstName} ${teacher.lastName}`
   })
 })
 
-const getUserInfoById = (id: any) => {
-  // Find the string in userOptions that starts with the specified id
-  const userString = userOptions.value.find((userString) => userString.startsWith(`${id} `))
+const getTeacherInfoById = (id: any) => {
+  // Find the string in teacherOptions that starts with the specified id
+  const teacherString = teacherOptions.value.find((teacherString) =>
+    teacherString.startsWith(`${id} `)
+  )
 
-  // If a matching string is found, return it; otherwise, return 'User Not Found'
-  return userString ? userString : 'User Not Found'
+  // If a matching string is found, return it; otherwise, return 'Teacher Not Found'
+  return teacherString ? teacherString : 'Teacher Not Found'
 }
 
 //*************************************** end coordinator *************************************************** */
@@ -665,7 +667,7 @@ watch(
                     <p style="font-size: 1.5vh">เลือก</p>
                     <v-combobox
                       v-model="select3"
-                      :items="userOptions"
+                      :items="teacherOptions"
                       variant="outlined"
                       rounded="lg"
                       :rules="[(v) => !!v || 'You must agree to continue!']"
@@ -683,7 +685,7 @@ watch(
                       <v-row>
                         <v-col>
                           <v-icon color="primary">mdi-numeric-{{ index + 1 }}-circle</v-icon>&nbsp;
-                          {{ getUserInfoById(curriculum.id) }}
+                          {{ getTeacherInfoById(curriculum.id) }}
                         </v-col>
                         <v-col class="d-flex justify-end" cols="auto">
                           <v-btn
@@ -1052,7 +1054,7 @@ watch(
                       style="font-size: 18px"
                       class="ml-8"
                     >
-                      ผู้ดูแลคนที่ {{ index + 1 }} : &nbsp;{{ getUserInfoById(curriculum.id) }}
+                      ผู้ดูแลคนที่ {{ index + 1 }} : &nbsp;{{ getTeacherInfoById(curriculum.id) }}
                     </p>
                   </div>
 

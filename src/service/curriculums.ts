@@ -21,9 +21,9 @@ function getCurriculum(id: string) {
   return http.get<Curriculum>(`/curriculums/${id}`);
 }
 
-function addCoordinator(curriculumId: string, user: { id: string }[]) {
-  console.log(user, 'from service'); // For debugging
-  return http.patch(`/curriculums/${curriculumId}/coordinators`, user);
+function addCoordinator(curriculumId: string, teacher: { id: string }[]) {
+  console.log(teacher, 'from service'); // For debugging
+  return http.patch(`/curriculums/${curriculumId}/coordinators`, teacher);
 }
 
 function addSubject(curriculumId: string, subjects: { id: string }[]) {
