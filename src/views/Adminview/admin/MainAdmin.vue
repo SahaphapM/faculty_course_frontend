@@ -9,7 +9,7 @@ import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type { VForm } from 'vuetify/components'
 import type { PageParams } from '@/types/PageParams'
-import DialogAddIF from '@/views/IFCurriculum/admin/DialogAddIF.vue'
+import DialogAddIF from '@/views/Adminview/admin/DialogAddIF.vue'
 
 const branchStore = useBranchStore()
 const curriculumStore = useCurriculumStore()

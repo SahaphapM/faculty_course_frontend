@@ -86,7 +86,7 @@ const router = createRouter({
     {
       path: '/AddIFAAIView',
       name: 'AddIFAAIView',
-      component: () => import('../views/IFCurriculum/admin/AddIFAAI.vue'),
+      component: () => import('../views/Adminview/admin/AddIFAAI.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true
@@ -140,7 +140,7 @@ const router = createRouter({
     {
       path: '/MainIFAdmin',
       name: 'MainIFAdmin',
-      component: () => import('../views/IFCurriculum/admin/MainAdmin.vue'),
+      component: () => import('../views/Adminview/admin/MainAdmin.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true
