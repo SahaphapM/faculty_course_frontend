@@ -64,8 +64,8 @@ const pageParamsSubjects = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 const pageParamsSkill = ref<PageParams>({
@@ -74,8 +74,8 @@ const pageParamsSkill = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnId: '',
+  columnName: ''
 })
 
 onMounted(async () => {
@@ -324,7 +324,8 @@ const formSubjects = ref<Subject>({
   credit: 0,
   studyTime: '',
   type: '3',
-  description: ''
+  description: '',
+  descriptionEng: ''
 })
 
 const initialSubjects: subjectsIds[] = []
@@ -463,7 +464,9 @@ const formSkill = ref<Skill>({
   id: '',
   name: '',
   description: '',
-  colorsTag: ''
+  level: 0,
+  children: [],
+  techSkills: []
 })
 
 const menu = ref(false)
@@ -488,18 +491,18 @@ const skill = ref<skillIds[]>(
 )
 const skillselect = ref<string | null>(null)
 
-watch(skillselect, async (newValue) => {
-  if (newValue) {
-    const skill = await skillStore.fetchSkill(newValue)
+// watch(skillselect, async (newValue) => {
+//   if (newValue) {
+//     const skill = await skillStore.fetchSkill(newValue)
 
-    // Update the specific form in refFormSkill
-    refFormSkill.value = refFormSkill.value.map((form, index) =>
-      index === 0 // Change this condition if needed to target specific form
-        ? { ...form, description: skill.description }
-        : form
-    )
-  }
-})
+//     // Update the specific form in refFormSkill
+//     refFormSkill.value = refFormSkill.value.map((form, index) =>
+//       index === 0 // Change this condition if needed to target specific form
+//         ? { ...form, description: skill.description }
+//         : form
+//     )
+//   }
+// })
 console.log(formSkill.value)
 
 async function addSkills() {
@@ -538,8 +541,7 @@ const fetchSkillById = (id: string, index: number) => {
   if (skill) {
     return {
       name: skill.name,
-      description: skill.description,
-      colorsTag: skill.colorsTag
+      description: skill.description
     }
   }
   return {

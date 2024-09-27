@@ -25,8 +25,8 @@ const pageParams = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnName: '',
+  columnId: ''
 })
 const select = ref<PageParams>({
   page: 1,
@@ -34,8 +34,8 @@ const select = ref<PageParams>({
   sort: '',
   order: 'ASC',
   search: '',
-  column1: '',
-  column2: ''
+  columnName: '',
+  columnId: ''
 })
 
 const dialogVisible = ref(false)

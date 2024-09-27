@@ -2,7 +2,7 @@
   <v-container class="mx-auto">
     <v-row>
       <v-col cols="12" md="4">
-        <v-card class="pa-5" height="60hv">
+        <v-card class="pa-5" height="50hv" style="border-top: 4px solid #2d487e">
           <template #text>
             <v-row class="d-flex justify-center">
               <v-img
@@ -14,12 +14,22 @@
                 class="rounded-circle"
               ></v-img>
             </v-row>
-            <div class="mt-7 text-center">
-              <p>{{ profile?.name }}</p>
-              <p>{{ profile?.email }}</p>
 
+            <div class="mt-7 text-center">
+              <!-- <p>{{ profile?.name }}</p>
+              <p>{{ profile?.email }}</p> -->
+              <p>Chanon Thansawad</p>
+              <p>65160066@go.buu.ac.th</p>
               <p class="mt-7" style="color: green">สถานะ : กำลังศึกษา</p>
             </div>
+
+            <v-divider class="mt-4 mb-4"></v-divider>
+            <div style="display: flex; margin-bottom: 2vh">
+              <div class="rounded-rectangle"></div>
+              <p class="text-header ml-3" style="font-size: 2.5vh">ทักษะที่โดดเด่น</p>
+            </div>
+
+            <div ref="chartDom" style="width: 100%; height: 320px; margin-top: 10px"></div>
           </template>
         </v-card>
       </v-col>
@@ -47,7 +57,9 @@
         <v-card class="pa-7 mt-2" style="border-top: 4px solid #2d487e">
           <div style="display: flex; align-items: center; margin-bottom: 2vh">
             <div class="rounded-rectangle"></div>
-            <p class="text-header ml-3" style="font-size: 2.5vh; margin: 0">ทักษะของผู้เรียน</p>
+            <p class="text-header ml-3" style="font-size: 2.5vh; margin: 0">
+              ทักษะของผู้เรียนทั้งหมด
+            </p>
           </div>
 
           <div class="d-flex justify-space-between align-center" style="margin-bottom: 1vh">
@@ -78,17 +90,71 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import type { Profile } from '@/types/Profile'
-import { onMounted, ref } from 'vue'
+import * as echarts from 'echarts'
 
+// Store reference to auth and profile
 const auth = useAuthStore()
-const profile = ref<Profile | null>()
+const profile = ref<Profile | null>(null)
 
+// Reference to the chart DOM element
+const chartDom = ref<HTMLElement | null>(null)
+
+// Fetch profile and initialize chart
 onMounted(async () => {
   profile.value = await auth.fetchProfile()
+
+  if (chartDom.value) {
+    const myChart = echarts.init(chartDom.value)
+
+    const option = {
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        left: 'center'
+      },
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          padAngle: 5,
+          itemStyle: {
+            borderRadius: 10
+          },
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 20,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: [
+            { value: 1048, name: 'หล่อ' },
+            { value: 735, name: 'Data analytics' },
+            { value: 580, name: 'Web programming' }
+          ]
+        }
+      ]
+    }
+
+    // Set the chart options
+    myChart.setOption(option)
+  }
 })
 </script>
+
 <style>
 .rounded-rectangle {
   width: 1vh; /* Adjust the width as needed */
