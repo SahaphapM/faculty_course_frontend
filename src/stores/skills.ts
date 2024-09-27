@@ -13,7 +13,7 @@ export const useSkillStore = defineStore('skill', () => {
     id: '',
     name: '',
     description: '',
-    level: 0,
+    domain: '',
     // subjects: [],
     children: [],
     techSkills: []
@@ -45,6 +45,7 @@ export const useSkillStore = defineStore('skill', () => {
     editedSkill.value = res.data
     // currentSkill.value = editedSkill.value
     console.log(editedSkill.value)
+
   }
 
   async function addSkill(addSkill: any) {
@@ -96,7 +97,6 @@ export const useSkillStore = defineStore('skill', () => {
     updateSkill,
     fetchSkill,
     fetchSkillsPage,
-    setCurrentSkill,
     fetchSkills,
     deleteSkill,
     deleteSubSkill,

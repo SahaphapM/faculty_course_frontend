@@ -464,8 +464,8 @@ const formSkill = ref<Skill>({
   id: '',
   name: '',
   description: '',
-  level: 0,
   children: [],
+  domain: '',
   techSkills: []
 })
 
@@ -491,18 +491,19 @@ const skill = ref<skillIds[]>(
 )
 const skillselect = ref<string | null>(null)
 
-// watch(skillselect, async (newValue) => {
-//   if (newValue) {
-//     const skill = await skillStore.fetchSkill(newValue)
 
-//     // Update the specific form in refFormSkill
-//     refFormSkill.value = refFormSkill.value.map((form, index) =>
-//       index === 0 // Change this condition if needed to target specific form
-//         ? { ...form, description: skill.description }
-//         : form
-//     )
-//   }
-// })
+watch(skillselect, async (newValue) => {
+  if (newValue) {
+    await skillStore.fetchSkill(newValue)
+    const skill = ref(skillStore.editedSkill)
+    // Update the specific form in refFormSkill
+    refFormSkill.value = refFormSkill.value.map((form, index) =>
+      index === 0 // Change this condition if needed to target specific form
+        ? { ...form, description: skill.value.description }
+        : form
+    )
+  }
+})
 console.log(formSkill.value)
 
 async function addSkills() {

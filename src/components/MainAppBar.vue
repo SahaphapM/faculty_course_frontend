@@ -6,8 +6,9 @@ import { useLocale } from 'vuetify'
 import { useAuthStore } from '@/stores/auth'
 import { useDrawerStore } from '@/stores/drawer'
 import { appVersion, isSmallScreen } from '@/utils/screenSize'
-import type { Profile } from '@/types/Profile'
+import type { Payload } from '@/types/Payload'
 import router from '@/router'
+import AuthService from '@/service/auth'
 
 const { t } = useLocale()
 
@@ -15,7 +16,7 @@ const drawer = useDrawerStore()
 const searchS = useSearchStore()
 
 const auth = useAuthStore()
-const profile = ref<Profile | null>()
+const profile = ref<Payload | null>()
 
 onMounted(async () => {
   profile.value = await auth.fetchProfile()
@@ -70,8 +71,8 @@ onMounted(async () => {
         </v-menu>
       </div>
       <!-- large screen -->
-      <div v-else>
-        <div v-if="!auth.isAuthenticated" class="d-flex ga-4">
+      <div>
+        <div v-if="!AuthService.isAuthenticated()" class="d-flex ga-4">
           <LanguageBtns />
           <v-btn class="bg-buu-gold" to="/login">
             <p class="font-weight-bold">{{ t('login') }}</p>
@@ -110,7 +111,7 @@ onMounted(async () => {
             </v-col>
             <v-col>
               <v-avatar color="white" :style="{ cursor: 'pointer' }">
-                <v-img :src="profile?.picture" draggable="false"></v-img>
+                <v-img :src="profile?.avatarUrl" draggable="false"></v-img>
                 <v-menu activator="parent">
                   <v-list>
                     <v-list-item append-icon="mdi-account" to="/profile">

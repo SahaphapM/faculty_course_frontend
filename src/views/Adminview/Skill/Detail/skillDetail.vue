@@ -28,60 +28,29 @@ async function saveSkill() {
   if (skills.value.id != '') {
     skillStore.updateSkill(skill)
   } else {
-    const payload: { name: string; description: string; level: number } = {
+    const payload: { name: string; description: string; domain: string } = {
       name: skill.name,
       description: skill.description,
-      level: skill.level
+      domain: skill.domain
     }
     console.log(payload)
 
     // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
-    console.log(skills.value.id, skills.value.children)
     await skillStore.addSkill(payload)
-    skillService.addSubSkill(skills.value.id, skills.value.children)
   }
 }
 
-function addSubSkill() {
-  if (!skills.value.children) {
-    skills.value.children = []
-  }
-
-  if (subSkillInput.value && !skills.value.children.includes(subSkillInput.value)) {
-    skills.value.children.push(subSkillInput.value)
-    subSkillInput.value = '' // Clear input after adding
-    console.log(skills.value.children)
-  }
-}
-
-function removeTechSkill(index: number) {
-  skills.value.techSkills.splice(index, 1)
-  skillService.removeTechSkill(skills.value.id, index.toString())
-}
-
-function removeSubSkill(index: number) {
-  skills.value.children.splice(index, 1)
-  subSkillRemove.value.push(index)
-  console.log(subSkillRemove.value)
-
-  // skillService.removeSubSkill(skills.value.id, index.toString())
-}
-
-const showDialog = async (item: any) => {
-  if (item != null) {
-    dialogVisible.value = true
-  } else {
-    dialogVisible.value = true
-  }
-}
 const closeDialog = async () => {
   dialogVisible.value = false
 }
 
 onMounted(() => {
-  if (route.params.id !== null) {
+  if (route.params.id !== 'addNew') {
+    console.log('update')
+
     fetchSkillDetail(route.params.id as string)
   } else {
+    console.log('add')
     skillStore.clearForm()
   }
 })
@@ -127,14 +96,14 @@ onMounted(() => {
           </v-col>
           <v-col cols="12">
             <v-combobox
-              v-model="skills.level"
+              v-model="skills.domain"
               hide-details
-              label="Level"
-              :items="[1, 2, 3, 4, 5]"
+              label="Skill Type"
+              :items="['ความรู้', 'คุณลักษณะบุคคล', 'จริยธรรม', 'ทักษะ']"
             ></v-combobox>
           </v-col>
 
-          <v-col cols="10"><p>Sub Skills</p></v-col
+          <!-- <v-col cols="10"><p>Sub Skills</p></v-col
           ><v-col cols="2"><v-btn @click="showDialog">Edit Sub Skills</v-btn></v-col>
 
           <v-col cols="12">
@@ -146,7 +115,7 @@ onMounted(() => {
               open-on-click
             >
             </v-treeview>
-          </v-col>
+          </v-col> -->
 
           <!-- <v-col cols="12">
             <v-combobox

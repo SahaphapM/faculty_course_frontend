@@ -1,4 +1,4 @@
-import type { Profile } from '@/types/Profile'
+import type { Payload } from '@/types/Payload'
 import http from './http'
 import type { AxiosResponse } from 'axios'
 import router from '@/router'
@@ -10,6 +10,10 @@ class AuthService {
     return res.data
   }
 
+  static isAuthenticated(): boolean {
+    return !!localStorage.getItem('token')
+  }
+
   static loginGoogle() {
     window.location.href = http.defaults.baseURL + '/auth/google'
   }
@@ -17,6 +21,7 @@ class AuthService {
   static async logout(): Promise<AxiosResponse> {
     try {
       const res = await http.post(`/auth/logout`, { withCredentials: true })
+      localStorage.removeItem('token')
       return res.data
     } catch (error) {
       console.error('Logout failed', error)
@@ -24,7 +29,7 @@ class AuthService {
     }
   }
 
-  static async profile(): Promise<Profile | null> {
+  static async profile(): Promise<Payload | null> {
     try {
       const res = await http.get(`auth/profile`)
       return res.data

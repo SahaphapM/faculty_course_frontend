@@ -38,8 +38,8 @@ export const useFacultyStore = defineStore('faculty', () => {
     faculties.value = res.data
   }
 
-  async function fetchBranchIds() {
-    const res = await facultyService.getBranchIds()
+  async function fetchAllDetails() {
+    const res = await facultyService.getAllDetails()
     return res.data
   }
 
@@ -75,6 +75,6 @@ export const useFacultyStore = defineStore('faculty', () => {
     editedFaculty,
     clearForm,
     setCurrentFaculty,
-    fetchBranchIds
+    fetchAllDetails
   }
 })

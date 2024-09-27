@@ -3,9 +3,15 @@ import { ref, onMounted, watch } from 'vue'
 import http from '../../service/http'
 import SearchTextfield from './SearchTextfield.vue'
 import { useLocale } from 'vuetify'
+import SelectByFeature from '../SelectByFeature.vue'
 
 const props = defineProps<{
   fetchFab?: (search: string, facultyId: string, branchId: string) => void
+  fetchByBranch?: boolean
+  fetchByCurriculum?: boolean
+  fetchBySubject?: boolean
+  fetchBySkill?: boolean
+  fetchByTechSkill?: boolean
   fetchSearch?: (search: string) => Promise<void>
 }>()
 
@@ -19,7 +25,7 @@ const { t } = useLocale()
 // Fetch faculties and branches
 const fetchFacultiesAndBranches = async () => {
   try {
-    const response = await http.get('/faculties/getBranchIds') // Adjust the URL as needed
+    const response = await http.get('/faculties/getAllDetails') // Adjust the URL as needed
     faculties.value = response.data
   } catch (error) {
     console.error('Failed to fetch faculties and branches:', error)
@@ -63,7 +69,7 @@ onMounted(() => {
     <v-col v-if="fetchSearch">
       <SearchTextfield :label="t('search')" :fetch-data="fetchSearch" />
     </v-col>
-    <v-col v-if="fetchFab">
+    <!-- <v-col v-if="fetchFab">
       <v-select
         v-model="selectedFaculty"
         density="comfortable"
@@ -76,9 +82,9 @@ onMounted(() => {
         rounded="lg"
         :return-object="true"
       ></v-select>
-    </v-col>
+    </v-col> -->
     <v-col v-if="fetchFab">
-      <v-select
+      <!-- <v-select
         v-model="selectedBranch"
         density="comfortable"
         :items="branches"
@@ -88,7 +94,16 @@ onMounted(() => {
         variant="outlined"
         rounded="lg"
         :return-object="true"
-      ></v-select>
+      ></v-select> -->
+
+      <SelectByFeature
+        :by-branch="fetchByBranch"
+        :by-curriculum="fetchByCurriculum"
+        :by-subject="fetchBySubject"
+        :by-skill="fetchBySkill"
+        :by-tech-skill="fetchByTechSkill"
+        :fetch-data="fetchFab"
+      ></SelectByFeature>
     </v-col>
   </v-row>
 </template>

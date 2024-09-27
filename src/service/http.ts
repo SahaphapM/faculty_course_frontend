@@ -1,5 +1,4 @@
-import router from '@/router'
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosResponse } from 'axios'
 // import Cookies from 'js-cookie'
 
 const instance = axios.create({
@@ -16,28 +15,21 @@ const instance = axios.create({
 //   })
 // }
 
-// instance.interceptors.request.use((config: any) => {
-// const token = document.cookie
-//   .split(';')
-//   .find((c) => c.trim().startsWith('access_token='))
-// ?.split('=')[1]
-// console.log(JSON.stringify(document.cookie))
-// console.log(token)
-//   const token = Cookies.get('access_token')
-//   console.log(token)
-//   if (token) {
-//     config.headers = {
-//       ...config.headers,
-//       Authorization: `Bearer ${token}`
-//     }
-//   } else {
-//     console.log('no token')
-//   }
-//   return config
-// })
+instance.interceptors.request.use(
+  (request: any) => {
+    const accessToken = localStorage.getItem('token')
+    if (accessToken) {
+      request.headers['Authorization'] = `Bearer ${accessToken}`
+    }
+    return request
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 instance.interceptors.response.use(
-  async function (res: any) {
+  async function (res: AxiosResponse) {
     return res
   },
   function (error: AxiosError) {

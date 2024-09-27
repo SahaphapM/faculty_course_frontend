@@ -2,11 +2,11 @@
   <v-container class="mx-auto">
     <v-row>
       <v-col cols="12" md="4">
-        <v-card class="pa-5" height="50hv" style="border-top: 4px solid #2d487e">
-          <template #text>
+        <v-card class="pa-5 h-100" flat>
+          <template #default>
             <v-row class="d-flex justify-center">
               <v-img
-                :src="profile?.picture"
+                :src="profile?.avatarUrl ?? 'https://placehold.co/200x200'"
                 min-width="200"
                 min-height="200"
                 max-width="200"
@@ -14,22 +14,33 @@
                 class="rounded-circle"
               ></v-img>
             </v-row>
-
-            <div class="mt-7 text-center">
-              <!-- <p>{{ profile?.name }}</p>
-              <p>{{ profile?.email }}</p> -->
-              <p>Chanon Thansawad</p>
-              <p>65160066@go.buu.ac.th</p>
-              <p class="mt-7" style="color: green">สถานะ : กำลังศึกษา</p>
+            <div class="mt-6 text-center">
+              <!-- <p>{{ profile?.name ?? 'placeholder name' }}</p> -->
+              <p>{{ profile?.email ?? 'placeholder@mail.buu' }}</p>
+              <p>{{ (profile?.roles ?? []).length > 0 ? profile?.roles : 'unknown role' }}</p>
+              <p class="mt-3" style="color: green">สถานะ : กำลังศึกษา</p>
             </div>
-
-            <v-divider class="mt-4 mb-4"></v-divider>
-            <div style="display: flex; margin-bottom: 2vh">
-              <div class="rounded-rectangle"></div>
-              <p class="text-header ml-3" style="font-size: 2.5vh">ทักษะที่โดดเด่น</p>
-            </div>
-
-            <div ref="chartDom" style="width: 100%; height: 320px; margin-top: 10px"></div>
+            <v-card class="mt-5" title="Social Media">
+              <template #text>
+                <v-list-item
+                  v-for="line in socials"
+                  :key="line.name"
+                  :href="line.link"
+                  target="_blank"
+                >
+                  <template #prepend>
+                    <img
+                      :src="line.icon"
+                      :alt="line.alt"
+                      width="48"
+                      class="mr-2"
+                      draggable="false"
+                    />
+                  </template>
+                  {{ line.name }}</v-list-item
+                >
+              </template>
+            </v-card>
           </template>
         </v-card>
       </v-col>
@@ -39,7 +50,6 @@
             <div class="rounded-rectangle"></div>
             <p class="text-header ml-3" style="font-size: 2.5vh">ระเบียนประวัติ</p>
           </div>
-
           <p class="text-content mt-1">รหัสประจำตัว : 65160066</p>
           <p class="text-content mt-1">ชื่อ : ชานนท์ ตันสวัสดิ์</p>
           <p class="text-content mt-1">ชื่ออังกฤษ : MR.CHANON THANSAWAD</p>
@@ -57,9 +67,7 @@
         <v-card class="pa-7 mt-2" style="border-top: 4px solid #2d487e">
           <div style="display: flex; align-items: center; margin-bottom: 2vh">
             <div class="rounded-rectangle"></div>
-            <p class="text-header ml-3" style="font-size: 2.5vh; margin: 0">
-              ทักษะของผู้เรียนทั้งหมด
-            </p>
+            <p class="text-header ml-3" style="font-size: 2.5vh; margin: 0">ทักษะของผู้เรียน</p>
           </div>
 
           <div class="d-flex justify-space-between align-center" style="margin-bottom: 1vh">
@@ -90,71 +98,55 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import type { Profile } from '@/types/Profile'
-import * as echarts from 'echarts'
+import type { Payload } from '@/types/Payload'
+import type { SkillNode } from '@/types/SkillNode'
+import { onMounted, ref } from 'vue'
 
-// Store reference to auth and profile
 const auth = useAuthStore()
-const profile = ref<Profile | null>(null)
+const profile = ref<Payload | null>()
 
-// Reference to the chart DOM element
-const chartDom = ref<HTMLElement | null>(null)
-
-// Fetch profile and initialize chart
 onMounted(async () => {
   profile.value = await auth.fetchProfile()
-
-  if (chartDom.value) {
-    const myChart = echarts.init(chartDom.value)
-
-    const option = {
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        left: 'center'
-      },
-      series: [
-        {
-          name: 'Access From',
-          type: 'pie',
-          radius: ['40%', '70%'],
-          avoidLabelOverlap: false,
-          padAngle: 5,
-          itemStyle: {
-            borderRadius: 10
-          },
-          label: {
-            show: false,
-            position: 'center'
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: 20,
-              fontWeight: 'bold'
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: [
-            { value: 1048, name: 'หล่อ' },
-            { value: 735, name: 'Data analytics' },
-            { value: 580, name: 'Web programming' }
-          ]
-        }
-      ]
-    }
-
-    // Set the chart options
-    myChart.setOption(option)
-  }
 })
-</script>
 
+const mockSkills: SkillNode[] = [
+  {
+    id: 'softdev',
+    name: 'Software Development Skills',
+    pass: true,
+    children: [{ id: 'softdev_meth', name: 'Software Development Methodologies', pass: false }]
+  }
+]
+
+const socials = [
+  { name: '@placeholder', link: 'https://line.me/th', icon: '/socials/line.svg', alt: 'Line' },
+  {
+    name: 'Firstname Lastname',
+    link: 'https://facebook.com',
+    icon: 'socials/facebook.svg',
+    alt: 'Facebook'
+  },
+  {
+    name: 'place.holder',
+    link: 'https://instagram.com',
+    icon: 'socials/instagram.svg',
+    alt: 'Instagram'
+  },
+  {
+    name: 'Firstname Lastname',
+    link: 'https://linkedin.com',
+    icon: 'socials/linkedin.svg',
+    alt: 'Linkedin'
+  },
+  {
+    name: '@place.holder',
+    link: 'https://x.com',
+    icon: 'socials/twitter-x.svg',
+    alt: 'Twitter (X)'
+  }
+]
+</script>
 <style>
 .rounded-rectangle {
   width: 1vh; /* Adjust the width as needed */

@@ -4,7 +4,18 @@ import MainLayout from './layouts/MainLayout.vue'
 import FullLayout from './layouts/FullLayout.vue'
 import CommonLayout from './layouts/CommonLayout.vue'
 import SearchDialog from './components/SearchDialog.vue'
+import { watchEffect } from 'vue'
+import router from './router'
 const route = useRoute()
+
+watchEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get('token')
+  if (token) {
+    localStorage.setItem('token', token ?? '')
+    router.replace('/')
+  }
+})
 </script>
 
 <template>

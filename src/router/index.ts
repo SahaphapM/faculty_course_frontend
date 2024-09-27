@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/home/HomeView.vue'
 import http from '@/service/http'
+import AuthService from '@/service/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,7 +63,7 @@ const router = createRouter({
       name: 'Profile',
       component: () => import('../views/profile/ProfileView.vue'),
       meta: {
-        layout: 'CommonLayout'
+        layout: 'MainLayout'
       }
     },
     {
@@ -148,9 +149,6 @@ const router = createRouter({
     {
       path: '/manageSubject',
       name: 'manageSubject',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/subjects/SubjectView.vue'),
       meta: {
         layout: 'MainLayout',
@@ -161,15 +159,6 @@ const router = createRouter({
       path: '/AddSubject',
       name: 'AddSubject',
       component: () => import('../views/subjects/AddSubjectView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
-    },
-    {
-      path: '/student/skills',
-      name: 'StudentSkills',
-      component: () => import('../views/student/Student_Skills.vue'),
       meta: {
         layout: 'MainLayout',
         requireAuth: true
@@ -194,30 +183,14 @@ const router = createRouter({
     }
   ]
 })
-// function isLogin() {
-//   const user = localStorage.getItem('user')
-//   // const member = localStorage.getItem('member')
-//   if (user) {
-//     return true
-//   }
-//   return false
-// }
 
-// async function isAuthenticated() {
-//   try {
-//     await http.get('auth/profile')
-//     return true
-//   } catch (err) {
-//     return false
-//   }
-// }
-// router.beforeEach(async (to, from, next) => {
-//   if (to.path !== '/forbidden' && to.meta.requireAuth) {
-//     const authenticated = await isAuthenticated()
-//     if (!authenticated) {
-//       return next('/forbidden')
-//     }
-//   }
-//   next()
-// })
+router.beforeEach(async (to, from, next) => {
+  if (to.path !== '/forbidden' && to.meta.requireAuth) {
+    const authenticated = AuthService.isAuthenticated()
+    if (!authenticated) {
+      return next('/forbidden')
+    }
+  }
+  next()
+})
 export default router
