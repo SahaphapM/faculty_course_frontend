@@ -491,6 +491,7 @@ const skill = ref<skillIds[]>(
 )
 const skillselect = ref<string | null>(null)
 
+
 watch(skillselect, async (newValue) => {
   if (newValue) {
     await skillStore.fetchSkill(newValue)
