@@ -1,7 +1,5 @@
-import type { Branch } from './Branch'
-import type { Faculty } from './Faculty'
 import type { Role } from './Role'
-type User = {
+type Teacher = {
   id: string | null
   email: string
   password: string
@@ -17,5 +15,4 @@ type User = {
   branchId: string
 }
 
-export type { User }
-  
+export type { Teacher }

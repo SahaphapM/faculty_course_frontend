@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import type { Role } from '@/types/Role'
-import type { User } from '@/types/User'
+import type { Teacher } from '@/types/Teachers'
 import { computed, onMounted, ref } from 'vue'
 import UploadImage from '@/components/UploadImage.vue'
 import instance from '@/service/http'
-import { useUserStore } from '@/stores/user'
+import { useTeacherStore } from '@/stores/teacher'
 
-const userStore = useUserStore()
+const teacherStore = useTeacherStore()
 const props = defineProps<{
-  item: User | null
+  item: Teacher | null
   isUpdate: boolean
   roles: Role[]
-  method: (user: User) => Promise<void>
+  method: (teacher: Teacher) => Promise<void>
 }>()
 const emit = defineEmits(['close-dialog'])
 
-const user = ref(Object.assign({}, props.item))
+const teacher = ref(Object.assign({}, props.item))
 const genders = ['ชาย', 'หญิง']
 
 const previewUrl = ref<string | null>(null)
@@ -41,14 +41,14 @@ const imageSrc = computed(() => {
   if (imageUpdate.value && imageFile.value) {
     return URL.createObjectURL(imageFile.value)
   }
-  return getImageUrl(user.value)
+  return getImageUrl(teacher.value)
 })
 
-const saveImage = (userId: string | null, file: File | null) => {
-  if (imageUpdate.value && userId && file) {
+const saveImage = (teacherId: string | null, file: File | null) => {
+  if (imageUpdate.value && teacherId && file) {
     try {
       //Save image
-      userStore.updateImage(userId, file)
+      teacherStore.updateImage(teacherId, file)
     } catch (error) {
       //Show error
     }
@@ -56,21 +56,21 @@ const saveImage = (userId: string | null, file: File | null) => {
 }
 
 const deleteImage = () => {
-  user.value.image = 'unknown.jpg'
+  teacher.value.image = 'unknown.jpg'
   imageUpdate.value = true
 }
 
-function getImageUrl(user: User) {
+function getImageUrl(teacher: Teacher) {
   // Use the base URL from Axios instance
-  if (user.image) {
-    return `${instance.defaults.baseURL}/public/users/images/${user.image}`
+  if (teacher.image) {
+    return `${instance.defaults.baseURL}/public/teachers/images/${teacher.image}`
   } else {
-    return `${instance.defaults.baseURL}/public/users/images/unknown.jpg`
+    return `${instance.defaults.baseURL}/public/teachers/images/unknown.jpg`
   }
 }
 
 const reset = () => {
-  user.value = Object.assign({}, props.item)
+  teacher.value = Object.assign({}, props.item)
   imageUpdate.value = false
 }
 
@@ -145,7 +145,7 @@ onMounted(async () => {
           <v-col>
             <v-form ref="form" v-model="isFormValid">
               <v-text-field
-                v-model="user.id"
+                v-model="teacher.id"
                 label="รหัสประจำตัว"
                 variant="outlined"
                 rounded="lg"
@@ -153,7 +153,7 @@ onMounted(async () => {
                 :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
-                v-model="user.email"
+                v-model="teacher.email"
                 label="อีเมลล์"
                 variant="outlined"
                 rounded="lg"
@@ -162,7 +162,7 @@ onMounted(async () => {
               ></v-text-field>
               <v-text-field
                 v-if="!isUpdate"
-                v-model="user.password"
+                v-model="teacher.password"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
                 :type="showPassword ? 'text' : 'password'"
@@ -173,7 +173,7 @@ onMounted(async () => {
                 :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
-                v-model="user.firstName"
+                v-model="teacher.firstName"
                 label="ชื่อ"
                 variant="outlined"
                 rounded="lg"
@@ -181,7 +181,7 @@ onMounted(async () => {
                 :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
-                v-model="user.middleName"
+                v-model="teacher.middleName"
                 label="ชื่อกลาง"
                 variant="outlined"
                 rounded="lg"
@@ -189,7 +189,7 @@ onMounted(async () => {
                 :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
-                v-model="user.lastName"
+                v-model="teacher.lastName"
                 label="นามสกุล"
                 variant="outlined"
                 rounded="lg"
@@ -197,7 +197,7 @@ onMounted(async () => {
                 :rules="[rules.required]"
               ></v-text-field>
               <v-text-field
-                v-model="user.phone"
+                v-model="teacher.phone"
                 label="เบอร์โทรศัพท์"
                 variant="outlined"
                 rounded="lg"
@@ -210,7 +210,7 @@ onMounted(async () => {
         <v-row>
           <v-col>
             <v-select
-              v-model="user.gender"
+              v-model="teacher.gender"
               :items="genders"
               item-title="name"
               label="เพศ"
@@ -222,7 +222,7 @@ onMounted(async () => {
           </v-col>
           <v-col>
             <v-combobox
-              v-model="user.roles"
+              v-model="teacher.roles"
               variant="outlined"
               multiple
               label="ตำแหน่ง"
@@ -241,7 +241,7 @@ onMounted(async () => {
             variant="plain"
             color="error"
             >ล้าง</v-btn
-          ><v-btn @click="method(user), saveImage(user.id, imageFile)" variant="plain"
+          ><v-btn @click="method(teacher), saveImage(teacher.id, imageFile)" variant="plain"
             >บันทึก</v-btn
           ></v-row
         >

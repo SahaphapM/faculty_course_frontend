@@ -93,9 +93,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/users',
-      name: 'users',
-      component: () => import('../views/users/UserView.vue'),
+      path: '/teachers',
+      name: 'teachers',
+      component: () => import('../views/teachers/TeacherView.vue'),
 
       meta: {
         layout: 'MainLayout',
