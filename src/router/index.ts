@@ -176,15 +176,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/course',
-      name: 'Course',
-      component: () => import('../views/Adminview/course/courseView.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
-    },
-    {
       path: '/student/help',
       name: 'StudentHelp',
       component: () => import('../views/student/Student_help.vue'),
