@@ -14,12 +14,9 @@ const { t } = useLocale()
 
 const headers = computed(() => [
   { title: t('uid'), value: 'id', key: 'id', sortable: false },
+  { title: t('avatar'), value: 'avatarUrl', key: 'avatarUrl', sortable: false },
   { title: t('email'), value: 'email', key: 'email', sortable: false },
-  { title: t('first name'), value: 'firstName', key: 'firstName', sortable: false },
-  { title: t('last name'), value: 'lastName', key: 'lastName', sortable: false },
-  // { title: 'เพศ', value: 'gender' },
-  // { title: 'เบอร์โทรศัพท์', value: 'phone' },
-  { title: t('position'), value: 'roles', key: 'roles', sortable: false }
+  { title: t('roles'), value: 'roles', key: 'roles', sortable: false }
 ])
 
 const dialog = ref(false)
@@ -138,13 +135,11 @@ const updateOptions = (options: any) => {
 onMounted(async () => {
   await roleStore.getRoles()
   await fetchUsers()
-  console.log(userStore.users)
-  console.log(userStore.totalUsers)
 })
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
     <MainTable
       page-icon="mdi-account-group"
       :page-title="t('list user')"
@@ -159,9 +154,12 @@ onMounted(async () => {
       customCol="roles"
     >
       <template #roles="{ item }">
-        <v-chip>
+        <v-chip v-if="item.roles.length > 0">
           {{ item.roles.map((n: any) => n.name)[0] }}
         </v-chip>
+        <div v-else>
+          {{ t('unknown') }}
+        </div>
       </template>
     </MainTable>
   </v-container>

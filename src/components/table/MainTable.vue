@@ -19,12 +19,7 @@
           :fetch-data="fetchData"
         ></SelectByFeature></v-col
       ><v-col class="d-flex justify-end flex-grow-0">
-        <v-btn
-          v-if="btnAddAction"
-          prepend-icon="mdi-plus"
-          @click="btnAddAction"
-          size="large"
-          min-width="150"
+        <v-btn v-if="btnAddAction" prepend-icon="mdi-plus" @click="btnAddAction" min-width="150"
           >{{ t('add') }}
         </v-btn></v-col
       ></v-row
@@ -58,14 +53,16 @@
             </template>
           </tr>
         </template>
+        <!-- @vue-ignore -->
         <template v-slot:item="{ item, index, columns }">
           <tr :class="{ 'even-row': index % 2 === 0, 'odd-row': index % 2 !== 0 }">
+            <!-- @vue-ignore -->
             <td v-for="column in columns" :key="column.key">
               <v-btn
                 v-if="column.key === 'actions' && action"
                 icon="mdi-file-document-edit"
                 size="small"
-                variant="tonal"
+                variant="plain"
                 color="table-text"
                 @click="action(item)"
               ></v-btn>
@@ -90,10 +87,6 @@ import { onMounted, reactive, ref } from 'vue'
 import { useLocale } from 'vuetify'
 import SelectByFeature from '../SelectByFeature.vue'
 import SearchTextfield from './SearchTextfield.vue'
-
-const parsedColumns = (columns: any): Record<string, any> => {
-  return columns.map((column: Record<string, any>) => column)
-}
 
 const { t } = useLocale()
 

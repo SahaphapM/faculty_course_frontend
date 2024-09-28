@@ -4,7 +4,6 @@ import MainLayout from './layouts/MainLayout.vue'
 import FullLayout from './layouts/FullLayout.vue'
 import SearchDialog from './components/SearchDialog.vue'
 import { ref, watchEffect } from 'vue'
-import router from './router'
 const route = useRoute()
 const token = ref()
 
@@ -13,15 +12,6 @@ const handleToken = () => {
   token.value = urlParams.get('token')
   if (token.value) {
     localStorage.setItem('token', token.value ?? '')
-  }
-}
-
-const handleRoute = () => {
-  if (route.meta.requireAuth) {
-    if (!token.value) {
-      return router.replace('/login')
-    }
-    return router.replace('/')
   }
 }
 

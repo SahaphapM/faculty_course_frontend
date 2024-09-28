@@ -15,6 +15,7 @@ class AuthService {
   }
 
   static loginGoogle() {
+    localStorage.removeItem('token')
     window.location.href = http.defaults.baseURL + '/auth/google'
   }
 
@@ -35,12 +36,12 @@ class AuthService {
       const res = await http.get(`auth/profile`)
       console.error(res)
       if (res.status === 401) {
-        router.replace('login')
+        router.replace('/login')
         return null
       }
       return res.data
     } catch (err: AxiosError | any) {
-      if (err.status === 401) {
+      if (err.status === 401 || err.status === 403) {
         router.replace('/login')
       }
       console.error(err)

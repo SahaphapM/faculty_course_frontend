@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/login/pages/LoginView.vue'),
+      component: () => import('../views/login/LoginView.vue'),
       meta: {
         layout: 'FullLayout',
         public: true
@@ -106,14 +106,6 @@ const router = createRouter({
       path: '/student/help',
       name: 'StudentHelp',
       component: () => import('../views/student/Student_help.vue')
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/TestComponent.vue'),
-      meta: {
-        public: true
-      }
     }
   ]
 })
