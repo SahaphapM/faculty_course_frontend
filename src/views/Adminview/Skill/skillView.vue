@@ -53,6 +53,7 @@ const fetchSkill = async () => {
 
 onMounted(async () => {
   await fetchSkill()
+  skillStore.fetchSkills()
   skillStore.clearForm()
 })
 </script>

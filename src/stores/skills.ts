@@ -14,26 +14,12 @@ export const useSkillStore = defineStore('skill', () => {
     name: '',
     description: '',
     domain: '',
-    // subjects: [],
+    parent: [],
     children: [],
     techSkills: []
   }
 
   const editedSkill = ref<Skill>({ ...initialSkill })
-
-  //   async function fetchSkill(id: string): Promise<Skill> {
-  //     dataInit.value = false;
-  //     const res = await skillService.getSkill(id);
-  //     editedSkill.value = res.data;
-  //     console.log(skills.value);
-  //     console.log(editedSkill.value);
-  //     dataInit.value = true;
-  //     return res.data;
-  // }
-  // async function fetchSkills() {
-  //   const res = await skillService.getSkills()
-  //   skills.value = res.data
-  // }
 
   async function fetchSkill(id: string) {
     dataInit.value = false

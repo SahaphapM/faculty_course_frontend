@@ -9,7 +9,6 @@ const skillStore = useSkillStore()
 
 const skills = computed(() => skillStore.editedSkill)
 const children = computed(() => skillStore.skillss)
-const techSkillInput = ref<any>(null)
 const subSkillInput = ref<any>(null)
 const localVisible = ref(props.visible)
 watch(
@@ -32,24 +31,62 @@ async function saveSkill() {
   closeDialog()
 }
 
-function getAllChildrenIds(skill: any): string[] {
-  const ids = [];
-  if (skill.children) {
-    for (const child of skill.children) {
-      ids.push(child.id);
-      ids.push(...getAllChildrenIds(child)); // Recursively gather IDs of children and grandchildren
+function getDescendants(skill: any): any[] {
+  let descendants: any[] = []
+
+  function collectDescendants(currentSkill: any) {
+    if (currentSkill.children && currentSkill.children.length > 0) {
+      currentSkill.children.forEach((child: any) => {
+        descendants.push(child)
+        collectDescendants(child) // Recursively collect descendants
+      })
     }
   }
-  return ids;
+
+  collectDescendants(skill) // Start from the current skill
+  return descendants
+}
+
+function getAncestors(skill: any, allSkills: any[]): any[] {
+  let ancestors: any[] = []
+  let parentSkill = allSkills.find((s) => s.id === skill.parent)
+  
+  while (parentSkill) {
+    ancestors.push(parentSkill)
+    parentSkill = allSkills.find((s) => s.id === parentSkill.parent)
+  }
+
+  return ancestors
 }
 
 function filterAvailableSkills() {
-  // Get the ids of all children and grandchildren of the current skill
-  const excludedIds = getAllChildrenIds(skills.value);
-  excludedIds.push(skills.value.id); // Include the current skill's id to avoid self-reference
+  // Get all descendants of the current skill (Database Security and Privacy)
+  const descendants = getDescendants(skills.value)
 
-  // Filter the skills to exclude those ids
-  return children.value.filter((child: any) => !excludedIds.includes(child.id));
+  // Get all ancestors of the current skill (Database Security and Privacy)
+  const ancestors = getAncestors(skills.value, children.value)
+
+  // Find all skills that are parents of any skill in the tree
+  const parentSkillsInTree = children.value
+    .filter((s: any) => s.parent !== null)
+    .map((s: any) => s.parent)
+
+  console.log('Descendants:', descendants)
+  console.log('Ancestors:', ancestors)
+
+  return children.value.filter(
+    (child: any) =>
+      // Include only skills where parent is null
+      child.parent === null &&
+      // Exclude descendants of the current skill
+      !descendants.some((descendant: any) => descendant.id === child.id) &&
+      // Exclude ancestors of the current skill
+      !ancestors.some((ancestor: any) => ancestor.id === child.id) &&
+      // Exclude skills that are parents of any skill in the tree
+      !parentSkillsInTree.includes(child.id) &&
+      // Exclude the current skill itself
+      child.id !== skills.value.id
+  )
 }
 
 function addSubSkill() {
@@ -113,7 +150,7 @@ onMounted(async () => {
               required
             ></v-text-field
           ></v-col>
-          <v-col>
+          <v-col cols="12"> 
             <v-treeview :items="skills.children" item-value="id">
               <template v-slot:prepend="{ item }">
                 <v-row>
@@ -134,7 +171,7 @@ onMounted(async () => {
               hide-details
               label="Sub Skill"
               item-title="name"
-              :items="filterAvailableSkills()" 
+              :items="filterAvailableSkills()"
             ></v-combobox>
             <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
           </v-col>
