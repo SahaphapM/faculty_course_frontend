@@ -19,13 +19,6 @@ const pageParams = ref<PageParams>({
   columnName: ''
 })
 
-const headers = computed(() => [
-  { title: 'ID', key: 'id' },
-  { title: 'Name', key: 'name' },
-  { title: 'Description', key: 'description' },
-  { title: 'Level', key: 'level' }
-])
-
 const skills = computed(() => skillStore.skills || [])
 
 const gotoDetail = async (id: any) => {
@@ -60,6 +53,7 @@ const fetchSkill = async () => {
 
 onMounted(async () => {
   await fetchSkill()
+  skillStore.fetchSkills()
   skillStore.clearForm()
 })
 </script>

@@ -5,7 +5,7 @@ type Skill = {
   name: string
   description: string
   domain: string
-  // subjects: Subject[]
+  parent?: Skill[]
   children: Skill[]
   techSkills: Skill[]
 }
