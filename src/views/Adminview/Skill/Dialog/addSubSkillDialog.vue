@@ -15,78 +15,25 @@ watch(
   () => props.visible,
   (newVal) => {
     localVisible.value = newVal
+    skillStore.fetchSkill(props.item.id)
   }
 )
 
-const closeDialog = async () => {
+function closeDialog() {
+  skillStore.clearForm()
   emit('close-dialog')
 }
 
 async function saveSkill() {
   console.log(skills.value.id, skills.value.children)
+
   const childrens = skills.value.children.map((child: any) => ({ id: child.id }))
+
   console.log(childrens)
+
   await skillService.addSubSkill(skills.value.id, childrens as [])
 
   closeDialog()
-}
-
-function getDescendants(skill: any): any[] {
-  let descendants: any[] = []
-
-  function collectDescendants(currentSkill: any) {
-    if (currentSkill.children && currentSkill.children.length > 0) {
-      currentSkill.children.forEach((child: any) => {
-        descendants.push(child)
-        collectDescendants(child) // Recursively collect descendants
-      })
-    }
-  }
-
-  collectDescendants(skill) // Start from the current skill
-  return descendants
-}
-
-function getAncestors(skill: any, allSkills: any[]): any[] {
-  let ancestors: any[] = []
-  let parentSkill = allSkills.find((s) => s.id === skill.parent)
-  
-  while (parentSkill) {
-    ancestors.push(parentSkill)
-    parentSkill = allSkills.find((s) => s.id === parentSkill.parent)
-  }
-
-  return ancestors
-}
-
-function filterAvailableSkills() {
-  // Get all descendants of the current skill (Database Security and Privacy)
-  const descendants = getDescendants(skills.value)
-
-  // Get all ancestors of the current skill (Database Security and Privacy)
-  const ancestors = getAncestors(skills.value, children.value)
-
-  // Find all skills that are parents of any skill in the tree
-  const parentSkillsInTree = children.value
-    .filter((s: any) => s.parent !== null)
-    .map((s: any) => s.parent)
-
-  console.log('Descendants:', descendants)
-  console.log('Ancestors:', ancestors)
-
-  return children.value.filter(
-    (child: any) =>
-      // Include only skills where parent is null
-      child.parent === null &&
-      // Exclude descendants of the current skill
-      !descendants.some((descendant: any) => descendant.id === child.id) &&
-      // Exclude ancestors of the current skill
-      !ancestors.some((ancestor: any) => ancestor.id === child.id) &&
-      // Exclude skills that are parents of any skill in the tree
-      !parentSkillsInTree.includes(child.id) &&
-      // Exclude the current skill itself
-      child.id !== skills.value.id
-  )
 }
 
 function addSubSkill() {
@@ -106,8 +53,37 @@ function removeSubSkill(subSkillId: string) {
   skillService.removeSubSkill(skills.value.id, subSkillId)
 }
 
+// Function to collect all parent skills of the current skill recursively
+function getParentChain(skillId: string, skillList: any[]): string[] {
+  const skill = skillList.find((s: any) => s.id === skillId)
+  if (!skill || !skill.parent) {
+    return []
+  }
+
+  // Recursively collect the parent and its ancestors
+  return [skill.parent, ...getParentChain(skill.parent, skillList)]
+}
+
+// Function to filter skills, excluding those in the parent chain
+function filterSkills(): any[] {
+  if (!skills.value || !skills.value.id) {
+    return []
+  }
+
+  // Get the parent chain for the current skill
+  const parentChain = getParentChain(skills.value.id, children.value)
+
+  // Filter out skills that are in the parent chain
+  return children.value.filter(
+    (skill: any) => !parentChain.includes(skill.id) && skill.id !== skills.value.id
+  )
+}
+
 onMounted(async () => {
   await skillStore.fetchSkills()
+  console.log(props.item)
+  // skillStore.fetchSkill(props.item)
+  skillStore.clearForm()
 })
 </script>
 
@@ -150,7 +126,7 @@ onMounted(async () => {
               required
             ></v-text-field
           ></v-col>
-          <v-col cols="12"> 
+          <v-col cols="12">
             <v-treeview :items="skills.children" item-value="id">
               <template v-slot:prepend="{ item }">
                 <v-row>
@@ -171,7 +147,7 @@ onMounted(async () => {
               hide-details
               label="Sub Skill"
               item-title="name"
-              :items="filterAvailableSkills()"
+              :items="filterSkills()"
             ></v-combobox>
             <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
           </v-col>

@@ -1,80 +1,60 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, watch } from 'vue'
 import { useSkillStore } from '@/stores/skills'
-import skillService from '@/service/skills'
-import skillDetailDialog from './skillDetailDialog.vue'
-const route = useRoute()
-const router = useRouter()
+
+const props = defineProps<{ visible: boolean; item: any | null }>()
+const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
-const children = computed(() => skillStore.skillss)
-const dialogVisible = ref(false)
-const selectedItem = ref<any | null>(null)
+const localVisible = ref(props.visible)
 const skills = computed(() => skillStore.editedSkill)
-const subSkillInput = ref<any>(null)
-const subSkillRemove = ref<any>(null)
-async function fetchSkillDetail(id: string) {
-  try {
-    await skillStore.fetchSkill(id)
-  } catch (error) {
-    console.error('Failed to fetch skill details:', error)
+
+watch(
+  () => props.visible,
+  (newVal) => {
+    localVisible.value = newVal
   }
+)
+
+function closeDialog() {
+  skillStore.clearForm()
+  emit('close-dialog')
 }
 
 async function saveSkill() {
-  console.log(skills.value.children)
-  console.log(skills.value.techSkills)
   let skill = { ...skills.value }
-  if (skills.value.id != '') {
-    skillStore.updateSkill(skill)
-  } else {
-    const payload: { name: string; description: string; domain: string } = {
-      name: skill.name,
-      description: skill.description,
-      domain: skill.domain
-    }
-    console.log(payload)
-    // skillService.addTechSkill(skills.value.id, skills.value.techSkills)
-    await skillStore.addSkill(payload)
+  const payload: { name: string; description: string; domain: string } = {
+    name: skill.name,
+    description: skill.description,
+    domain: skill.domain
   }
-  router.push({ name: 'SkillView'})
+  console.log(payload)
+  await skillStore.addSkill(payload)
+  closeDialog()
 }
-
-const closeDialog = async () => {
-  dialogVisible.value = false
-}
-
-onMounted(() => {
-  if (route.params.id !== 'addNew') {
-    console.log('update')
-    fetchSkillDetail(route.params.id as string)
-  } else {
-    console.log('add')
-    skillStore.clearForm()
-  }
-})
 </script>
 
 <template>
-  <v-container>
-    <v-breadcrumbs :items="['หน้าหลัก', 'หลักสูตร', 'สกิล']">
-      <template v-slot:divider>
-        <v-icon icon="mdi-chevron-right"></v-icon>
-      </template>
-    </v-breadcrumbs>
-
-    <p style="font-size: 30px">รายละเอียดสกิล</p>
-
-    <v-card
-      class="elevation-5"
-      rounded="lg"
-      max-width="1000px"
-      width="100%"
-      height="100%"
-      style="min-width: 200px"
-    >
+  <v-dialog
+    v-model="localVisible"
+    max-width="1000px"
+    persistent
+    style="height: 100vh; overflow-y: auto"
+  >
+    <v-card class="elevation-5" rounded="lg" width="100%" height="100%" style="min-width: 200px">
       <v-container style="width: 100%; height: 100%">
+        <div style="display: flex; justify-content: flex-end">
+          <v-btn
+            color="primary"
+            variant="plain"
+            @click="closeDialog"
+            style="height: 40px; width: 40px"
+            class="circular-btn"
+            icon="mdi-close"
+            rounded="lg"
+          />
+        </div>
         <v-row>
+          <v-col cols="12"><p style="font-size: 24px">Detail</p></v-col>
           <v-col cols="12">
             <v-text-field
               v-model="skills.name"
@@ -135,8 +115,7 @@ onMounted(() => {
         </v-row>
       </v-container>
     </v-card>
-  </v-container>
-  <skillDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
+  </v-dialog>
 </template>
 
 <style scoped>

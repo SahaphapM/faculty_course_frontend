@@ -120,23 +120,16 @@ const router = createRouter({
         requireAuth: true
       }
     },
-    {
-      path: '/SkillView/Detail/:id',
-      name: 'SkillView/SkillDetail',
-      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
-      meta: {
-        layout: 'MainLayout',
-        requireAuth: true
-      }
-    },
     // {
-    //   path: '/SkillView/Details/:id',
-    //   name: 'SkillView/SkillDetails',
-    //   component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
+    //   path: '/SkillView/Detail/:id',
+    //   name: 'SkillView/SkillDetail',
+    //   component: () => import('../views/Adminview/Skill/Detail/skillDetailDialog.vue'),
     //   meta: {
-    //     topic: 'MainLayout'
+    //     layout: 'MainLayout',
+    //     requireAuth: true
     //   }
     // },
+
     {
       path: '/MainIFAdmin',
       name: 'MainIFAdmin',
