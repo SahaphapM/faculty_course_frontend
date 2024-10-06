@@ -2,11 +2,22 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import skillService from '@/service/skills'
 import { useSkillStore } from '@/stores/skills'
+import type { Skill } from '@/types/Skills'
 
 const props = defineProps<{ visible: boolean; item: any | null }>()
 const emit = defineEmits(['close-dialog'])
 const skillStore = useSkillStore()
+const initialSkill: Skill = {
+  id: '',
+  name: '',
+  description: '',
+  domain: '',
+  parent: [],
+  children: [],
+  techSkills: []
+}
 
+const inputSkill = ref<Skill>({ ...initialSkill })
 const skills = computed(() => skillStore.editedSkill)
 const children = computed(() => skillStore.skillss)
 const subSkillInput = ref<any>(null)
@@ -27,11 +38,17 @@ function closeDialog() {
 async function saveSkill() {
   console.log(skills.value.id, skills.value.children)
 
-  const childrens = skills.value.children.map((child: any) => ({ id: child.id }))
+  // const childrens = skills.value.children.map((child: any) => ({ id: child.id }))
+  // const childrens = skills.value.children.map((child: any) => ({ inputSkill }))
+  let skill = { ...inputSkill.value }
+  const payload: { name: string; description: string; domain: string } = {
+    name: skill.name,
+    description: skill.description,
+    domain: skill.domain
+  }
+  // console.log(childrens)
 
-  console.log(childrens)
-
-  await skillService.addSubSkill(skills.value.id, childrens as [])
+  await skillService.addSubSkill(skills.value.id, payload)
 
   closeDialog()
 }
@@ -53,27 +70,22 @@ function removeSubSkill(subSkillId: string) {
   skillService.removeSubSkill(skills.value.id, subSkillId)
 }
 
-// Function to collect all parent skills of the current skill recursively
 function getParentChain(skillId: string, skillList: any[]): string[] {
   const skill = skillList.find((s: any) => s.id === skillId)
   if (!skill || !skill.parent) {
     return []
   }
 
-  // Recursively collect the parent and its ancestors
   return [skill.parent, ...getParentChain(skill.parent, skillList)]
 }
 
-// Function to filter skills, excluding those in the parent chain
 function filterSkills(): any[] {
   if (!skills.value || !skills.value.id) {
     return []
   }
 
-  // Get the parent chain for the current skill
   const parentChain = getParentChain(skills.value.id, children.value)
 
-  // Filter out skills that are in the parent chain
   return children.value.filter(
     (skill: any) => !parentChain.includes(skill.id) && skill.id !== skills.value.id
   )
@@ -82,7 +94,6 @@ function filterSkills(): any[] {
 onMounted(async () => {
   await skillStore.fetchSkills()
   console.log(props.item)
-  // skillStore.fetchSkill(props.item)
   skillStore.clearForm()
 })
 </script>
@@ -116,17 +127,36 @@ onMounted(async () => {
         </div>
 
         <v-row>
-          <v-col cols="12"><p style="font-size: 24px">children</p></v-col>
-          <v-col>
+          <v-col cols="12"
+            ><p style="font-size: 24px">{{ skills.name }}</p></v-col
+          >
+          <v-col cols="12">
             <v-text-field
-              v-model="skills.name"
+              v-model="inputSkill.name"
               :counter="10"
               label="Name"
               hide-details
               required
-            ></v-text-field
-          ></v-col>
+            ></v-text-field>
+          </v-col>
           <v-col cols="12">
+            <v-text-field
+              v-model="inputSkill.description"
+              :counter="10"
+              label="Description"
+              hide-details
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-combobox
+              v-model="inputSkill.domain"
+              hide-details
+              label="Skill Type"
+              :items="['ความรู้', 'คุณลักษณะบุคคล', 'จริยธรรม', 'ทักษะ']"
+            ></v-combobox>
+          </v-col>
+          <!-- <v-col cols="12">
             <v-treeview :items="skills.children" item-value="id">
               <template v-slot:prepend="{ item }">
                 <v-row>
@@ -150,7 +180,7 @@ onMounted(async () => {
               :items="filterSkills()"
             ></v-combobox>
             <v-btn @click="addSubSkill" class="mt-4">Add Sub Skill</v-btn>
-          </v-col>
+          </v-col> -->
         </v-row>
 
         <v-row>
