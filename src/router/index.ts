@@ -39,12 +39,21 @@ const router = createRouter({
     {
       path: '/AddIFAAIView',
       name: 'AddIFAAIView',
-      component: () => import('../views/IFCurriculum/admin/AddIFAAI.vue')
+      component: () => import('../views/Adminview/admin/AddIFAAI.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     },
     {
-      path: '/users',
-      name: 'users',
-      component: () => import('../views/users/UserView.vue')
+      path: '/teachers',
+      name: 'teachers',
+      component: () => import('../views/teachers/TeacherView.vue'),
+
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     },
     {
       path: '/ClosView',
@@ -56,23 +65,24 @@ const router = createRouter({
       name: 'SkillView',
       component: () => import('../views/Adminview/Skill/skillView.vue')
     },
-    {
-      path: '/SkillView/Detail/:id',
-      name: 'SkillView/SkillDetail',
-      component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue')
-    },
     // {
-    //   path: '/SkillView/Details/:id',
-    //   name: 'SkillView/SkillDetails',
-    //   component: () => import('../views/Adminview/Skill/Detail/skillDetail.vue'),
+    //   path: '/SkillView/Detail/:id',
+    //   name: 'SkillView/SkillDetail',
+    //   component: () => import('../views/Adminview/Skill/Detail/skillDetailDialog.vue'),
     //   meta: {
-    //     topic: 'MainLayout'
+    //     layout: 'MainLayout',
+    //     requireAuth: true
     //   }
     // },
+
     {
       path: '/MainIFAdmin',
       name: 'MainIFAdmin',
-      component: () => import('../views/IFCurriculum/admin/MainAdmin.vue')
+      component: () => import('../views/Adminview/admin/MainAdmin.vue'),
+      meta: {
+        layout: 'MainLayout',
+        requireAuth: true
+      }
     },
     {
       path: '/manageSubject',

@@ -18,8 +18,6 @@ const navMenu = [
   { title: 'subject', to: '/manageSubject' },
   { title: 'skill', to: '/skillView' },
   { title: 'user', to: '/users' },
-  { title: 'students', to: '/students' },
-  { title: 'teachers', to: '/teachers' },
-  { title: 'courses', to: '/courses' }
+  { title: 'teacher', to: '/teachers' }
 ]
 </script>

@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import http from '@/service/http'
 import { useCurriculumStore } from '@/stores/curriculums'
 import type { Curriculum } from '@/types/Curriculums'
-import { useUserStore } from '@/stores/user'
+import { useTeacherStore } from '@/stores/teacher'
 import type { Branch } from '@/types/Branch'
 import { useBranchStore } from '@/stores/branch'
 import type {} from '@/types/Faculty'
@@ -13,13 +13,13 @@ import { usePloStore } from '@/stores/plos'
 const curriculumStore = useCurriculumStore()
 const branchStore = useBranchStore()
 const PloStore = usePloStore()
-const userStore = useUserStore()
+const teacherStore = useTeacherStore()
 const curriculums = computed(() => curriculumStore.curriculums)
 const overlay = ref(false)
 const reveal = ref(false)
 const reveal2 = ref(true)
 const reveal3 = ref(false)
-const users = computed(() => userStore.users)
+const teachers = computed(() => teacherStore.teachers)
 const id = ref<string>('')
 const thaiName = ref<string>('')
 const engName = ref<string>('')
@@ -43,7 +43,7 @@ const hover = ref<boolean>(false)
 const tab = ref<string>('option-1')
 const forms = ref([{ label: 'Plo1', description: '', select5: null }])
 
-type userIds = { id: string }
+type teacherIds = { id: string }
 
 onMounted(async () => {
   await curriculumStore.fetchCurriculums()
@@ -72,7 +72,7 @@ const removeForm = () => {
 onMounted(async () => {
   await branchStore.getBranches()
   curriculumStore.fetchCurriculums()
-  await userStore.fetchUsers()
+  await teacherStore.fetchTeachers()
   const coordinators = curriculumStore.currentCurriculum?.coordinators
 })
 
@@ -231,7 +231,7 @@ const getCoordinatorName = (id: string | null) => {
   const coordinator = currentCurriculum.coordinators.find((coord) => coord.id === id)
   return coordinator ? coordinator.firstName : 'Unknown'
 }
-const coordinator = ref<userIds[]>([])
+const coordinator = ref<teacherIds[]>([])
 async function saveC() {
   console.log(coordinator.value, 'from vue') // Log the data to be sent
 
@@ -267,7 +267,6 @@ async function addc() {
 
   const userId = select3.value.substring(0, select3.value.indexOf(' '))
 
-  console.log(userStore.fetchUser(userId.toString))
   if (userId) {
     if (!coordinator.value) {
       coordinator.value = []
@@ -282,21 +281,23 @@ async function addc() {
   }
 }
 
-const userOptions = computed(() => {
-  return users.value.map((user) => {
-    const rolesString = Array.isArray(user.roles)
-      ? user.roles.map((role) => role.name).join(', ')
+const teacherOptions = computed(() => {
+  return teachers.value.map((teacher) => {
+    const rolesString = Array.isArray(teacher.roles)
+      ? teacher.roles.map((role) => role.name).join(', ')
       : 'No Roles'
-    return `${user.id} ${user.firstName} ${user.lastName}`
+    return `${teacher.id} ${teacher.firstName} ${teacher.lastName}`
   })
 })
 
-const getUserInfoById = (id: any) => {
-  // Find the string in userOptions that starts with the specified id
-  const userString = userOptions.value.find((userString) => userString.startsWith(`${id} `))
+const getTeacherInfoById = (id: any) => {
+  // Find the string in teacherOptions that starts with the specified id
+  const teacherString = teacherOptions.value.find((teacherString) =>
+    teacherString.startsWith(`${id} `)
+  )
 
-  // If a matching string is found, return it; otherwise, return 'User Not Found'
-  return userString ? userString : 'User Not Found'
+  // If a matching string is found, return it; otherwise, return 'Teacher Not Found'
+  return teacherString ? teacherString : 'Teacher Not Found'
 }
 </script>
 <template>
@@ -463,7 +464,7 @@ const getUserInfoById = (id: any) => {
                         <p style="font-size: 1.5vh">เลือก</p>
                         <v-combobox
                           v-model="select3"
-                          :items="userOptions"
+                          :items="teacherOptions"
                           variant="outlined"
                           rounded="lg"
                         ></v-combobox>
@@ -481,7 +482,7 @@ const getUserInfoById = (id: any) => {
                             <v-col>
                               <v-icon color="primary">mdi-numeric-{{ index + 1 }}-circle</v-icon
                               >&nbsp;
-                              {{ getUserInfoById(curriculum.id) }}
+                              {{ getTeacherInfoById(curriculum.id) }}
                             </v-col>
                             <v-col class="d-flex justify-end" cols="auto">
                               <v-btn
@@ -531,9 +532,7 @@ const getUserInfoById = (id: any) => {
                   </div>
                   <div>
                     <v-form ref="form" class="form-container">
-
                       <v-sheet width="90%" min-height="20vh" max-height="70vh" height="100%">
-
                         <p style="font-size: 3vh">PLO</p>
                         <v-card
                           style="border-color: #bdbdbd"
@@ -543,7 +542,6 @@ const getUserInfoById = (id: any) => {
                           :key="curriculum.id"
                           class="pa-3 mt-3 bg-blue-grey-lighten-5"
                         >
-
                           <v-icon color="primary" class="mb-1"
                             >mdi-numeric-{{ index + 1 }}-circle</v-icon
                           >&nbsp;

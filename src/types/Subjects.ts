@@ -1,18 +1,7 @@
-// type Subject = {
-//   id: string
-//   thaiName: string
-//   engName: string
-//   description: string
-//   credit: number
-//   type: string
-//   studyTime: string
-//   descriptionEng: string
-// }
-// export type { Subject }
+import type { Curriculum } from './Curriculums'
+import type { Skill } from './Skills'
 
-import type { SkillDetail } from './SkillDetail'
-
-export interface Subject {
+type Subject = {
   id: string
   thaiName: string
   engName: string
@@ -20,5 +9,6 @@ export interface Subject {
   credit: number
   type: string
   studyTime: string
-  skillDetails: SkillDetail[]
+  descriptionEng: string
 }
+export type { Subject }

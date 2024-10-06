@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import skillDetailDialog from './Detail/skillDetailDialog.vue'
+import skillDetailDialog from './Dialog/addSubSkillDialog.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useSkillStore } from '@/stores/skills'
 import type { PageParams } from '@/types/PageParams'

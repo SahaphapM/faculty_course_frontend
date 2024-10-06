@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import skillDetailDialog from './Detail/skillDetailDialog.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useSkillStore } from '@/stores/skills'
+import AddSkillDialog from './Dialog/addSkillDialog.vue'
+import AddSubSkillDialog from './Dialog/addSubSkillDialog.vue'
+import SkillDetailDialog from './Dialog/skillDetailDialog.vue'
 import type { PageParams } from '@/types/PageParams'
-import router from '@/router'
 
 const skillStore = useSkillStore()
 const loading = ref(false)
-const dialogVisible = ref(false)
+const dialogAddVisible = ref(false)
+const dialogAddSubVisible = ref(false)
+const dialogDetailVisible = ref(false)
 const selectedItem = ref<any | null>(null)
 const pageParams = ref<PageParams>({
   page: 1,
@@ -19,49 +22,54 @@ const pageParams = ref<PageParams>({
   columnName: ''
 })
 
-const headers = computed(() => [
-  { title: 'ID', key: 'id' },
-  { title: 'Name', key: 'name' },
-  { title: 'Description', key: 'description' },
-  { title: 'Level', key: 'level' }
-])
-
 const skills = computed(() => skillStore.skills || [])
 
-const gotoDetail = async (id: any) => {
-  router.push({ name: 'SkillView/SkillDetail', params: { id } })
-}
-const showDialog = async (id: any) => {
-  skillStore.fetchSkill(id)
-  dialogVisible.value = true
-}
-const closeDialog = async () => {
-  await fetchSkill()
-  dialogVisible.value = false
+const showDialogAdd = async () => {
+  dialogAddVisible.value = true
 }
 
-const updateOptions = (options: any) => {
-  pageParams.value.page = options.page
-  pageParams.value.limit = options.itemsPerPage
-  fetchSkill()
+const closeDialogAdd = () => {
+  dialogAddVisible.value = false
 }
 
-function removeSubSkill(subSkillId: string) {}
+const showDialogAddSub = async (item: any) => {
+  selectedItem.value = item
+  dialogAddSubVisible.value = true
+}
+
+const closeDialogAddSub = () => {
+  dialogAddSubVisible.value = false
+}
+
+const showDialogDetail = async (item: any) => {
+  selectedItem.value = item
+  dialogDetailVisible.value = true
+}
+
+const closeDialogDetail = () => {
+  dialogDetailVisible.value = false
+}
+
 const fetchSkill = async () => {
   loading.value = true
+  skillStore.clearForm()
   try {
     await skillStore.fetchSkillsPage(pageParams.value)
   } catch (error) {
-    console.error('Error fetching curriculum:', error)
+    console.error('Error fetching skills:', error)
   } finally {
     loading.value = false
   }
 }
+watch(
+  [() => dialogAddVisible.value, () => dialogAddSubVisible.value, () => dialogDetailVisible.value],
+  () => {
+    fetchSkill()
+  }
+);
 
-onMounted(async () => {
-  await fetchSkill()
-  skillStore.clearForm()
-})
+
+onMounted(fetchSkill)
 </script>
 
 <template>
@@ -90,7 +98,7 @@ onMounted(async () => {
         <v-btn
           rounded="lg"
           style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => gotoDetail('addNew')"
+          @click="() => showDialogAdd()"
         >
           <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
         ></v-col
@@ -101,49 +109,55 @@ onMounted(async () => {
       <v-col cols="12">
         <v-treeview :items="skills" item-value="id">
           <template v-slot:prepend="{ item }">
-            <v-row>
-              <v-col style="margin-top: 12px">{{ item.name }}</v-col>
-              <v-col cols="auto">
-                <v-btn icon @click.stop="showDialog(item.id)">
+            <tr>
+              <td style="padding-right: 50px">{{ item.name }}</td>
+              <td>
+                <v-btn
+                  icon
+                  @click.stop="showDialogAddSub(item)"
+                  variant="text"
+                  rounded="lg"
+                  style="width: px"
+                >
                   <v-icon>mdi-plus-thick</v-icon>
                 </v-btn>
-                <v-btn icon
-                  ><v-icon primary small @click="gotoDetail(item.id)"
-                    >mdi-file-document-edit-outline</v-icon
-                  >
+              </td>
+              <td>
+                <v-btn
+                  icon
+                  @click.stop="showDialogDetail(item)"
+                  variant="text"
+                  rounded="lg"
+                  style="width: px"
+                >
+                  <v-icon>mdi-file-document-edit-outline</v-icon>
                 </v-btn>
-                <v-btn icon @click.stop="removeSubSkill(item.id)">
+              </td>
+              <td>
+                <v-btn icon variant="text" rounded="lg" style="width: px">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
-              </v-col>
-            </v-row>
+              </td>
+            </tr>
           </template>
         </v-treeview>
       </v-col>
     </v-card>
+
+    <AddSubSkillDialog
+      :visible="dialogAddSubVisible"
+      :item="selectedItem"
+      @close-dialog="closeDialogAddSub"
+    />
+    <SkillDetailDialog
+      :visible="dialogDetailVisible"
+      :item="selectedItem"
+      @close-dialog="closeDialogDetail"
+    />
+    <addSkillDialog
+      :visible="dialogAddVisible"
+      :item="null"
+      @close-dialog="closeDialogAdd"
+    />
   </v-container>
-  <skillDetailDialog :visible="dialogVisible" :item="selectedItem" @close-dialog="closeDialog()" />
 </template>
-
-<style>
-.details-text {
-  margin-left: 10px; /* Adjust the spacing between the div and p as needed */
-  font-weight: bold;
-  font-size: large;
-}
-
-.custom-header {
-  background-color: #2d487e; /* Blue header color */
-  color: #ffffff;
-}
-.even-row {
-  background-color: #f9f9f9;
-  color: black;
-  text-align: left;
-}
-.odd-row {
-  background-color: #ffffff;
-  color: black;
-  text-align: left;
-}
-</style>

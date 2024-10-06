@@ -64,8 +64,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     await curriculumService.updateCurriculum(curriculum)
   }
 
-  async function addCoordinatorToCurriculum(curriculumId: string, user: { id: string }[]) {
-    await curriculumService.addCoordinator(curriculumId, user)
+  async function addCoordinatorToCurriculum(curriculumId: string, teacher: { id: string }[]) {
+    await curriculumService.addCoordinator(curriculumId, teacher)
   }
 
   async function addSubjectToCurriculum(curriculumId: string, subjects: { id: string }[]) {
@@ -73,7 +73,8 @@ export const useCurriculumStore = defineStore('curriculum', () => {
   }
 
   async function addPlosToCurriculum(curriculumId: string, ploId: string) {
-    await curriculumService.addCoordinator(curriculumId, [{ id: ploId }])
+    // await curriculumService.addCoordinator(curriculumId, [{ id: ploId }])
+    console.log('Why it using addCoordinator api for PLO?', ploId) // For debugging
   }
 
   async function deleteCurriculum(id: string) {
@@ -102,6 +103,5 @@ export const useCurriculumStore = defineStore('curriculum', () => {
     setCurrentCurriculum,
     addSubjectToCurriculum,
     addPlosToCurriculum
-
   }
 })
