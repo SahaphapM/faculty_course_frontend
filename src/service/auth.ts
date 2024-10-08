@@ -1,6 +1,6 @@
 import type { Payload } from '@/types/Payload'
 import http from './http'
-import type { AxiosResponse } from 'axios'
+import type { AxiosError, AxiosResponse } from 'axios'
 import router from '@/router'
 
 class AuthService {
@@ -10,11 +10,12 @@ class AuthService {
     return res.data
   }
 
-  static isAuthenticated(): boolean {
+  static async isAuthenticated(): Promise<boolean> {
     return !!localStorage.getItem('token')
   }
 
   static loginGoogle() {
+    localStorage.removeItem('token')
     window.location.href = http.defaults.baseURL + '/auth/google'
   }
 
@@ -22,9 +23,10 @@ class AuthService {
     try {
       const res = await http.post(`/auth/logout`, { withCredentials: true })
       localStorage.removeItem('token')
+      window.location.reload()
       return res.data
     } catch (error) {
-      console.error('Logout failed', error)
+      console.error(error)
       throw error
     }
   }
@@ -32,8 +34,16 @@ class AuthService {
   static async profile(): Promise<Payload | null> {
     try {
       const res = await http.get(`auth/profile`)
+      console.error(res)
+      if (res.status === 401) {
+        router.replace('/login')
+        return null
+      }
       return res.data
-    } catch (err) {
+    } catch (err: AxiosError | any) {
+      if (err.status === 401 || err.status === 403) {
+        router.replace('/login')
+      }
       console.error(err)
       return null
     }

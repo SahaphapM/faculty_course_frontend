@@ -4,12 +4,6 @@ interface Menu {
   title: string
   to: string
 }
-export const appBarMenu: Menu[] = [
-  { title: 'home', to: '/' },
-  { title: 'news', to: '/news' },
-  { title: 'data center', to: '/dataCenter' },
-  { title: 'contact', to: '/contacts' }
-]
 
 export const adminMenu: Menu[] = [
   { title: 'curriculums management', to: '/MainAdmin' },
@@ -20,9 +14,4 @@ export const adminMenu: Menu[] = [
 
 export const allPage = () => {
   return router.getRoutes().map((n) => ({ title: n.name?.toString(), to: n.path }))
-}
-
-export function getAllAppMenu() {
-  // return appBarMenu.concat(adminMenu)
-  return allPage()
 }

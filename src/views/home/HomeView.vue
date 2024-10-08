@@ -1,27 +1,36 @@
-<script setup lang="ts">
-import BasicCard from '@/components/BasicCard.vue'
-import { listFaculties } from '@/models/faculties'
-</script>
-
 <template>
-  <div>
-    <v-carousel show-arrows="hover" cycle continuous height="240">
-      <v-carousel-item
-        v-for="n in 3"
-        :key="n"
-        :src="`https://picsum.photos/seed/${n}/1280/720`"
-        cover
-      ></v-carousel-item>
-    </v-carousel>
-    <v-row class="mt-5">
-      <v-col cols="6" md="3" v-for="(data, index) in listFaculties" :key="data.eng">
-        <BasicCard
-          :title="data.thai"
-          :subtitle="data.eng"
-          text="lorem"
-          :img-path="`https://picsum.photos/seed/${index}/280/120`"
-        />
+  <v-container fluid>
+    <v-row>
+      <v-col cols="12" sm="8">
+        <v-card>
+          <v-card-title> Tour Guide 🚀 </v-card-title>
+          <v-card-text>
+            <v-stepper hide-actions alt-labels flat>
+              <v-stepper-header>
+                <v-stepper-item title="1" value="1"></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item title="2" value="2"></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item title="3" value="3"></v-stepper-item>
+              </v-stepper-header>
+            </v-stepper>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card>
+          <v-card-title> Develop Team 🧑‍💻</v-card-title>
+          <v-card-text>
+            <v-list-item></v-list-item>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
+
+<script setup lang="ts"></script>

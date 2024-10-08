@@ -7,7 +7,6 @@ import { useAuthStore } from '@/stores/auth'
 import { useDrawerStore } from '@/stores/drawer'
 import { appVersion, isSmallScreen } from '@/utils/screenSize'
 import type { Payload } from '@/types/Payload'
-import router from '@/router'
 import AuthService from '@/service/auth'
 
 const { t } = useLocale()
@@ -94,17 +93,6 @@ onMounted(async () => {
                 hide-details
               >
               </v-text-field>
-            </v-col>
-            <v-col>
-              <v-btn
-                prepend-icon="mdi-cog"
-                variant="outlined"
-                color="buu-gold"
-                @click="() => router.push('/MainIFAdmin')"
-                min-width="125"
-                height="40"
-                >{{ t('manage') }}</v-btn
-              >
             </v-col>
             <v-col>
               <LanguageBtns />

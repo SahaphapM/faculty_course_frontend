@@ -1,5 +1,6 @@
 // import * as components from 'vuetify/components'
 // import * as directives from 'vuetify/directives'
+// import '@/styles/main.scss'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { md2 } from 'vuetify/blueprints'

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getAllAppMenu } from '@/models/navigation'
+import { allPage } from '@/models/navigation'
 import router from '@/router'
 import { useSearchStore } from '@/stores/search'
 import { ref, computed, onUnmounted } from 'vue'
@@ -49,7 +49,7 @@ const { t } = useLocale()
 const store = useSearchStore()
 const searchText = ref('')
 
-const items = getAllAppMenu()
+const items = allPage()
 
 const handleSelect = () => {
   const path = filteredItems.value[0].to

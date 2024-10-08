@@ -27,7 +27,6 @@ watch(
     append-inner-icon="mdi-magnify"
     v-model="search"
     rounded="lg"
-    style="height: 83px; min-width: 250px"
     @click:append-inner="fetchData(search)"
     @keydown.enter="fetchData(search)"
   ></v-text-field>
