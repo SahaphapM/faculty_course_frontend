@@ -4,6 +4,7 @@ import { useSkillStore } from '@/stores/skills'
 import AddSkillDialog from './Dialog/addSkillDialog.vue'
 import AddSubSkillDialog from './Dialog/addSubSkillDialog.vue'
 import SkillDetailDialog from './Dialog/skillDetailDialog.vue'
+import ConfirmDialog from './Dialog/ConfirmDialog.vue' 
 import type { PageParams } from '@/types/PageParams'
 
 const skillStore = useSkillStore()
@@ -11,6 +12,7 @@ const loading = ref(false)
 const dialogAddVisible = ref(false)
 const dialogAddSubVisible = ref(false)
 const dialogDetailVisible = ref(false)
+const dialogConfirmVisible = ref(false)
 const selectedItem = ref<any | null>(null)
 const pageParams = ref<PageParams>({
   page: 1,
@@ -49,6 +51,16 @@ const showDialogDetail = async (item: any) => {
 const closeDialogDetail = () => {
   dialogDetailVisible.value = false
 }
+const confirmDeleteSkill = async (item: any) => {
+  selectedItem.value = item
+  dialogConfirmVisible.value = true
+}
+const deleteSkillConfirmed = async () => {
+  if (selectedItem.value) {
+    await skillStore.deleteSkill(selectedItem.value.id)
+    fetchSkill()
+  }
+}
 
 const fetchSkill = async () => {
   loading.value = true
@@ -66,8 +78,7 @@ watch(
   () => {
     fetchSkill()
   }
-);
-
+)
 
 onMounted(fetchSkill)
 </script>
@@ -89,7 +100,8 @@ onMounted(fetchSkill)
           v-model="pageParams.search"
           rounded="lg"
           @keydown.enter="fetchSkill"
-          style="height: 55px; width: 100%; min-width: 300px"
+          class="my-auto"
+          style="height: 55px; width: 100%; min-width: 300px; "
         ></v-text-field>
       </v-col>
 
@@ -97,15 +109,13 @@ onMounted(fetchSkill)
       <v-col md="2">
         <v-btn
           rounded="lg"
-          style="height: 55px; min-width: 170px; width: 100%"
-          @click="() => showDialogAdd()"
-        >
-          <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn
-        ></v-col
-      >
+          style="height: 45px; min-width: 170px; width: 100%"
+          @click="() => showDialogAdd()">
+          <v-icon>mdi-plus</v-icon>&nbsp; ADD NEW</v-btn>
+        </v-col>
     </v-row>
 
-    <v-card rounded="lg" style="margin-top: 1%">
+    <v-card rounded="lg" >
       <v-col cols="12">
         <v-treeview :items="skills" item-value="id">
           <template v-slot:prepend="{ item }">
@@ -134,7 +144,13 @@ onMounted(fetchSkill)
                 </v-btn>
               </td>
               <td>
-                <v-btn icon variant="text" rounded="lg" style="width: px">
+                <v-btn
+                  icon
+                  @click.stop="confirmDeleteSkill(item)"
+                  variant="text"
+                  rounded="lg"
+                  style="width: px"
+                >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </td>
@@ -154,10 +170,11 @@ onMounted(fetchSkill)
       :item="selectedItem"
       @close-dialog="closeDialogDetail"
     />
-    <addSkillDialog
-      :visible="dialogAddVisible"
-      :item="null"
-      @close-dialog="closeDialogAdd"
+    <AddSkillDialog :visible="dialogAddVisible" :item="null" @close-dialog="closeDialogAdd" />
+    <ConfirmDialog
+      :visible="dialogConfirmVisible"
+      @close-dialog="() => (dialogConfirmVisible = false)"
+      @confirm-delete="deleteSkillConfirmed()"
     />
   </v-container>
 </template>

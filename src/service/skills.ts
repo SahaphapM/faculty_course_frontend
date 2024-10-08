@@ -6,7 +6,7 @@ function addSkill(skill: Skill) {
   return http.post('/skills', skill)
 }
 
-function addSubSkill(id: string, subSkill: Skill[]) {
+function addSubSkill(id: string, subSkill: any) {
   return http.post(`/skills/${id}/createSubSkills`, subSkill) // Corrected URL
 }
 

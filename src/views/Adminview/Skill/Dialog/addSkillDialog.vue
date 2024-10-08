@@ -34,27 +34,17 @@ async function saveSkill() {
 </script>
 
 <template>
-  <v-dialog
-    v-model="localVisible"
-    max-width="1000px"
-    persistent
-    style="height: 100vh; overflow-y: auto"
-  >
-    <v-card class="elevation-5" rounded="lg" width="100%" height="100%" style="min-width: 200px">
-      <v-container style="width: 100%; height: 100%">
-        <div style="display: flex; justify-content: flex-end">
-          <v-btn
-            color="primary"
-            variant="plain"
-            @click="closeDialog"
-            style="height: 40px; width: 40px"
-            class="circular-btn"
-            icon="mdi-close"
-            rounded="lg"
-          />
-        </div>
+  <v-dialog v-model="localVisible" max-width="1000px" persistent style="overflow-y: auto">
+    <v-card class="elevation-5" rounded="lg" width="100%" height="100%" style="min-width: 350px">
+      <v-container>
         <v-row>
-          <v-col cols="12"><p style="font-size: 24px">Detail</p></v-col>
+          <v-col cols="11" class="my-auto">
+            <p style="font-size: 20px">Add New Skill</p>
+          </v-col>
+          <v-col cols="1">
+            <div style="display: flex; justify-content: flex-end">
+              <v-btn color="primary" variant="plain" @click="closeDialog" icon="mdi-close" /></div
+          ></v-col>
           <v-col cols="12">
             <v-text-field
               v-model="skills.name"
@@ -81,37 +71,11 @@ async function saveSkill() {
               :items="['ความรู้', 'คุณลักษณะบุคคล', 'จริยธรรม', 'ทักษะ']"
             ></v-combobox>
           </v-col>
-
-          <!-- <v-col cols="10"><p>Sub Skills</p></v-col
-          ><v-col cols="2"><v-btn @click="showDialog">Edit Sub Skills</v-btn></v-col>
-
-          <v-col cols="12">
-            <v-treeview
-              :items="skills.children"
-              item-key="id"
-              item-title="name"
-              activatable
-              open-on-click
-            >
-            </v-treeview>
-          </v-col> -->
-
-          <!-- <v-col cols="12">
-            <v-combobox
-              v-model="subSkillInput"
-              hide-details
-              label="Sub Skill"
-              item-title="name"
-              :items="children"
-            ></v-combobox>
-            <v-btn @click="addSubSkill" class="mt-4">Add Tech Skill</v-btn>
-          </v-col> -->
         </v-row>
 
-        <v-row>
-          <v-col>
-            <v-btn @click="saveSkill">Save</v-btn>
-          </v-col>
+        <v-row class="justify-end pb-2">
+          <v-btn @click="closeDialog" variant="plain" color="error">cancel </v-btn>
+          <v-btn @click="saveSkill" variant="plain">save</v-btn>
         </v-row>
       </v-container>
     </v-card>

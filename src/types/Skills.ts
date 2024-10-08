@@ -1,4 +1,3 @@
-import type { Subject } from './Subjects'
 
 type Skill = {
   id: string

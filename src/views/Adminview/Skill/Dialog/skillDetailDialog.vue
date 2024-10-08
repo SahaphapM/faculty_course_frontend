@@ -13,10 +13,10 @@ watch(
   async (newVal) => {
     localVisible.value = newVal
     try {
-    await skillStore.fetchSkill(props.item.id)
-  } catch (error) {
-    console.error('Error fetching skills:', error)
-  }
+      await skillStore.fetchSkill(props.item.id)
+    } catch (error) {
+      console.error('Error fetching skills:', error)
+    }
   }
 )
 
@@ -41,19 +41,22 @@ async function saveSkill() {
   >
     <v-card class="elevation-5" rounded="lg" width="100%" height="100%" style="min-width: 200px">
       <v-container style="width: 100%; height: 100%">
-        <div style="display: flex; justify-content: flex-end">
-          <v-btn
-            color="primary"
-            variant="plain"
-            @click="closeDialog"
-            style="height: 40px; width: 40px"
-            class="circular-btn"
-            icon="mdi-close"
-            rounded="lg"
-          />
-        </div>
         <v-row>
-          <v-col cols="12"><p style="font-size: 24px">Detail</p></v-col>
+          <v-col cols="11" class="my-auto">
+            <p style="font-size: 24px">Detail</p>
+          </v-col>
+          <v-col cols="1"
+            ><div style="display: flex; justify-content: flex-end">
+              <v-btn
+                color="primary"
+                variant="plain"
+                @click="closeDialog"
+                style="height: 40px; width: 40px"
+                class="circular-btn"
+                icon="mdi-close"
+                rounded="lg"
+              /></div
+          ></v-col>
           <v-col cols="12">
             <v-text-field
               v-model="skills.name"
@@ -107,10 +110,9 @@ async function saveSkill() {
           </v-col> -->
         </v-row>
 
-        <v-row>
-          <v-col>
-            <v-btn @click="saveSkill">Save</v-btn>
-          </v-col>
+        <v-row class="justify-end pb-2">
+          <v-btn @click="closeDialog" variant="plain" color="error">cancel </v-btn>
+          <v-btn @click="saveSkill" variant="plain">save</v-btn>
         </v-row>
       </v-container>
     </v-card>
